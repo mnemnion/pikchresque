@@ -6,6 +6,39 @@ pub fn build(b: *std.Build) void {
 
     const optimize = b.standardOptimizeOption(.{});
 
+    const zitron_dep = b.dependency("zitron", .{
+        .target = b.graph.host,
+        .optimize = .Debug,
+        .enum_file = true,
+        .show_conflicts = true,
+    });
+    const zitron_exe = zitron_dep.artifact("zitron");
+
+    const grammar_run = b.addRunArtifact(zitron_exe);
+    const grammar_write_in = b.addWriteFiles();
+    const grammar_input_dir = grammar_write_in.addCopyDirectory(b.path("src"), "pikchr_grammar_in", .{});
+    grammar_run.setCwd(grammar_input_dir);
+    grammar_run.addArg("pikchr.zy");
+    grammar_run.step.dependOn(&grammar_write_in.step);
+
+    const grammar_write_out = b.addWriteFiles();
+    grammar_write_out.step.dependOn(&grammar_run.step);
+    const grammar_output_dir = grammar_write_out.addCopyDirectory(grammar_input_dir, "", .{
+        .exclude_extensions = &.{"zy"},
+    });
+
+    const install_generated_parser = b.addInstallFile(grammar_output_dir.path(b, "pikchr.zig"), "grammar/pikchr.zig");
+    install_generated_parser.step.dependOn(&grammar_write_out.step);
+    const install_generated_tokens = b.addInstallFile(grammar_output_dir.path(b, "TokenKind.zig"), "grammar/TokenKind.zig");
+    install_generated_tokens.step.dependOn(&grammar_write_out.step);
+    const install_generated_report = b.addInstallFile(grammar_output_dir.path(b, "pikchr.out"), "grammar/pikchr.out");
+    install_generated_report.step.dependOn(&grammar_write_out.step);
+
+    const grammar_step = b.step("grammar", "Generate the Pikchr parser with Zitron");
+    grammar_step.dependOn(&install_generated_parser.step);
+    grammar_step.dependOn(&install_generated_tokens.step);
+    grammar_step.dependOn(&install_generated_report.step);
+
     const pikchresque_mod = b.addModule("pikchresque", .{
         .root_source_file = b.path("src/pikchresque.zig"),
         .target = target,
@@ -66,6 +99,18 @@ pub fn build(b: *std.Build) void {
 
     const run_module_unit_tests = b.addRunArtifact(module_unit_tests);
 
+    const grammar_mod = b.createModule(.{
+        .root_source_file = grammar_output_dir.path(b, "pikchr.zig"),
+        .target = target,
+        .optimize = optimize,
+    });
+    const grammar_unit_tests = b.addTest(.{
+        .root_module = grammar_mod,
+        .filters = test_filters,
+    });
+    grammar_unit_tests.step.dependOn(&grammar_write_out.step);
+    const run_grammar_unit_tests = b.addRunArtifact(grammar_unit_tests);
+
     const lib_unit_tests = b.addTest(.{
         .root_module = lib_mod,
         .filters = test_filters,
@@ -83,6 +128,7 @@ pub fn build(b: *std.Build) void {
     const test_step = b.step("test", "Run unit tests");
 
     test_step.dependOn(&run_module_unit_tests.step);
+    test_step.dependOn(&run_grammar_unit_tests.step);
 
     test_step.dependOn(&run_lib_unit_tests.step);
 

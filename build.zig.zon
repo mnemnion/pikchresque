@@ -8,7 +8,11 @@
 
     .fingerprint = 0xd44d3780eee74820,
 
-    .dependencies = .{},
+    .dependencies = .{
+        .zitron = .{
+            .path = "../zitron",
+        },
+    },
 
     .paths = .{
         "build.zig",
