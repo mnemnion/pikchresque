@@ -358,6 +358,11 @@ pub const PClass = struct {
     xRender: ?*const fn (*Pik, *PObj) void, // Render
 };
 
+// Generate an error message for the output.  pErr is the token at which
+// the error should point.  zMsg is the text of the error message. If
+// either pErr or zMsg is NULL, generate an out-of-memory error message.
+//
+// This routine is a no-op if there has already been an error reported.
 fn pik_error(p: *Pik, token: ?*const PToken, message: ?[]const u8) void {
     if (p.nErr != 0) return;
     p.nErr += 1;
@@ -381,6 +386,7 @@ fn pik_error(p: *Pik, token: ?*const PToken, message: ?[]const u8) void {
     }
 }
 
+// Free a complete list of objects
 fn pik_elist_free(p: *Pik, list: ?*PList) void {
     const l = list orelse return;
     for (l.a[0..l.n]) |obj| pik_elem_free(p, obj);
@@ -388,6 +394,7 @@ fn pik_elist_free(p: *Pik, list: ?*PList) void {
     p.allocator.destroy(l);
 }
 
+// Free a single object, and its substructure
 fn pik_elem_free(p: *Pik, elem: ?*PObj) void {
     const obj = elem orelse return;
     if (obj.zName) |z| p.allocator.free(z);
@@ -402,7 +409,7 @@ fn pik_elem_free(p: *Pik, elem: ?*PObj) void {
     p.allocator.free(obj.aPath);
     p.allocator.destroy(obj);
 }
-} /* end include */
+} // end include
 
 %name PikParser
 %token_type PToken
@@ -695,6 +702,7 @@ expr(A) ::= object(B) DOT_L colorproperty(P).     { A = pik_property_of(B, &P); 
 
 %code {
 
+// Return the contents of a STRING token without the outer quote marks.
 fn tokenInner(t: *const PToken) []const u8 {
     if (t.n < 2) return "";
     return t.z[1 .. t.n - 1];
@@ -714,6 +722,8 @@ const Builtin = struct {
 //
 // Units are in inches, except for "color" and "fill" which are
 // interpreted as 24-bit RGB values.
+//
+// Binary search used.  Must be kept in sorted order.
 const aBuiltin = [_]Builtin{
     .{ .zName = "arcrad", .val = 0.25 },
     .{ .zName = "arrowhead", .val = 2.0 },
@@ -756,8 +766,12 @@ const Color = struct {
     val: i32,
 };
 
-// Chart of CSS color names.  Two new names "None" and "Off" are
-// added with a value of -1.
+// Chart of the 148 official CSS color names with their
+// corresponding RGB values thru Color Module Level 4:
+// https://developer.mozilla.org/en-US/docs/Web/CSS/color_value
+//
+// Two new names "None" and "Off" are added with a value
+// of -1.
 const aColor = [_]Color{
     .{ .zName = "Black", .val = 0x000000 },
     .{ .zName = "Blue", .val = 0x0000ff },
@@ -777,11 +791,13 @@ fn nullRender(p: *Pik, obj: *PObj) void {
     _ = obj;
 }
 
+// Methods for the "arc" class
 fn arcInit(p: *Pik, obj: *PObj) void {
     obj.w = pik_value(p, "arcrad", null);
     obj.h = obj.w;
 }
 
+// Methods for the "arrow" class
 fn arrowInit(p: *Pik, obj: *PObj) void {
     obj.w = pik_value(p, "linewid", null);
     obj.h = pik_value(p, "lineht", null);
@@ -789,12 +805,15 @@ fn arrowInit(p: *Pik, obj: *PObj) void {
     obj.rarrow = 1;
 }
 
+// Methods for the "box" class
 fn boxInit(p: *Pik, obj: *PObj) void {
     obj.w = pik_value(p, "boxwid", null);
     obj.h = pik_value(p, "boxht", null);
     obj.rad = pik_value(p, "boxrad", null);
 }
 
+// Return offset from the center of the box to the compass point
+// given by parameter cp
 fn boxOffset(p: *Pik, obj: *PObj, cp: i32) PPoint {
     _ = p;
     var pt = cZeroPoint;
@@ -822,6 +841,9 @@ fn boxOffset(p: *Pik, obj: *PObj, cp: i32) PPoint {
     return pt;
 }
 
+// Given a point outside a box, return the point on the edge of the
+// box at which a line from the center of the box to the outside point
+// intersects the box.
 fn boxChop(p: *Pik, obj: *PObj, pt: *PPoint) PPoint {
     var cp: i32 = CP_C;
     var chop = obj.ptAt;
@@ -853,6 +875,7 @@ fn boxFit(p: *Pik, obj: *PObj, w: PNum, h: PNum) void {
     if (h > 0) obj.h = h;
 }
 
+// Methods for the "circle" class
 fn circleInit(p: *Pik, obj: *PObj) void {
     obj.w = pik_value(p, "circlerad", null) * 2;
     obj.h = obj.w;
@@ -860,6 +883,8 @@ fn circleInit(p: *Pik, obj: *PObj) void {
 }
 
 fn circleNumProp(p: *Pik, obj: *PObj, id: *PToken) void {
+    // For a circle, the width must equal the height and both must
+    // be twice the radius.  Enforce those constraints.
     _ = p;
     const name = id.z[0..id.n];
     if (std.mem.eql(u8, name, "diameter") or std.mem.eql(u8, name, "radius")) {
@@ -896,6 +921,7 @@ fn circleFit(p: *Pik, obj: *PObj, w: PNum, h: PNum) void {
     }
 }
 
+// Methods for the "cylinder" class
 fn cylinderInit(p: *Pik, obj: *PObj) void {
     obj.w = pik_value(p, "cylwid", null);
     obj.h = pik_value(p, "cylht", null);
@@ -908,6 +934,7 @@ fn cylinderFit(p: *Pik, obj: *PObj, w: PNum, h: PNum) void {
     if (h > 0) obj.h = h + 0.25 * obj.rad + obj.sw;
 }
 
+// Methods for the "dot" class
 fn dotInit(p: *Pik, obj: *PObj) void {
     obj.rad = pik_value(p, "dotrad", null);
     obj.h = obj.rad * 6;
@@ -936,23 +963,356 @@ fn dotOffset(p: *Pik, obj: *PObj, cp: i32) PPoint {
     return cZeroPoint;
 }
 
+// Append a tag, and any classes, to zOut.  Leaves the class open
+// so elements can add additional class data.
+fn pik_append_tag_open(p: *Pik, obj: ?*PObj, tag: []const u8) void {
+    pik_append(p, "<");
+    pik_append(p, tag);
+    pik_append(p, " ");
+    const o = obj orelse {
+        pik_append(p, "error=\"missing-pObj\" ");
+        return;
+    };
+    pik_append(p, "class=\"");
+    if (o.type) |class| {
+        if (std.mem.eql(u8, class.zName, "[]")) {
+            pik_append(p, "group");
+        } else {
+            pik_append(p, class.zName);
+        }
+    }
+    if (o.zName) |name| {
+        pik_append(p, " ");
+        pik_append_text(p, name, 4);
+    }
+    var xclass = o.pXmlClass;
+    while (xclass) |xc| : (xclass = xc.pNext) {
+        pik_append(p, " ");
+        pik_append_text(p, xc.zClass, 4);
+    }
+}
+
+// Append a PNum value surrounded by text.  Do coordinate transformations
+// on the value.
+fn pik_append_x(p: *Pik, prefix: []const u8, v: PNum, suffix: []const u8) void {
+    pik_append(p, prefix);
+    pik_append_num(p, "", p.rScale * (v - p.bbox.sw.x));
+    pik_append(p, suffix);
+}
+
+fn pik_append_y(p: *Pik, prefix: []const u8, v: PNum, suffix: []const u8) void {
+    pik_append(p, prefix);
+    pik_append_num(p, "", p.rScale * (p.bbox.ne.y - v));
+    pik_append(p, suffix);
+}
+
+fn pik_append_xy(p: *Pik, prefix: []const u8, x: PNum, y: PNum) void {
+    pik_append(p, prefix);
+    pik_append_num(p, "", p.rScale * (x - p.bbox.sw.x));
+    pik_append(p, ",");
+    pik_append_num(p, "", p.rScale * (p.bbox.ne.y - y));
+}
+
+fn pik_append_dis(p: *Pik, prefix: []const u8, v: PNum, suffix: []const u8) void {
+    pik_append(p, prefix);
+    pik_append_num(p, "", p.rScale * v);
+    pik_append(p, suffix);
+}
+
+// Invert the RGB color so that it is appropriate for dark mode.
+// Variable x hold the initial color.  The color is intended for use
+// as a background color if isBg is true, and as a foreground color
+// if isBg is false.
+fn pik_color_to_dark_mode(color: i32, is_bg: bool) i32 {
+    const x = 0xffffff - color;
+    var r = (x >> 16) & 0xff;
+    var g = (x >> 8) & 0xff;
+    var b = x & 0xff;
+    const mx = @max(r, @max(g, b));
+    const mn = @min(r, @min(g, b));
+    r = mn + (mx - r);
+    g = mn + (mx - g);
+    b = mn + (mx - b);
+    if (is_bg) {
+        if (mx > 127) {
+            r = @divTrunc(127 * r, mx);
+            g = @divTrunc(127 * g, mx);
+            b = @divTrunc(127 * b, mx);
+        }
+    } else {
+        if (mn < 128 and mx > mn) {
+            r = 127 + @divTrunc((r - mn) * 128, mx - mn);
+            g = 127 + @divTrunc((g - mn) * 128, mx - mn);
+            b = 127 + @divTrunc((b - mn) * 128, mx - mn);
+        }
+    }
+    return r * 0x10000 + g * 0x100 + b;
+}
+
+// Append a color specification to the output.
+//
+// In PIKCHR_DARK_MODE, the color is inverted.  The "bg" flags indicates that
+// the color is intended for use as a background color if true, or as a
+// foreground color if false.  The distinction only matters for color
+// inversions in PIKCHR_DARK_MODE.
+fn pik_append_clr(p: *Pik, prefix: []const u8, value: PNum, suffix: []const u8, is_bg: bool) void {
+    var x = pik_round(value);
+    if (x == 0 and p.fgcolor > 0 and !is_bg) {
+        x = p.fgcolor;
+    } else if (is_bg and x >= 0xffffff and p.bgcolor > 0) {
+        x = p.bgcolor;
+    } else if ((p.mFlags & PIKCHR_DARK_MODE) != 0) {
+        x = pik_color_to_dark_mode(x, is_bg);
+    }
+    pik_append(p, prefix);
+    p.zOut.writer.print("rgb({d},{d},{d})", .{ (x >> 16) & 0xff, (x >> 8) & 0xff, x & 0xff }) catch pik_error(p, null, null);
+    pik_append(p, suffix);
+}
+
+// Append an SVG path A record:
+//
+//    A r1 r2 0 0 0 x y
+fn pik_append_arc(p: *Pik, r1: PNum, r2: PNum, x: PNum, y: PNum) void {
+    pik_append(p, "A");
+    pik_append_num(p, "", p.rScale * r1);
+    pik_append(p, " ");
+    pik_append_num(p, "", p.rScale * r2);
+    pik_append(p, " 0 0 0 ");
+    pik_append_num(p, "", p.rScale * (x - p.bbox.sw.x));
+    pik_append(p, " ");
+    pik_append_num(p, "", p.rScale * (p.bbox.ne.y - y));
+}
+
+// Append presentation styles to text.
+//
+// eFill is non-zero to fill in the background, or 0 if no fill should
+// occur.  Non-zero values of eFill determine the "bg" flag to pik_append_clr()
+// for cases when pObj->fill==pObj->color
+//
+//     1        fill is background, and color is foreground.
+//     2        fill and color are both foreground.  (Used by "dot" objects)
+//     3        fill and color are both background.  (Used by most other objs)
+fn pik_append_style(p: *Pik, obj: *PObj, e_fill: i32) void {
+    var clr_is_bg = false;
+    if (obj.fill >= 0 and e_fill != 0) {
+        var fill_is_bg = true;
+        if (obj.fill == obj.color) {
+            if (e_fill == 2) fill_is_bg = false;
+            if (e_fill == 3) clr_is_bg = true;
+        }
+        pik_append_clr(p, "fill=\"", obj.fill, "\"", fill_is_bg);
+    } else {
+        p.mAttr |= ATTR_FILL_NO;
+        pik_append(p, "fill=\"transparent\"");
+    }
+    if (obj.sw >= 0.0 and obj.color >= 0.0) {
+        var sw = obj.sw;
+        pik_append_dis(p, " stroke-width=\"", sw, "\"");
+        pik_append_clr(p, " stroke=\"", obj.color, "\"", clr_is_bg);
+        if (obj.dotted > 0.0) {
+            const v = obj.dotted;
+            if (sw < 2.1 / p.rScale) sw = 2.1 / p.rScale;
+            pik_append_dis(p, " stroke-dasharray=\"", sw, "");
+            pik_append_dis(p, " ", v, "\"");
+        } else if (obj.dashed > 0.0) {
+            const v = obj.dashed;
+            pik_append_dis(p, " stroke-dasharray=\"", v, "");
+            pik_append_dis(p, " ", v, "\"");
+        }
+    }
+}
+
+// Append multiple <text> SVG elements for the text fields of the PObj.
+// Parameters:
+//
+//    p          The Pik object into which we are rendering
+//
+//    pObj       Object containing the text to be rendered
+//
+//    pBox       If not NULL, do no rendering at all.  Instead
+//               expand the box object so that it will include all
+//               of the text.
+fn pik_append_txt(p: *Pik, obj: *PObj, box: ?*PBox) void {
+    _ = box;
+    for (obj.aTxt[0..obj.nTxt]) |txt| {
+        pik_append(p, "<text>");
+        pik_append_text(p, tokenInner(&txt), 2);
+        pik_append(p, "</text>\n");
+    }
+}
+
+// Methods for the "box" class
+fn boxRender(p: *Pik, obj: *PObj) void {
+    const w2 = 0.5 * obj.w;
+    const h2 = 0.5 * obj.h;
+    var rad = obj.rad;
+    const pt = obj.ptAt;
+    if (obj.sw >= 0.0) {
+        pik_append_tag_open(p, obj, "path");
+        if (obj.fill < 0.0) pik_append(p, " _T");
+        pik_append(p, "\" ");
+        if (rad <= 0.0) {
+            pik_append_xy(p, "d=\"M", pt.x - w2, pt.y - h2);
+            pik_append_xy(p, "L", pt.x + w2, pt.y - h2);
+            pik_append_xy(p, "L", pt.x + w2, pt.y + h2);
+            pik_append_xy(p, "L", pt.x - w2, pt.y + h2);
+            pik_append(p, "Z\" ");
+        } else {
+            //
+            //         ----       - y3
+            //        /    \
+            //       /      \     _ y2
+            //      |        |
+            //      |        |    _ y1
+            //       \      /
+            //        \    /
+            //         ----       _ y0
+            //
+            //      '  '  '  '
+            //     x0 x1 x2 x3
+            //
+            if (rad > w2) rad = w2;
+            if (rad > h2) rad = h2;
+            const x0 = pt.x - w2;
+            const x1 = x0 + rad;
+            const x3 = pt.x + w2;
+            const x2 = x3 - rad;
+            const y0 = pt.y - h2;
+            const y1 = y0 + rad;
+            const y3 = pt.y + h2;
+            const y2 = y3 - rad;
+            pik_append_xy(p, "d=\"M", x1, y0);
+            if (x2 > x1) pik_append_xy(p, "L", x2, y0);
+            pik_append_arc(p, rad, rad, x3, y1);
+            if (y2 > y1) pik_append_xy(p, "L", x3, y2);
+            pik_append_arc(p, rad, rad, x2, y3);
+            if (x2 > x1) pik_append_xy(p, "L", x1, y3);
+            pik_append_arc(p, rad, rad, x0, y2);
+            if (y2 > y1) pik_append_xy(p, "L", x0, y1);
+            pik_append_arc(p, rad, rad, x1, y0);
+            pik_append(p, "Z\" ");
+        }
+        pik_append_style(p, obj, 3);
+        pik_append(p, " />\n");
+    }
+    pik_append_txt(p, obj, null);
+}
+
+// Methods for the "circle" class
+fn circleRender(p: *Pik, obj: *PObj) void {
+    if (obj.sw >= 0.0) {
+        pik_append_tag_open(p, obj, "circle");
+        if (obj.fill < 0.0) pik_append(p, " _T");
+        pik_append(p, "\" ");
+        pik_append_x(p, "cx=\"", obj.ptAt.x, "\"");
+        pik_append_y(p, " cy=\"", obj.ptAt.y, "\"");
+        pik_append_dis(p, " r=\"", obj.rad, "\" ");
+        pik_append_style(p, obj, 3);
+        pik_append(p, " />\n");
+    }
+    pik_append_txt(p, obj, null);
+}
+
+// Methods for the "dot" class
+fn dotRender(p: *Pik, obj: *PObj) void {
+    if (obj.sw >= 0.0) {
+        pik_append_tag_open(p, obj, "circle");
+        if (obj.fill < 0.0) pik_append(p, " _T");
+        pik_append(p, "\" ");
+        pik_append_x(p, "cx=\"", obj.ptAt.x, "\"");
+        pik_append_y(p, " cy=\"", obj.ptAt.y, "\"");
+        pik_append_dis(p, " r=\"", obj.rad, "\" ");
+        pik_append_style(p, obj, 2);
+        pik_append(p, " />\n");
+    }
+    pik_append_txt(p, obj, null);
+}
+
+// Methods for the "diamond" class
+fn diamondRender(p: *Pik, obj: *PObj) void {
+    const w2 = 0.5 * obj.w;
+    const h2 = 0.5 * obj.h;
+    const pt = obj.ptAt;
+    if (obj.sw >= 0.0) {
+        pik_append_tag_open(p, obj, "path");
+        if (obj.fill < 0.0) pik_append(p, " _T");
+        pik_append(p, "\" ");
+        pik_append_xy(p, "d=\"M", pt.x - w2, pt.y);
+        pik_append_xy(p, "L", pt.x, pt.y - h2);
+        pik_append_xy(p, "L", pt.x + w2, pt.y);
+        pik_append_xy(p, "L", pt.x, pt.y + h2);
+        pik_append(p, "Z\" ");
+        pik_append_style(p, obj, 3);
+        pik_append(p, " />\n");
+    }
+    pik_append_txt(p, obj, null);
+}
+
+// Methods for the "ellipse" class
+fn ellipseRender(p: *Pik, obj: *PObj) void {
+    if (obj.sw >= 0.0) {
+        pik_append_tag_open(p, obj, "ellipse");
+        if (obj.fill < 0.0) pik_append(p, " _T");
+        pik_append(p, "\" ");
+        pik_append_x(p, "cx=\"", obj.ptAt.x, "\"");
+        pik_append_y(p, " cy=\"", obj.ptAt.y, "\"");
+        pik_append_dis(p, " rx=\"", obj.w / 2.0, "\"");
+        pik_append_dis(p, " ry=\"", obj.h / 2.0, "\" ");
+        pik_append_style(p, obj, 3);
+        pik_append(p, " />\n");
+    }
+    pik_append_txt(p, obj, null);
+}
+
+// Methods for the "line" class
+fn lineRender(p: *Pik, obj: *PObj) void {
+    if (obj.sw > 0.0) {
+        pik_append_tag_open(p, obj, "path");
+        if ((obj.bClose != 0 and obj.fill < 0.0) or obj.bClose == 0) pik_append(p, " _T");
+        pik_append(p, "\" ");
+        pik_append(p, "d=\"M");
+        if (obj.nPath > 0 and obj.aPath.len > 0) {
+            var i: usize = 0;
+            while (i < @as(usize, @intCast(obj.nPath)) and i < obj.aPath.len) : (i += 1) {
+                pik_append_xy(p, if (i == 0) "" else "L", obj.aPath[i].x, obj.aPath[i].y);
+            }
+        } else {
+            pik_append_xy(p, "", obj.ptEnter.x, obj.ptEnter.y);
+            pik_append_xy(p, "L", obj.ptExit.x, obj.ptExit.y);
+        }
+        if (obj.bClose != 0) {
+            pik_append(p, "Z");
+        } else {
+            obj.fill = -1.0;
+        }
+        pik_append(p, "\" ");
+        pik_append_style(p, obj, if (obj.bClose != 0) 3 else 0);
+        pik_append(p, " />\n");
+    }
+    pik_append_txt(p, obj, null);
+}
+
+// Methods for the "diamond" class
 fn diamondInit(p: *Pik, obj: *PObj) void {
     obj.w = pik_value(p, "diamondwid", null);
     obj.h = pik_value(p, "diamondht", null);
     obj.bAltAutoFit = 1;
 }
 
+// Methods for the "ellipse" class
 fn ellipseInit(p: *Pik, obj: *PObj) void {
     obj.w = pik_value(p, "ellipsewid", null);
     obj.h = pik_value(p, "ellipseht", null);
 }
 
+// Methods for the "line" class
 fn lineInit(p: *Pik, obj: *PObj) void {
     obj.w = pik_value(p, "linewid", null);
     obj.h = pik_value(p, "lineht", null);
     obj.rad = pik_value(p, "linerad", null);
 }
 
+// Methods for the "move" class
 fn moveInit(p: *Pik, obj: *PObj) void {
     obj.w = pik_value(p, "movewid", null);
     obj.h = obj.w;
@@ -961,6 +1321,7 @@ fn moveInit(p: *Pik, obj: *PObj) void {
     obj.sw = -1.0;
 }
 
+// Methods for the "oval" class
 fn ovalInit(p: *Pik, obj: *PObj) void {
     obj.h = pik_value(p, "ovalht", null);
     obj.w = pik_value(p, "ovalwid", null);
@@ -970,21 +1331,26 @@ fn ovalInit(p: *Pik, obj: *PObj) void {
 fn ovalNumProp(p: *Pik, obj: *PObj, id: *PToken) void {
     _ = p;
     _ = id;
+    // Always adjust the radius to be half of the smaller of
+    // the width and height.
     obj.rad = 0.5 * @min(obj.h, obj.w);
 }
 
+// Methods for the "spline" class
 fn splineInit(p: *Pik, obj: *PObj) void {
     obj.w = pik_value(p, "linewid", null);
     obj.h = pik_value(p, "lineht", null);
     obj.rad = 1000;
 }
 
+// Methods for the "text" class
 fn textInit(p: *Pik, obj: *PObj) void {
     _ = pik_value(p, "textwid", null);
     _ = pik_value(p, "textht", null);
     obj.sw = 0.0;
 }
 
+// Methods for the "sublist" class
 fn sublistInit(p: *Pik, obj: *PObj) void {
     _ = p;
     const list = obj.pSublist orelse return;
@@ -997,49 +1363,366 @@ fn sublistInit(p: *Pik, obj: *PObj) void {
     obj.mCalc |= A_WIDTH | A_HEIGHT | A_RADIUS;
 }
 
+// The following array holds all the different kinds of objects.
+// The special [] object is separate.
 const sublistClass = PClass{
+    // name
     .zName = "[]",
+    // isline
     .isLine = 0,
+    // eJust
     .eJust = 0,
+    // xInit
     .xInit = sublistInit,
+    // xNumProp
     .xNumProp = null,
+    // xCheck
     .xCheck = null,
+    // xChop
     .xChop = null,
+    // xOffset
     .xOffset = boxOffset,
+    // xFit
     .xFit = null,
+    // xRender
     .xRender = null,
 };
 
 const noopClass = PClass{
+    // name
     .zName = "noop",
+    // isline
     .isLine = 0,
+    // eJust
     .eJust = 0,
+    // xInit
     .xInit = null,
+    // xNumProp
     .xNumProp = null,
+    // xCheck
     .xCheck = null,
+    // xChop
     .xChop = null,
+    // xOffset
     .xOffset = boxOffset,
+    // xFit
     .xFit = null,
+    // xRender
     .xRender = null,
 };
 
 const aClass = [_]PClass{
-    .{ .zName = "arc", .isLine = 1, .eJust = 0, .xInit = arcInit, .xNumProp = null, .xCheck = null, .xChop = null, .xOffset = boxOffset, .xFit = null, .xRender = nullRender },
-    .{ .zName = "arrow", .isLine = 1, .eJust = 0, .xInit = arrowInit, .xNumProp = null, .xCheck = null, .xChop = null, .xOffset = boxOffset, .xFit = null, .xRender = nullRender },
-    .{ .zName = "box", .isLine = 0, .eJust = 1, .xInit = boxInit, .xNumProp = null, .xCheck = null, .xChop = boxChop, .xOffset = boxOffset, .xFit = boxFit, .xRender = nullRender },
-    .{ .zName = "circle", .isLine = 0, .eJust = 0, .xInit = circleInit, .xNumProp = circleNumProp, .xCheck = null, .xChop = circleChop, .xOffset = boxOffset, .xFit = circleFit, .xRender = nullRender },
-    .{ .zName = "cylinder", .isLine = 0, .eJust = 1, .xInit = cylinderInit, .xNumProp = null, .xCheck = null, .xChop = boxChop, .xOffset = boxOffset, .xFit = cylinderFit, .xRender = nullRender },
-    .{ .zName = "diamond", .isLine = 0, .eJust = 0, .xInit = diamondInit, .xNumProp = null, .xCheck = null, .xChop = boxChop, .xOffset = boxOffset, .xFit = boxFit, .xRender = nullRender },
-    .{ .zName = "dot", .isLine = 0, .eJust = 0, .xInit = dotInit, .xNumProp = dotNumProp, .xCheck = dotCheck, .xChop = circleChop, .xOffset = dotOffset, .xFit = null, .xRender = nullRender },
-    .{ .zName = "ellipse", .isLine = 0, .eJust = 0, .xInit = ellipseInit, .xNumProp = null, .xCheck = null, .xChop = circleChop, .xOffset = boxOffset, .xFit = boxFit, .xRender = nullRender },
-    .{ .zName = "file", .isLine = 0, .eJust = 1, .xInit = boxInit, .xNumProp = null, .xCheck = null, .xChop = boxChop, .xOffset = boxOffset, .xFit = boxFit, .xRender = nullRender },
-    .{ .zName = "line", .isLine = 1, .eJust = 0, .xInit = lineInit, .xNumProp = null, .xCheck = null, .xChop = null, .xOffset = boxOffset, .xFit = null, .xRender = nullRender },
-    .{ .zName = "move", .isLine = 1, .eJust = 0, .xInit = moveInit, .xNumProp = null, .xCheck = null, .xChop = null, .xOffset = boxOffset, .xFit = null, .xRender = nullRender },
-    .{ .zName = "oval", .isLine = 0, .eJust = 1, .xInit = ovalInit, .xNumProp = ovalNumProp, .xCheck = null, .xChop = boxChop, .xOffset = boxOffset, .xFit = boxFit, .xRender = nullRender },
-    .{ .zName = "spline", .isLine = 1, .eJust = 0, .xInit = splineInit, .xNumProp = null, .xCheck = null, .xChop = null, .xOffset = boxOffset, .xFit = null, .xRender = nullRender },
-    .{ .zName = "text", .isLine = 0, .eJust = 0, .xInit = textInit, .xNumProp = null, .xCheck = null, .xChop = boxChop, .xOffset = boxOffset, .xFit = boxFit, .xRender = nullRender },
+    .{
+        // name
+        .zName = "arc",
+        // isline
+        .isLine = 1,
+        // eJust
+        .eJust = 0,
+        // xInit
+        .xInit = arcInit,
+        // xNumProp
+        .xNumProp = null,
+        // xCheck
+        .xCheck = null,
+        // xChop
+        .xChop = null,
+        // xOffset
+        .xOffset = boxOffset,
+        // xFit
+        .xFit = null,
+        // xRender
+        .xRender = nullRender,
+    },
+    .{
+        // name
+        .zName = "arrow",
+        // isline
+        .isLine = 1,
+        // eJust
+        .eJust = 0,
+        // xInit
+        .xInit = arrowInit,
+        // xNumProp
+        .xNumProp = null,
+        // xCheck
+        .xCheck = null,
+        // xChop
+        .xChop = null,
+        // xOffset
+        .xOffset = boxOffset,
+        // xFit
+        .xFit = null,
+        // xRender
+        .xRender = lineRender,
+    },
+    .{
+        // name
+        .zName = "box",
+        // isline
+        .isLine = 0,
+        // eJust
+        .eJust = 1,
+        // xInit
+        .xInit = boxInit,
+        // xNumProp
+        .xNumProp = null,
+        // xCheck
+        .xCheck = null,
+        // xChop
+        .xChop = boxChop,
+        // xOffset
+        .xOffset = boxOffset,
+        // xFit
+        .xFit = boxFit,
+        // xRender
+        .xRender = boxRender,
+    },
+    .{
+        // name
+        .zName = "circle",
+        // isline
+        .isLine = 0,
+        // eJust
+        .eJust = 0,
+        // xInit
+        .xInit = circleInit,
+        // xNumProp
+        .xNumProp = circleNumProp,
+        // xCheck
+        .xCheck = null,
+        // xChop
+        .xChop = circleChop,
+        // xOffset
+        .xOffset = boxOffset,
+        // xFit
+        .xFit = circleFit,
+        // xRender
+        .xRender = circleRender,
+    },
+    .{
+        // name
+        .zName = "cylinder",
+        // isline
+        .isLine = 0,
+        // eJust
+        .eJust = 1,
+        // xInit
+        .xInit = cylinderInit,
+        // xNumProp
+        .xNumProp = null,
+        // xCheck
+        .xCheck = null,
+        // xChop
+        .xChop = boxChop,
+        // xOffset
+        .xOffset = boxOffset,
+        // xFit
+        .xFit = cylinderFit,
+        // xRender
+        .xRender = boxRender,
+    },
+    .{
+        // name
+        .zName = "diamond",
+        // isline
+        .isLine = 0,
+        // eJust
+        .eJust = 0,
+        // xInit
+        .xInit = diamondInit,
+        // xNumProp
+        .xNumProp = null,
+        // xCheck
+        .xCheck = null,
+        // xChop
+        .xChop = boxChop,
+        // xOffset
+        .xOffset = boxOffset,
+        // xFit
+        .xFit = boxFit,
+        // xRender
+        .xRender = diamondRender,
+    },
+    .{
+        // name
+        .zName = "dot",
+        // isline
+        .isLine = 0,
+        // eJust
+        .eJust = 0,
+        // xInit
+        .xInit = dotInit,
+        // xNumProp
+        .xNumProp = dotNumProp,
+        // xCheck
+        .xCheck = dotCheck,
+        // xChop
+        .xChop = circleChop,
+        // xOffset
+        .xOffset = dotOffset,
+        // xFit
+        .xFit = null,
+        // xRender
+        .xRender = dotRender,
+    },
+    .{
+        // name
+        .zName = "ellipse",
+        // isline
+        .isLine = 0,
+        // eJust
+        .eJust = 0,
+        // xInit
+        .xInit = ellipseInit,
+        // xNumProp
+        .xNumProp = null,
+        // xCheck
+        .xCheck = null,
+        // xChop
+        .xChop = circleChop,
+        // xOffset
+        .xOffset = boxOffset,
+        // xFit
+        .xFit = boxFit,
+        // xRender
+        .xRender = ellipseRender,
+    },
+    .{
+        // name
+        .zName = "file",
+        // isline
+        .isLine = 0,
+        // eJust
+        .eJust = 1,
+        // xInit
+        .xInit = boxInit,
+        // xNumProp
+        .xNumProp = null,
+        // xCheck
+        .xCheck = null,
+        // xChop
+        .xChop = boxChop,
+        // xOffset
+        .xOffset = boxOffset,
+        // xFit
+        .xFit = boxFit,
+        // xRender
+        .xRender = boxRender,
+    },
+    .{
+        // name
+        .zName = "line",
+        // isline
+        .isLine = 1,
+        // eJust
+        .eJust = 0,
+        // xInit
+        .xInit = lineInit,
+        // xNumProp
+        .xNumProp = null,
+        // xCheck
+        .xCheck = null,
+        // xChop
+        .xChop = null,
+        // xOffset
+        .xOffset = boxOffset,
+        // xFit
+        .xFit = null,
+        // xRender
+        .xRender = lineRender,
+    },
+    .{
+        // name
+        .zName = "move",
+        // isline
+        .isLine = 1,
+        // eJust
+        .eJust = 0,
+        // xInit
+        .xInit = moveInit,
+        // xNumProp
+        .xNumProp = null,
+        // xCheck
+        .xCheck = null,
+        // xChop
+        .xChop = null,
+        // xOffset
+        .xOffset = boxOffset,
+        // xFit
+        .xFit = null,
+        // xRender
+        .xRender = nullRender,
+    },
+    .{
+        // name
+        .zName = "oval",
+        // isline
+        .isLine = 0,
+        // eJust
+        .eJust = 1,
+        // xInit
+        .xInit = ovalInit,
+        // xNumProp
+        .xNumProp = ovalNumProp,
+        // xCheck
+        .xCheck = null,
+        // xChop
+        .xChop = boxChop,
+        // xOffset
+        .xOffset = boxOffset,
+        // xFit
+        .xFit = boxFit,
+        // xRender
+        .xRender = boxRender,
+    },
+    .{
+        // name
+        .zName = "spline",
+        // isline
+        .isLine = 1,
+        // eJust
+        .eJust = 0,
+        // xInit
+        .xInit = splineInit,
+        // xNumProp
+        .xNumProp = null,
+        // xCheck
+        .xCheck = null,
+        // xChop
+        .xChop = null,
+        // xOffset
+        .xOffset = boxOffset,
+        // xFit
+        .xFit = null,
+        // xRender
+        .xRender = lineRender,
+    },
+    .{
+        // name
+        .zName = "text",
+        // isline
+        .isLine = 0,
+        // eJust
+        .eJust = 0,
+        // xInit
+        .xInit = textInit,
+        // xNumProp
+        .xNumProp = null,
+        // xCheck
+        .xCheck = null,
+        // xChop
+        .xChop = boxChop,
+        // xOffset
+        .xOffset = boxOffset,
+        // xFit
+        .xFit = boxFit,
+        // xRender
+        .xRender = nullRender,
+    },
 };
 
+// Convert an object class name into a PClass pointer
 fn pik_find_class(id: *PToken) ?*const PClass {
     for (&aClass) |*class| {
         if (std.mem.eql(u8, class.zName, id.z[0..id.n])) return class;
@@ -1047,6 +1730,7 @@ fn pik_find_class(id: *PToken) ?*const PClass {
     return null;
 }
 
+// Recompute key layout parameters from variables.
 fn pik_compute_layout_settings(p: *Pik) void {
     if (p.bLayoutVars != 0) return;
     var thickness = pik_value(p, "thickness", null);
@@ -1062,6 +1746,7 @@ fn pik_compute_layout_settings(p: *Pik) void {
     p.bLayoutVars = 1;
 }
 
+// Add all objects of the list pList to the bounding box
 fn pik_bbox_add_elist(p: *Pik, list: *PList, w_arrow: PNum) void {
     _ = w_arrow;
     for (list.a[0..list.n]) |obj| {
@@ -1074,16 +1759,23 @@ fn pik_bbox_add_elist(p: *Pik, list: *PList, w_arrow: PNum) void {
     }
 }
 
+// Show basic information about each object as a comment in the
+// generated HTML.  Used for testing and debugging.  Activated
+// by the (undocumented) "debug = 1;"
+// command.
 fn pik_elem_render(p: *Pik, obj: *PObj) void {
     if (obj.type) |class| {
         if (class.xRender) |x| x(p, obj);
     }
 }
 
+// Render a list of objects
 fn pik_elist_render(p: *Pik, list: *PList) void {
     for (list.a[0..list.n]) |obj| pik_elem_render(p, obj);
 }
 
+// Render a list of objects.  Write the SVG into p->zOut.
+// Delete the input object_list before returnning.
 fn pik_render(p: *Pik, list: ?*PList) void {
     const l = list orelse return;
     defer {
@@ -1144,6 +1836,9 @@ fn pik_render(p: *Pik, list: ?*PList) void {
     pik_append(p, "</svg>\n");
 }
 
+// Append a new object onto the end of an object list.  The
+// object list is created if it does not already exist.  Return
+// the new object list.
 fn pik_elist_append(p: *Pik, list: ?*PList, obj: ?*PObj) ?*PList {
     const o = obj orelse return list;
     const l = list orelse p.allocator.create(PList) catch {
@@ -1166,6 +1861,12 @@ fn pik_elist_append(p: *Pik, list: ?*PList, obj: ?*PObj) ?*PList {
     return l;
 }
 
+// Allocate and return a new PObj object.
+//
+// If pId!=0 then pId is an identifier that defines the object class.
+// If pStr!=0 then it is a STRING literal that defines a text object.
+// If pSublist!=0 then this is a [...] object. If all three parameters
+// are NULL then this is a no-op object used to define a PLACENAME.
 fn pik_elem_new(p: *Pik, id: ?*PToken, str: ?*PToken, sublist: ?*PList) ?*PObj {
     if (p.nErr != 0) return null;
     const obj = p.allocator.create(PObj) catch {
@@ -1236,6 +1937,7 @@ fn pik_elem_new(p: *Pik, id: ?*PToken, str: ?*PToken, sublist: ?*PList) ?*PObj {
     return obj;
 }
 
+// Set a title or label for the Pikchr diagram.
 fn pik_set_title(p: *Pik, title: *PToken, label: i32) void {
     if (p.zTitle) |old| p.allocator.free(old);
     p.zTitle = p.allocator.dupe(u8, tokenInner(title)) catch {
@@ -1245,6 +1947,7 @@ fn pik_set_title(p: *Pik, title: *PToken, label: i32) void {
     p.bLabel = if (label != 0) 1 else 0;
 }
 
+// Set a description for the Pikchr diagram.
 fn pik_set_description(p: *Pik, desc: *PToken) void {
     if (p.zDesc) |old| p.allocator.free(old);
     p.zDesc = p.allocator.dupe(u8, tokenInner(desc)) catch {
@@ -1253,10 +1956,31 @@ fn pik_set_description(p: *Pik, desc: *PToken) void {
     };
 }
 
-fn pik_set_direction(p: *Pik, dir: i16) void {
-    if (ValidDir(dir)) p.eDir = @intCast(dir);
+// Set the output direction and exit point for an object
+fn pik_elem_set_exit(obj: *PObj, dir: i32) void {
+    if (!ValidDir(dir)) return;
+    obj.outDir = dir;
+    if (obj.type == null or obj.type.?.isLine == 0 or obj.bClose != 0) {
+        obj.ptExit = obj.ptAt;
+        switch (obj.outDir) {
+            DIR_LEFT => obj.ptExit.x -= obj.w * 0.5,
+            DIR_UP => obj.ptExit.y += obj.h * 0.5,
+            DIR_DOWN => obj.ptExit.y -= obj.h * 0.5,
+            else => obj.ptExit.x += obj.w * 0.5,
+        }
+    }
 }
 
+// Change the layout direction.
+fn pik_set_direction(p: *Pik, dir: i16) void {
+    if (!ValidDir(dir)) return;
+    p.eDir = @intCast(dir);
+    if (p.list) |list| {
+        if (list.n != 0) pik_elem_set_exit(list.a[list.n - 1], dir);
+    }
+}
+
+// Attach a name to an object
 fn pik_elem_setname(p: *Pik, obj: ?*PObj, name: *PToken) void {
     const o = obj orelse return;
     if (o.zName) |old| p.allocator.free(old);
@@ -1266,6 +1990,11 @@ fn pik_elem_setname(p: *Pik, obj: ?*PObj, name: *PToken) void {
     };
 }
 
+// Set a local variable name to "val".
+//
+// The name might be a built-in variable or a color name.  In either case,
+// a new application-defined variable is set.  Since app-defined variables
+// are searched first, this will override any built-in variables.
 fn pik_set_var(p: *Pik, id: *PToken, val: PNum, op: *PToken) void {
     var found = p.pVar;
     while (found) |v| : (found = v.pNext) {
@@ -1302,6 +2031,8 @@ fn pik_set_var(p: *Pik, id: *PToken, val: PNum, op: *PToken) void {
     p.bLayoutVars = 0;
 }
 
+// This is an ugly hack, but it keeps diagrams output-identical.  It
+// should be removed to make textcolor independent of color.
 fn pik_sync_textcolor(p: *Pik, old_val: PNum, new_val: PNum) void {
     var textcolor = p.pVar;
     while (textcolor) |v| : (textcolor = v.pNext) {
@@ -1323,6 +2054,7 @@ fn pik_sync_textcolor(p: *Pik, old_val: PNum, new_val: PNum) void {
     p.pVar = v;
 }
 
+// Round a PNum into the nearest integer
 fn pik_round(v: PNum) i32 {
     if (std.math.isNan(v)) return 0;
     if (v < -2147483647) return -2147483648;
@@ -1330,6 +2062,18 @@ fn pik_round(v: PNum) i32 {
     return @intFromFloat(v);
 }
 
+// Search for the variable named z[0..n-1] in:
+//
+//   * Application defined variables
+//   * Built-in variables
+//
+// Return the value of the variable if found.  If not found
+// return 0.0.  Also if pMiss is not NULL, then set it to 1
+// if not found.
+//
+// This routine is a subroutine to pik_get_var().  But it is also
+// used by object implementations to look up (possibly overwritten)
+// values for built-in variables like "boxwid".
 fn pik_value(p: *Pik, z: []const u8, miss: ?*i32) PNum {
     var v = p.pVar;
     while (v) |vv| : (v = vv.pNext) {
@@ -1352,6 +2096,14 @@ fn pik_value(p: *Pik, z: []const u8, miss: ?*i32) PNum {
     return 0.0;
 }
 
+// Look up a color-name.  Unlike other names in this program, the
+// color-names are not case sensitive.  So "DarkBlue" and "darkblue"
+// and "DARKBLUE" all find the same value (139).
+//
+// If not found, return -99.0.  Also post an error if p!=NULL.
+//
+// Special color names "None" and "Off" return -1.0 without causing
+// an error.
 fn pik_lookup_color(p: ?*Pik, id: *PToken) PNum {
     for (aColor) |color| {
         if (std.ascii.eqlIgnoreCase(id.z[0..id.n], color.zName)) {
@@ -1362,6 +2114,15 @@ fn pik_lookup_color(p: ?*Pik, id: *PToken) PNum {
     return -99.0;
 }
 
+// Get the value of a variable.
+//
+// Search in order:
+//
+//    *  Application defined variables
+//    *  Built-in variables
+//    *  Color names
+//
+// If no such variable is found, throw an error.
 fn pik_get_var(p: *Pik, id: *PToken) PNum {
     var miss: i32 = 0;
     const v = pik_value(p, id.z[0..id.n], &miss);
@@ -1372,6 +2133,19 @@ fn pik_get_var(p: *Pik, id: *PToken) PNum {
     return 0.0;
 }
 
+// Convert a numeric literal into a number.  Return that number.
+// There is no error handling because the tokenizer has already
+// assured us that the numeric literal is valid.
+//
+// Allowed number forms:
+//
+//   (1)    Floating point literal
+//   (2)    Same as (1) but followed by a unit: "cm", "mm", "in",
+//          "px", "pt", or "pc".
+//   (3)    Hex integers: 0x000000
+//
+// This routine returns the result in inches.  If a different unit
+// is specified, the conversion happens automatically.
 fn pik_atof(t: *PToken) PNum {
     const text = t.z[0..t.n];
     if (text.len >= 3 and text[0] == '0' and (text[1] == 'x' or text[1] == 'X')) {
@@ -1394,10 +2168,17 @@ fn pik_atof(t: *PToken) PNum {
     return ans;
 }
 
+// Append raw text to zOut
 fn pik_append(p: *Pik, text: []const u8) void {
     p.zOut.writer.writeAll(text) catch pik_error(p, null, null);
 }
 
+// Given a string and its length, returns true if the string begins
+// with a construct which syntactically matches an HTML entity escape
+// sequence (without checking for whether it's a known entity). Always
+// returns false if zText[0] is false or n<4. Entities match the
+// equivalent of the regexes `&#[0-9]{2,};` and
+// `&[a-zA-Z][a-zA-Z0-9]+;`.
 fn pik_isentity(text: []const u8) bool {
     if (text.len < 4 or text[0] != '&') return false;
     if (text[1] == '#') {
@@ -1417,6 +2198,21 @@ fn pik_isentity(text: []const u8) bool {
     return false;
 }
 
+// Append text to zOut with HTML characters escaped.
+//
+//   *  The space character is changed into non-breaking space (U+00a0)
+//      if mFlags has the 0x01 bit set. This is needed when outputting
+//      text to preserve leading and trailing whitespace.  Turns out we
+//      cannot use &nbsp; as that is an HTML-ism and is not valid in XML.
+//
+//   *  The "&" character is changed into "&amp;" if mFlags has the
+//      0x02 bit set.  This is needed when generating error message text.
+//
+//   *  The '"' character is changed into "&quot;" if mFlags has the
+//      0x04 bit set.  This is needed when creating XML attribute strings.
+//      This 'attribute mode' also replaces '\n' with ' '.
+//
+//   *  Except for the above, only "<" and ">" are escaped.
 fn pik_append_text(p: *Pik, text: []const u8, flags: i32) void {
     const b_q_space = (flags & 1) != 0;
     const b_q_amp = (flags & 2) != 0;
@@ -1449,20 +2245,92 @@ fn pik_append_text(p: *Pik, text: []const u8, flags: i32) void {
     }
 }
 
+// Append a PNum value
 fn pik_append_num(p: *Pik, prefix: []const u8, v: PNum) void {
     pik_append(p, prefix);
     p.zOut.writer.print("{d}", .{v}) catch pik_error(p, null, null);
 }
 
+// Do final adjustment and consistency work after all attributes have
+// been added to an object.
 fn pik_after_adding_attributes(p: *Pik, obj: ?*PObj) void {
-    _ = p;
-    _ = obj;
+    const o = obj orelse return;
+    if (o.type) |class| {
+        if (class.isLine != 0) {
+            if (p.nTPath < 2) {
+                var rel = PRel{ .rAbs = 0.0, .rRel = 1.0 };
+                pik_add_direction(p, null, &rel);
+            }
+            o.nPath = p.nTPath;
+            const n: usize = @intCast(p.nTPath);
+            o.aPath = p.allocator.dupe(PPoint, p.aTPath[0..n]) catch {
+                pik_error(p, &o.errTok, null);
+                return;
+            };
+            o.ptEnter = o.aPath[0];
+            o.ptExit = o.aPath[n - 1];
+            o.ptAt = .{
+                .x = 0.5 * (o.ptEnter.x + o.ptExit.x),
+                .y = 0.5 * (o.ptEnter.y + o.ptExit.y),
+            };
+        } else {
+            pik_elem_set_exit(o, o.outDir);
+        }
+    }
+}
+
+// Return the offset from an object's center to a named edge/compass point.
+fn pik_elem_offset(p: *Pik, obj: *PObj, cp: i32) PPoint {
+    if (obj.type) |class| {
+        if (class.xOffset) |x| return x(p, obj, cp);
+    }
+    return cZeroPoint;
+}
+
+// Move all coordinates contained within an object (and within its
+// substructure) by dx, dy
+fn pik_elem_move(obj: *PObj, dx: PNum, dy: PNum) void {
+    obj.ptAt.x += dx;
+    obj.ptAt.y += dy;
+    obj.ptEnter.x += dx;
+    obj.ptEnter.y += dy;
+    obj.ptExit.x += dx;
+    obj.ptExit.y += dy;
+    obj.bbox.ne.x += dx;
+    obj.bbox.ne.y += dy;
+    obj.bbox.sw.x += dx;
+    obj.bbox.sw.y += dy;
+    const n_path: usize = if (obj.nPath > 0) @intCast(obj.nPath) else 0;
+    for (obj.aPath[0..@min(obj.aPath.len, n_path)]) |*pt| {
+        pt.x += dx;
+        pt.y += dy;
+    }
+    if (obj.pSublist) |sub| pik_elist_move(sub, dx, dy);
+}
+
+// Move all coordinates contained within a list of objects by dx, dy.
+fn pik_elist_move(list: *PList, dx: PNum, dy: PNum) void {
+    for (list.a[0..list.n]) |obj| pik_elem_move(obj, dx, dy);
 }
 
 fn hasKind(tok: *const PToken, kind: TokenKind) bool {
     return tok.eType == @intFromEnum(kind);
 }
 
+// Check to see if it is ok to set the value of parameter mThis.
+// Return 0 if it is ok. If it not ok, generate an appropriate
+// error message and return non-zero.
+//
+// Flags are set in pObj so that the same object or conflicting
+// objects may not be set again.
+//
+// To be ok, bit mThis must be clear and no more than one of
+// the bits identified by mBlockers may be set.
+//
+// Set a numeric property like "width 7" or "radius 200%".
+//
+// The rAbs term is an absolute value to add in.  rRel is
+// a relative value by which to change the current value.
 fn pik_set_numprop(p: *Pik, prop: *PToken, val: *PRel) void {
     const obj = p.cur orelse return;
     var target: *PNum = undefined;
@@ -1496,6 +2364,7 @@ fn pik_set_numprop(p: *Pik, prop: *PToken, val: *PRel) void {
     if (obj.type) |class| if (class.xNumProp) |x| x(p, obj, prop);
 }
 
+// Set a color property.  The argument is an RGB value.
 fn pik_set_clrprop(p: *Pik, prop: *PToken, val: PNum) void {
     const obj = p.cur orelse return;
     if (hasKind(prop, .FILL)) {
@@ -1523,6 +2392,10 @@ fn pik_set_clrprop(p: *Pik, prop: *PToken, val: PNum) void {
     if (obj.type) |class| if (class.xNumProp) |x| x(p, obj, prop);
 }
 
+// Set a "dashed" property like "dash 0.05"
+//
+// Use the value supplied by pVal if available.  If pVal==0, use
+// a default.
 fn pik_set_dashed(p: *Pik, prop: *PToken, val: ?*PNum) void {
     const obj = p.cur orelse return;
     if ((obj.mProp & A_DASHED) != 0) {
@@ -1534,23 +2407,115 @@ fn pik_set_dashed(p: *Pik, prop: *PToken, val: ?*PNum) void {
     obj.mProp |= A_DASHED;
 }
 
+// If the current path information came from a "same" or "same as"
+// reset it.
+fn pik_reset_samepath(p: *Pik) void {
+    if (p.samePath != 0) {
+        p.samePath = 0;
+        p.nTPath = 1;
+    }
+}
+
+// Advance to the next entry in p->aTPath.  Return its index.
+fn pik_next_rpath(p: *Pik, err: ?*PToken) i32 {
+    var n = p.nTPath - 1;
+    if (n + 1 >= p.aTPath.len) {
+        pik_error(p, err, "too many path elements");
+        return n;
+    }
+    n += 1;
+    p.nTPath += 1;
+    p.aTPath[@intCast(n)] = p.aTPath[@intCast(n - 1)];
+    p.mTPath = 0;
+    return n;
+}
+
+// Add a direction term to an object.  "up 0.5", or "left 3", or "down"
+// or "down 50%".
 fn pik_add_direction(p: *Pik, dir: ?*PToken, val: *PRel) void {
-    _ = dir;
-    _ = val;
+    const obj = p.cur orelse return;
+    if (obj.type == null or obj.type.?.isLine == 0) {
+        if (dir) |d| pik_error(p, d, "use with line-oriented objects only") else pik_error(p, &obj.errTok, "syntax error");
+        return;
+    }
+    pik_reset_samepath(p);
+    var n = p.nTPath - 1;
+    if (p.thenFlag != 0 or p.mTPath == 3 or n == 0) {
+        n = pik_next_rpath(p, dir);
+        p.thenFlag = 0;
+    }
+    const d: i32 = if (dir) |dd| dd.eCode else p.eDir;
+    switch (d) {
+        DIR_UP => {
+            if ((p.mTPath & 2) != 0) n = pik_next_rpath(p, dir);
+            p.aTPath[@intCast(n)].y += val.rAbs + obj.h * val.rRel;
+            p.mTPath |= 2;
+        },
+        DIR_DOWN => {
+            if ((p.mTPath & 2) != 0) n = pik_next_rpath(p, dir);
+            p.aTPath[@intCast(n)].y -= val.rAbs + obj.h * val.rRel;
+            p.mTPath |= 2;
+        },
+        DIR_RIGHT => {
+            if ((p.mTPath & 1) != 0) n = pik_next_rpath(p, dir);
+            p.aTPath[@intCast(n)].x += val.rAbs + obj.w * val.rRel;
+            p.mTPath |= 1;
+        },
+        DIR_LEFT => {
+            if ((p.mTPath & 1) != 0) n = pik_next_rpath(p, dir);
+            p.aTPath[@intCast(n)].x -= val.rAbs + obj.w * val.rRel;
+            p.mTPath |= 1;
+        },
+        else => {},
+    }
+    obj.outDir = d;
     p.thenFlag = 0;
 }
 
+// Process a movement attribute of the form "right until even with ..."
+//
+// pDir is the first keyword, "right" or "left" or "up" or "down".
+// The movement is in that direction until its closest approach to
+// the point specified by pPoint.
 fn pik_evenwith(p: *Pik, dir: *PToken, place: *PPoint) void {
-    _ = p;
-    _ = dir;
-    _ = place;
+    const obj = p.cur orelse return;
+    if (obj.type == null or obj.type.?.isLine == 0) {
+        pik_error(p, dir, "use with line-oriented objects only");
+        return;
+    }
+    pik_reset_samepath(p);
+    var n = p.nTPath - 1;
+    if (p.thenFlag != 0 or p.mTPath == 3 or n == 0) {
+        n = pik_next_rpath(p, dir);
+        p.thenFlag = 0;
+    }
+    switch (@as(i32, dir.eCode)) {
+        DIR_DOWN, DIR_UP => {
+            if ((p.mTPath & 2) != 0) n = pik_next_rpath(p, dir);
+            p.aTPath[@intCast(n)].y = place.y;
+            p.mTPath |= 2;
+        },
+        DIR_RIGHT, DIR_LEFT => {
+            if ((p.mTPath & 1) != 0) n = pik_next_rpath(p, dir);
+            p.aTPath[@intCast(n)].x = place.x;
+            p.mTPath |= 1;
+        },
+        else => {},
+    }
+    obj.outDir = dir.eCode;
 }
 
+// XML Class Methods
+
+// Set a single XML class on an Object.
+//
 fn pik_set_xml_class(p: *Pik, tok: *PToken) void {
     _ = p;
     _ = tok;
 }
 
+// Set a list of XML classes on an object.
+//
 fn pik_set_xml_classes(p: *Pik, tok: *PToken) void {
     _ = p;
     _ = tok;
@@ -1561,24 +2526,70 @@ fn pik_close_path(p: *Pik, err: *PToken) void {
     if (p.cur) |obj| obj.bClose = 1;
 }
 
+// Set the "from" of an object
 fn pik_set_from(p: *Pik, obj: ?*PObj, tok: *PToken, pt: *PPoint) void {
-    _ = p;
-    _ = tok;
-    if (obj) |o| o.ptEnter = pt.*;
+    const o = obj orelse return;
+    if (o.type == null or o.type.?.isLine == 0) {
+        pik_error(p, tok, "use \"at\" to position this object");
+        return;
+    }
+    if ((o.mProp & A_FROM) != 0) {
+        pik_error(p, tok, "line start location already fixed");
+        return;
+    }
+    if (p.nTPath > 1) {
+        const dx = pt.x - p.aTPath[0].x;
+        const dy = pt.y - p.aTPath[0].y;
+        var i: usize = 1;
+        while (i < @as(usize, @intCast(p.nTPath))) : (i += 1) {
+            p.aTPath[i].x += dx;
+            p.aTPath[i].y += dy;
+        }
+    }
+    p.aTPath[0] = pt.*;
+    p.mTPath = 3;
+    o.mProp |= A_FROM;
+    o.ptEnter = pt.*;
 }
 
+// Set the "to" of an object
 fn pik_add_to(p: *Pik, obj: ?*PObj, tok: *PToken, pt: *PPoint) void {
-    _ = p;
-    _ = tok;
-    if (obj) |o| o.ptExit = pt.*;
+    const o = obj orelse return;
+    if (o.type == null or o.type.?.isLine == 0) {
+        pik_error(p, tok, "use \"at\" to position this object");
+        return;
+    }
+    pik_reset_samepath(p);
+    var n = p.nTPath - 1;
+    if (n == 0 or p.mTPath == 3 or p.thenFlag != 0) n = pik_next_rpath(p, tok);
+    p.aTPath[@intCast(n)] = pt.*;
+    p.mTPath = 3;
+    o.ptExit = pt.*;
 }
 
+// Add a new term to the path for a line-oriented object by transferring
+// the information in the ptTo field over onto the path and into ptFrom
+// resetting the ptTo.
 fn pik_then(p: *Pik, tok: *PToken, obj: ?*PObj) void {
-    _ = tok;
-    _ = obj;
+    if (obj) |o| {
+        if (o.type == null or o.type.?.isLine == 0) {
+            pik_error(p, tok, "use with line-oriented objects only");
+            return;
+        }
+        const n = p.nTPath - 1;
+        if (n < 1 and (o.mProp & A_FROM) == 0) {
+            pik_error(p, tok, "no prior path points");
+            return;
+        }
+    }
     p.thenFlag = 1;
 }
 
+// Process a movement attribute of one of these forms:
+//
+//         pDist   pHdgKW  rHdg    pEdgept
+//     GO distance HEADING angle
+//     GO distance               compasspoint
 fn pik_move_hdg(
     p: *Pik,
     rel: *PRel,
@@ -1595,18 +2606,35 @@ fn pik_move_hdg(
     _ = err;
 }
 
+// Position the current object so that a particular edge/compass point lands
+// at a requested location.
 fn pik_set_at(p: *Pik, edge: ?*PToken, at: *PPoint, err: *PToken) void {
-    _ = edge;
     _ = err;
-    if (p.cur) |obj| obj.ptAt = at.*;
+    const obj = p.cur orelse return;
+    const cp = if (edge) |e| e.eEdge else CP_C;
+    const offset = pik_elem_offset(p, obj, cp);
+    const old = PPoint{ .x = obj.ptAt.x + offset.x, .y = obj.ptAt.y + offset.y };
+    const dx = at.x - old.x;
+    const dy = at.y - old.y;
+    pik_elem_move(obj, dx, dy);
+    var i: usize = 0;
+    const n: usize = if (p.nTPath > 0) @intCast(p.nTPath) else 0;
+    while (i < n) : (i += 1) {
+        p.aTPath[i].x += dx;
+        p.aTPath[i].y += dy;
+    }
 }
 
+// Change most of the settings for the current object to be the
+// same as the pOther object, or the most recent object of the same
+// type if pOther is NULL.
 fn pik_same(p: *Pik, other: ?*PObj, err: *PToken) void {
     _ = p;
     _ = other;
     _ = err;
 }
 
+// Try to add a text attribute to an object
 fn pik_add_txt(p: *Pik, txt: *PToken, pos: i16) void {
     const obj = p.cur orelse return;
     if (obj.nTxt >= obj.aTxt.len) {
@@ -1618,22 +2646,45 @@ fn pik_add_txt(p: *Pik, txt: *PToken, pos: i16) void {
     obj.nTxt += 1;
 }
 
+// Adjust the width, height, and/or radius of the object so that
+// it fits around the text that has been added so far.
+//
+//    (1) Only text specified prior to this attribute is considered.
+//    (2) The text size is estimated based on the charht and charwid
+//        variable settings.
+//    (3) The fitted attributes can be changed again after this
+//        attribute, for example using "width 110%" if this auto-fit
+//        underestimates the text size.
+//    (4) Previously set attributes will not be altered.  In other words,
+//        "width 1in fit" might cause the height to change, but the
+//        width is now set.
+//    (5) This only works for attributes that have an xFit method.
+//
+// The eWhich parameter is:
+//
+//    1:   Fit horizontally only
+//    2:   Fit vertically only
+//    3:   Fit both ways
 fn pik_size_to_fit(p: *Pik, fit: *PToken, which: i32) void {
     _ = p;
     _ = fit;
     _ = which;
 }
 
+// Lower the layer of the current object so that it is behind the
+// given object.
 fn pik_behind(p: *Pik, other: ?*PObj) void {
     _ = p;
     _ = other;
 }
 
+// Merge "text-position" flags
 fn pik_text_position(prev: i16, flag: *PToken) i32 {
     _ = flag;
     return prev;
 }
 
+// Do a linear interpolation of two positions.
 fn pik_position_between(x: PNum, p1: PPoint, p2: PPoint) PPoint {
     return .{
         .x = p1.x + x * (p2.x - p1.x),
@@ -1641,21 +2692,32 @@ fn pik_position_between(x: PNum, p1: PPoint, p2: PPoint) PPoint {
     };
 }
 
+// Compute the position that is dist away from pt at an heading angle of r
+//
+// The angle is a compass heading in degrees.  North is 0 (or 360).
+// East is 90.  South is 180.  West is 270.  And so forth.
 fn pik_position_at_angle(dist: PNum, r: PNum, pt: PPoint) PPoint {
     const a = std.math.degreesToRadians(r);
     return .{ .x = pt.x + dist * @sin(a), .y = pt.y + dist * @cos(a) };
 }
 
+// Compute the position that is dist away at a compass point
 fn pik_position_at_hdg(dist: PNum, d: *PToken, pt: PPoint) PPoint {
     return pik_position_at_angle(dist, d.eCode, pt);
 }
 
+// Return a "Place" associated with object pObj.  If pEdge is NULL
+// return the center of the object.  Otherwise, return the corner
+// described by pEdge.
 fn pik_place_of_elem(p: *Pik, obj: ?*PObj, edge: ?*PToken) PPoint {
-    _ = p;
-    _ = edge;
-    return if (obj) |o| o.ptAt else cZeroPoint;
+    const o = obj orelse return cZeroPoint;
+    const cp = if (edge) |e| e.eEdge else CP_C;
+    const offset = pik_elem_offset(p, o, cp);
+    p.lastRef = o;
+    return .{ .x = o.ptAt.x + offset.x, .y = o.ptAt.y + offset.y };
 }
 
+// Return the coordinates for the n-th vertex of a line.
 fn pik_nth_vertex(p: *Pik, nth: *PToken, err: *PToken, obj: ?*PObj) PPoint {
     _ = p;
     _ = nth;
@@ -1663,18 +2725,38 @@ fn pik_nth_vertex(p: *Pik, nth: *PToken, err: *PToken, obj: ?*PObj) PPoint {
     return if (obj) |o| o.ptAt else cZeroPoint;
 }
 
+// Search for the NTH object.
+//
+// If pBasis is not NULL then it should be a [] object.  Use the
+// sublist of that [] object for the search.  If pBasis is not a []
+// object, then throw an error.
+//
+// The pNth token describes the N-th search.  The pNth->eCode value
+// is one more than the number of items to skip.  It is negative
+// to search backwards.  If pNth->eType==T_ID, then it is the name
+// of a class to search for.  If pNth->eType==T_LB, then
+// search for a [] object.  If pNth->eType==T_LAST, then search for
+// any type.
+//
+// Raise an error if the item is not found.
 fn pik_find_nth(p: *Pik, basis: ?*PObj, nth: *PToken) ?*PObj {
     _ = nth;
     if (basis) |b| return b;
     return p.cur;
 }
 
+// Search for an object by name.
+//
+// Search in pBasis->pSublist if pBasis is not NULL.  If pBasis is NULL
+// then search in p->list.
 fn pik_find_byname(p: *Pik, basis: ?*PObj, name: *PToken) ?*PObj {
     _ = basis;
     _ = name;
     return p.cur;
 }
 
+// Convert a T_NTH token (ex: "2nd", "5th"} into a numeric value and
+// return that value.  Throw an error if the value is too big.
 fn pik_nth_value(p: *Pik, nth: *PToken) i16 {
     var i: usize = 0;
     while (i < nth.n and std.ascii.isDigit(nth.z[i])) : (i += 1) {}
@@ -1687,12 +2769,14 @@ fn pik_nth_value(p: *Pik, nth: *PToken) i16 {
     return @intCast(v);
 }
 
+// Return the value of a property of an object.
 fn pik_property_of(obj: ?*PObj, prop: *PToken) PNum {
     const o = obj orelse return 0.0;
     _ = prop;
     return o.w;
 }
 
+// Compute one of the built-in functions
 fn pik_func(p: *Pik, func: *PToken, x: PNum, y: PNum) PNum {
     _ = p;
     _ = func;
@@ -1700,14 +2784,17 @@ fn pik_func(p: *Pik, func: *PToken, x: PNum, y: PNum) PNum {
     return x;
 }
 
+// Compute the distance between two points
 fn pik_dist(a: *PPoint, b: *PPoint) PNum {
     return std.math.hypot(a.x - b.x, a.y - b.y);
 }
 
+// Return true if a bounding box is empty.
 fn pik_bbox_isempty(box: *PBox) bool {
     return box.sw.x > box.ne.x;
 }
 
+// Return true if point pPt is contained within the bounding box pBox
 fn pik_bbox_contains_point(box: *PBox, pt: *PPoint) bool {
     if (pik_bbox_isempty(box)) return false;
     if (pt.x < box.sw.x) return false;
@@ -1717,6 +2804,7 @@ fn pik_bbox_contains_point(box: *PBox, pt: *PPoint) bool {
     return true;
 }
 
+// Initialize a bounding box to an empty container
 fn pik_bbox_init(box: *PBox) void {
     box.sw.x = 1.0;
     box.sw.y = 1.0;
@@ -1724,6 +2812,8 @@ fn pik_bbox_init(box: *PBox) void {
     box.ne.y = 0.0;
 }
 
+// Enlarge the PBox of the first argument so that it fully
+// covers the second PBox
 fn pik_bbox_addbox(a: *PBox, b: *PBox) void {
     if (pik_bbox_isempty(a)) a.* = b.*;
     if (pik_bbox_isempty(b)) return;
@@ -1733,6 +2823,8 @@ fn pik_bbox_addbox(a: *PBox, b: *PBox) void {
     if (a.ne.y < b.ne.y) a.ne.y = b.ne.y;
 }
 
+// Enlarge the PBox of the first argument, if necessary, so that
+// it contains the point described by the 2nd and 3rd arguments.
 fn pik_bbox_add_xy(box: *PBox, x: PNum, y: PNum) void {
     if (pik_bbox_isempty(box)) {
         box.ne.x = x;
@@ -1747,6 +2839,8 @@ fn pik_bbox_add_xy(box: *PBox, x: PNum, y: PNum) void {
     if (box.ne.y < y) box.ne.y = y;
 }
 
+// Enlarge the PBox so that it is able to contain an ellipse
+// centered at x,y and with radiuses rx and ry.
 fn pik_bbox_addellipse(box: *PBox, x: PNum, y: PNum, rx: PNum, ry: PNum) void {
     if (pik_bbox_isempty(box)) {
         box.ne.x = x + rx;
@@ -1761,16 +2855,19 @@ fn pik_bbox_addellipse(box: *PBox, x: PNum, y: PNum, rx: PNum, ry: PNum) void {
     if (box.ne.y < y + ry) box.ne.y = y + ry;
 }
 
+// Process an "assert( e1 == e2 )" statement.  Always return NULL.
 fn pik_assert(p: *Pik, e1: PNum, eq: *PToken, e2: PNum) ?*PObj {
     if (e1 != e2) pik_error(p, eq, "assertion failed");
     return null;
 }
 
+// Process an "assert( place1 == place2 )" statement.  Always return NULL.
 fn pik_position_assert(p: *Pik, e1: *PPoint, eq: *PToken, e2: *PPoint) ?*PObj {
     if (e1.x != e2.x or e1.y != e2.y) pik_error(p, eq, "assertion failed");
     return null;
 }
 
+// Add a new macro
 fn pik_add_macro(p: *Pik, id: *PToken, code: *PToken) void {
     _ = p;
     _ = id;
@@ -1806,7 +2903,36 @@ test "Pik render consumes object list into allocating writer" {
     const list = pik_elist_append(&pik, null, obj);
     pik_render(&pik, list);
     try std.testing.expect(std.mem.startsWith(u8, pik.zOut.written(), "<svg "));
+    try std.testing.expect(std.mem.indexOf(u8, pik.zOut.written(), "<path ") != null);
     try std.testing.expect(std.mem.endsWith(u8, pik.zOut.written(), "</svg>\n"));
     try std.testing.expect(pik.list == null);
+}
+
+test "Pik line direction builds path before render" {
+    var pik = Pik.init(std.testing.allocator, std.testing.io, "line", null, 0);
+    defer pik.deinit();
+    var tok = classToken("line");
+    const obj = pik_elem_new(&pik, &tok, null, null).?;
+    var rel = PRel{ .rAbs = 0.0, .rRel = 1.0 };
+    pik_add_direction(&pik, null, &rel);
+    pik_after_adding_attributes(&pik, obj);
+    try std.testing.expectEqual(@as(i32, 2), obj.nPath);
+    try std.testing.expect(obj.ptExit.x > obj.ptEnter.x);
+    _ = pik_elist_append(&pik, null, obj);
+}
+
+test "Pik set at moves object edge" {
+    var pik = Pik.init(std.testing.allocator, std.testing.io, "box", null, 0);
+    defer pik.deinit();
+    var tok = classToken("box");
+    const obj = pik_elem_new(&pik, &tok, null, null).?;
+    var edge = PToken{ .eEdge = CP_E };
+    var err = classToken("at");
+    var at = PPoint{ .x = 2.0, .y = 3.0 };
+    pik_set_at(&pik, &edge, &at, &err);
+    const east = pik_place_of_elem(&pik, obj, &edge);
+    try std.testing.expectEqual(@as(PNum, 2.0), east.x);
+    try std.testing.expectEqual(@as(PNum, 3.0), east.y);
+    _ = pik_elist_append(&pik, null, obj);
 }
 }
