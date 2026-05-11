@@ -782,6 +782,117 @@ const aColor = [_]Color{
     .{ .zName = "White", .val = 0xffffff },
 };
 
+const PIKCHR_TOKEN_LIMIT = 100000;
+
+const PikWord = struct {
+    zWord: []const u8, // Text of the keyword
+    eType: TokenKind, // Token code
+    eCode: u16 = 0, // Extra code for the token
+    eEdge: u8 = 0, // CP_* code for corner/edge keywords
+};
+
+// Keywords
+const pik_keywords = [_]PikWord{
+    .{ .zWord = "above", .eType = .ABOVE },
+    .{ .zWord = "abs", .eType = .FUNC1, .eCode = FN_ABS },
+    .{ .zWord = "aligned", .eType = .ALIGNED },
+    .{ .zWord = "and", .eType = .AND },
+    .{ .zWord = "as", .eType = .AS },
+    .{ .zWord = "assert", .eType = .ASSERT },
+    .{ .zWord = "at", .eType = .AT },
+    .{ .zWord = "behind", .eType = .BEHIND },
+    .{ .zWord = "below", .eType = .BELOW },
+    .{ .zWord = "between", .eType = .BETWEEN },
+    .{ .zWord = "big", .eType = .BIG },
+    .{ .zWord = "bold", .eType = .BOLD },
+    .{ .zWord = "bot", .eType = .EDGEPT, .eEdge = CP_S },
+    .{ .zWord = "bottom", .eType = .BOTTOM, .eEdge = CP_S },
+    .{ .zWord = "c", .eType = .EDGEPT, .eEdge = CP_C },
+    .{ .zWord = "ccw", .eType = .CCW },
+    .{ .zWord = "center", .eType = .CENTER, .eEdge = CP_C },
+    .{ .zWord = "chop", .eType = .CHOP },
+    .{ .zWord = "class", .eType = .CLASS },
+    .{ .zWord = "close", .eType = .CLOSE },
+    .{ .zWord = "color", .eType = .COLOR },
+    .{ .zWord = "cos", .eType = .FUNC1, .eCode = FN_COS },
+    .{ .zWord = "cw", .eType = .CW },
+    .{ .zWord = "dashed", .eType = .DASHED },
+    .{ .zWord = "define", .eType = .DEFINE },
+    .{ .zWord = "description", .eType = .DESCRIBE },
+    .{ .zWord = "diameter", .eType = .DIAMETER },
+    .{ .zWord = "dist", .eType = .DIST },
+    .{ .zWord = "dotted", .eType = .DOTTED },
+    .{ .zWord = "down", .eType = .DOWN, .eCode = DIR_DOWN },
+    .{ .zWord = "e", .eType = .EDGEPT, .eEdge = CP_E },
+    .{ .zWord = "east", .eType = .EDGEPT, .eEdge = CP_E },
+    .{ .zWord = "end", .eType = .END, .eEdge = CP_END },
+    .{ .zWord = "even", .eType = .EVEN },
+    .{ .zWord = "fill", .eType = .FILL },
+    .{ .zWord = "first", .eType = .NTH },
+    .{ .zWord = "fit", .eType = .FIT },
+    .{ .zWord = "from", .eType = .FROM },
+    .{ .zWord = "go", .eType = .GO },
+    .{ .zWord = "heading", .eType = .HEADING },
+    .{ .zWord = "height", .eType = .HEIGHT },
+    .{ .zWord = "ht", .eType = .HEIGHT },
+    .{ .zWord = "in", .eType = .IN },
+    .{ .zWord = "int", .eType = .FUNC1, .eCode = FN_INT },
+    .{ .zWord = "invis", .eType = .INVIS },
+    .{ .zWord = "invisible", .eType = .INVIS },
+    .{ .zWord = "italic", .eType = .ITALIC },
+    .{ .zWord = "label", .eType = .LABEL },
+    .{ .zWord = "last", .eType = .LAST },
+    .{ .zWord = "left", .eType = .LEFT, .eCode = DIR_LEFT, .eEdge = CP_W },
+    .{ .zWord = "ljust", .eType = .LJUST },
+    .{ .zWord = "max", .eType = .FUNC2, .eCode = FN_MAX },
+    .{ .zWord = "min", .eType = .FUNC2, .eCode = FN_MIN },
+    .{ .zWord = "mono", .eType = .MONO },
+    .{ .zWord = "monospace", .eType = .MONO },
+    .{ .zWord = "n", .eType = .EDGEPT, .eEdge = CP_N },
+    .{ .zWord = "ne", .eType = .EDGEPT, .eEdge = CP_NE },
+    .{ .zWord = "north", .eType = .EDGEPT, .eEdge = CP_N },
+    .{ .zWord = "nw", .eType = .EDGEPT, .eEdge = CP_NW },
+    .{ .zWord = "of", .eType = .OF },
+    .{ .zWord = "previous", .eType = .LAST },
+    .{ .zWord = "print", .eType = .PRINT },
+    .{ .zWord = "rad", .eType = .RADIUS },
+    .{ .zWord = "radius", .eType = .RADIUS },
+    .{ .zWord = "right", .eType = .RIGHT, .eCode = DIR_RIGHT, .eEdge = CP_E },
+    .{ .zWord = "rjust", .eType = .RJUST },
+    .{ .zWord = "s", .eType = .EDGEPT, .eEdge = CP_S },
+    .{ .zWord = "same", .eType = .SAME },
+    .{ .zWord = "se", .eType = .EDGEPT, .eEdge = CP_SE },
+    .{ .zWord = "sin", .eType = .FUNC1, .eCode = FN_SIN },
+    .{ .zWord = "small", .eType = .SMALL },
+    .{ .zWord = "solid", .eType = .SOLID },
+    .{ .zWord = "south", .eType = .EDGEPT, .eEdge = CP_S },
+    .{ .zWord = "sqrt", .eType = .FUNC1, .eCode = FN_SQRT },
+    .{ .zWord = "start", .eType = .START, .eEdge = CP_START },
+    .{ .zWord = "sw", .eType = .EDGEPT, .eEdge = CP_SW },
+    .{ .zWord = "t", .eType = .TOP, .eEdge = CP_N },
+    .{ .zWord = "textcolor", .eType = .TEXTCOLOR },
+    .{ .zWord = "the", .eType = .THE },
+    .{ .zWord = "then", .eType = .THEN },
+    .{ .zWord = "thick", .eType = .THICK },
+    .{ .zWord = "thickness", .eType = .THICKNESS },
+    .{ .zWord = "thin", .eType = .THIN },
+    .{ .zWord = "this", .eType = .THIS },
+    .{ .zWord = "title", .eType = .TITLE },
+    .{ .zWord = "to", .eType = .TO },
+    .{ .zWord = "top", .eType = .TOP, .eEdge = CP_N },
+    .{ .zWord = "until", .eType = .UNTIL },
+    .{ .zWord = "up", .eType = .UP, .eCode = DIR_UP },
+    .{ .zWord = "vertex", .eType = .VERTEX },
+    .{ .zWord = "w", .eType = .EDGEPT, .eEdge = CP_W },
+    .{ .zWord = "way", .eType = .WAY },
+    .{ .zWord = "west", .eType = .EDGEPT, .eEdge = CP_W },
+    .{ .zWord = "wid", .eType = .WIDTH },
+    .{ .zWord = "width", .eType = .WIDTH },
+    .{ .zWord = "with", .eType = .WITH },
+    .{ .zWord = "x", .eType = .X },
+    .{ .zWord = "y", .eType = .Y },
+};
+
 fn classToken(name: []const u8) PToken {
     return .{ .z = name, .n = name.len };
 }
@@ -3165,6 +3276,535 @@ fn pik_add_macro(p: *Pik, id: *PToken, code: *PToken) void {
     new.?.inUse = 0;
 }
 
+fn setTokenType(token: *PToken, kind: TokenKind) void {
+    token.eType = @intFromEnum(kind);
+}
+
+fn findKeyword(text: []const u8) ?PikWord {
+    for (pik_keywords) |word| {
+        if (std.mem.eql(u8, word.zWord, text)) return word;
+    }
+    return null;
+}
+
+fn isIdentChar(c: u8) bool {
+    return std.ascii.isAlphanumeric(c) or c == '_';
+}
+
+fn tokenKind(token: *const PToken) TokenKind {
+    return @enumFromInt(token.eType);
+}
+
+// Search a PikWordlist for the given keyword.  Return a pointer to the
+// keyword entry found.  Or return 0 if not found.
+fn pik_find_word(z_in: []const u8) ?PikWord {
+    return findKeyword(z_in);
+}
+
+// Set a symbolic debugger breakpoint on this routine to receive a
+// breakpoint when the "#breakpoint" token is parsed.
+fn pik_breakpoint(z: []const u8) void {
+    // Prevent C compilers from optimizing out this routine.
+    if (z.len > 2 and z[2] == 'X') unreachable;
+}
+
+// Return the length of next token.  The token starts on
+// the pToken->z character.  Fill in other fields of the
+// pToken object as appropriate.
+fn pik_token_length(token: *PToken, allow_codeblock: bool) usize {
+    const z = token.z;
+    if (z.len == 0) {
+        setTokenType(token, .end_of_input);
+        return 0;
+    }
+    switch (z[0]) {
+        '\\' => {
+            token.eType = T_WHITESPACE;
+            var i: usize = 1;
+            while (i < z.len and (z[i] == '\r' or z[i] == ' ' or z[i] == '\t')) : (i += 1) {}
+            if (i < z.len and z[i] == '\n') return i + 1;
+            token.eType = T_ERROR;
+            return 1;
+        },
+        ';', '\n' => {
+            setTokenType(token, .EOL);
+            return 1;
+        },
+        '"' => {
+            var i: usize = 1;
+            while (i < z.len) : (i += 1) {
+                if (z[i] == '\\') {
+                    if (i + 1 >= z.len) break;
+                    i += 1;
+                    continue;
+                }
+                if (z[i] == '"') {
+                    setTokenType(token, .STRING);
+                    return i + 1;
+                }
+            }
+            token.eType = T_ERROR;
+            return i;
+        },
+        ' ', '\t', '\x0c', '\r' => {
+            var i: usize = 1;
+            while (i < z.len and (z[i] == ' ' or z[i] == '\t' or z[i] == '\r' or z[i] == '\x0c')) : (i += 1) {}
+            token.eType = T_WHITESPACE;
+            return i;
+        },
+        '#' => {
+            var i: usize = 1;
+            while (i < z.len and z[i] != '\n') : (i += 1) {}
+            token.eType = T_WHITESPACE;
+            // If the comment is "#breakpoint" then invoke the pik_breakpoint()
+            // routine.  The pik_breakpoint() routie is a no-op that serves as
+            // a convenient place to set a gdb breakpoint when debugging.
+            if (std.mem.startsWith(u8, z, "#breakpoint")) pik_breakpoint(z);
+            return i;
+        },
+        '/' => {
+            if (z.len > 1 and z[1] == '*') {
+                var i: usize = 2;
+                while (i + 1 < z.len and !(z[i] == '*' and z[i + 1] == '/')) : (i += 1) {}
+                if (i + 1 < z.len and z[i] == '*') {
+                    token.eType = T_WHITESPACE;
+                    return i + 2;
+                }
+                token.eType = T_ERROR;
+                return i;
+            } else if (z.len > 1 and z[1] == '/') {
+                var i: usize = 2;
+                while (i < z.len and z[i] != '\n') : (i += 1) {}
+                token.eType = T_WHITESPACE;
+                return i;
+            } else if (z.len > 1 and z[1] == '=') {
+                setTokenType(token, .ASSIGN);
+                token.eCode = @intFromEnum(TokenKind.SLASH);
+                return 2;
+            }
+            setTokenType(token, .SLASH);
+            return 1;
+        },
+        '+' => {
+            if (z.len > 1 and z[1] == '=') {
+                setTokenType(token, .ASSIGN);
+                token.eCode = @intFromEnum(TokenKind.PLUS);
+                return 2;
+            }
+            setTokenType(token, .PLUS);
+            return 1;
+        },
+        '*' => {
+            if (z.len > 1 and z[1] == '=') {
+                setTokenType(token, .ASSIGN);
+                token.eCode = @intFromEnum(TokenKind.STAR);
+                return 2;
+            }
+            setTokenType(token, .STAR);
+            return 1;
+        },
+        '%' => { setTokenType(token, .PERCENT); return 1; },
+        '(' => { setTokenType(token, .LP); return 1; },
+        ')' => { setTokenType(token, .RP); return 1; },
+        '[' => { setTokenType(token, .LB); return 1; },
+        ']' => { setTokenType(token, .RB); return 1; },
+        ',' => { setTokenType(token, .COMMA); return 1; },
+        ':' => { setTokenType(token, .COLON); return 1; },
+        '>' => { setTokenType(token, .GT); return 1; },
+        '=' => {
+            if (z.len > 1 and z[1] == '=') {
+                setTokenType(token, .EQ);
+                return 2;
+            }
+            setTokenType(token, .ASSIGN);
+            token.eCode = @intFromEnum(TokenKind.ASSIGN);
+            return 1;
+        },
+        '-' => {
+            if (z.len > 1 and z[1] == '>') {
+                setTokenType(token, .RARROW);
+                return 2;
+            } else if (z.len > 1 and z[1] == '=') {
+                setTokenType(token, .ASSIGN);
+                token.eCode = @intFromEnum(TokenKind.MINUS);
+                return 2;
+            }
+            setTokenType(token, .MINUS);
+            return 1;
+        },
+        '<' => {
+            if (z.len > 1 and z[1] == '-') {
+                if (z.len > 2 and z[2] == '>') {
+                    setTokenType(token, .LRARROW);
+                    return 3;
+                }
+                setTokenType(token, .LARROW);
+                return 2;
+            }
+            setTokenType(token, .LT);
+            return 1;
+        },
+        0xe2 => {
+            if (z.len > 2 and z[1] == 0x86) {
+                if (z[2] == 0x90) {
+                    setTokenType(token, .LARROW); // <-
+                    return 3;
+                }
+                if (z[2] == 0x92) {
+                    setTokenType(token, .RARROW); // ->
+                    return 3;
+                }
+                if (z[2] == 0x94) {
+                    setTokenType(token, .LRARROW); // <->
+                    return 3;
+                }
+            }
+            token.eType = T_ERROR;
+            return 1;
+        },
+        '{' => {
+            var i: usize = 1;
+            var depth: i32 = if (allow_codeblock) 1 else 0;
+            while (i < z.len and depth > 0) {
+                var x = PToken{ .z = z[i..] };
+                const len = pik_token_length(&x, false);
+                if (len == 1) {
+                    if (z[i] == '{') depth += 1;
+                    if (z[i] == '}') depth -= 1;
+                }
+                i += len;
+            }
+            if (depth != 0) {
+                token.eType = T_ERROR;
+                return 1;
+            }
+            setTokenType(token, .CODEBLOCK);
+            return i;
+        },
+        '&' => {
+            const Entity = struct { text: []const u8, kind: TokenKind };
+            const entities = [_]Entity{
+                .{ .text = "&rarr;", .kind = .RARROW },
+                .{ .text = "&rightarrow;", .kind = .RARROW },
+                .{ .text = "&larr;", .kind = .LARROW },
+                .{ .text = "&leftarrow;", .kind = .LARROW },
+                .{ .text = "&leftrightarrow;", .kind = .LRARROW },
+            };
+            for (entities) |entity| {
+                if (std.mem.startsWith(u8, z, entity.text)) {
+                    setTokenType(token, entity.kind);
+                    return entity.text.len;
+                }
+            }
+            token.eType = T_ERROR;
+            return 1;
+        },
+        '\'' => {
+            // Each token must start with a lower letter
+            var first = true;
+            var i: usize = 1;
+            while (i < z.len) : (i += 1) {
+                if (z[i] == ' ') {
+                    first = true;
+                } else if (first and std.ascii.isLower(z[i])) {
+                    first = false;
+                } else if (!first and (std.ascii.isAlphanumeric(z[i]) or z[i] == '_')) {
+                    continue;
+                } else if (z[i] == '\'') {
+                    setTokenType(token, .XML_CLASSES);
+                    return i + 1;
+                } else {
+                    token.eType = T_ERROR;
+                    return i;
+                }
+            }
+            token.eType = T_ERROR;
+            return i;
+        },
+        else => return pik_token_length_default(token),
+    }
+}
+
+fn pik_token_length_default(token: *PToken) usize {
+    const z = token.z;
+    var c = z[0];
+    var i: usize = 0;
+    if (c == '.') {
+        const c1 = if (z.len > 1) z[1] else 0;
+        if (std.ascii.isLower(c1)) {
+            i = 2;
+            while (i < z.len and std.ascii.isLower(z[i])) : (i += 1) {}
+            if (pik_find_word(z[1..i])) |found| {
+                if (found.eEdge > 0 or found.eType == .EDGEPT or found.eType == .START or found.eType == .END) {
+                    // Dot followed by something that is a 2-D place value
+                    setTokenType(token, .DOT_E);
+                } else if (found.eType == .X or found.eType == .Y) {
+                    // Dot followed by "x" or "y"
+                    setTokenType(token, .DOT_XY);
+                } else {
+                    // Any other "dot"
+                    setTokenType(token, .DOT_L);
+                }
+            } else {
+                setTokenType(token, .DOT_L);
+            }
+            return 1;
+        } else if (std.ascii.isDigit(c1)) {
+            i = 0;
+        } else if (std.ascii.isUpper(c1)) {
+            i = 2;
+            while (i < z.len and isIdentChar(z[i])) : (i += 1) {}
+            setTokenType(token, .DOT_U);
+            return 1;
+        } else {
+            token.eType = T_ERROR;
+            return 1;
+        }
+    }
+    if (std.ascii.isDigit(c) or c == '.') {
+        var n_digit: usize = 0;
+        var is_int = true;
+        if (c != '.') {
+            n_digit = 1;
+            i = 1;
+            while (i < z.len and std.ascii.isDigit(z[i])) : (i += 1) n_digit += 1;
+            c = if (i < z.len) z[i] else 0;
+            if (i == 1 and (c == 'x' or c == 'X') and z[0] == '0') {
+                i = 2;
+                while (i < z.len and std.ascii.isHex(z[i])) : (i += 1) {}
+                setTokenType(token, .NUMBER);
+                return i;
+            }
+        } else {
+            is_int = false;
+            n_digit = 0;
+            i = 0;
+            c = '.';
+        }
+        if (c == '.') {
+            is_int = false;
+            i += 1;
+            while (i < z.len and std.ascii.isDigit(z[i])) : (i += 1) n_digit += 1;
+            c = if (i < z.len) z[i] else 0;
+        }
+        if (n_digit == 0) {
+            token.eType = T_ERROR;
+            return i;
+        }
+        if (c == 'e' or c == 'E') {
+            const before = i;
+            i += 1;
+            var c2 = if (i < z.len) z[i] else 0;
+            if (c2 == '+' or c2 == '-') {
+                i += 1;
+                c2 = if (i < z.len) z[i] else 0;
+            }
+            if (!std.ascii.isDigit(c2)) {
+                i = before;
+            } else {
+                i += 1;
+                is_int = false;
+                while (i < z.len and std.ascii.isDigit(z[i])) : (i += 1) {}
+            }
+            c = if (i < z.len) z[i] else 0;
+        }
+        const c2 = if (i + 1 < z.len) z[i + 1] else 0;
+        if (is_int and ((c == 't' and c2 == 'h') or (c == 'r' and c2 == 'd') or (c == 'n' and c2 == 'd') or (c == 's' and c2 == 't'))) {
+            setTokenType(token, .NTH);
+            return i + 2;
+        }
+        if ((c == 'i' and c2 == 'n') or (c == 'c' and c2 == 'm') or (c == 'm' and c2 == 'm') or (c == 'p' and (c2 == 't' or c2 == 'x' or c2 == 'c'))) {
+            i += 2;
+        }
+        setTokenType(token, .NUMBER);
+        return i;
+    } else if (std.ascii.isLower(c)) {
+        i = 1;
+        while (i < z.len and isIdentChar(z[i])) : (i += 1) {}
+        if (pik_find_word(z[0..i])) |found| {
+            setTokenType(token, found.eType);
+            token.eCode = found.eCode;
+            token.eEdge = found.eEdge;
+            return i;
+        }
+        token.n = i;
+        if (pik_find_class(token) != null) {
+            setTokenType(token, .CLASSNAME);
+        } else {
+            setTokenType(token, .ID);
+        }
+        return i;
+    } else if (std.ascii.isUpper(c)) {
+        i = 1;
+        while (i < z.len and isIdentChar(z[i])) : (i += 1) {}
+        setTokenType(token, .PLACENAME);
+        return i;
+    } else if (c == '$' and z.len > 1 and z[1] >= '1' and z[1] <= '9' and !(z.len > 2 and std.ascii.isDigit(z[2]))) {
+        token.eType = T_PARAMETER;
+        token.eCode = z[1] - '1';
+        return 2;
+    } else if (c == '_' or c == '$' or c == '@') {
+        i = 1;
+        while (i < z.len and isIdentChar(z[i])) : (i += 1) {}
+        setTokenType(token, .ID);
+        return i;
+    }
+    token.eType = T_ERROR;
+    return 1;
+}
+
+var pikchr_call_count: u32 = 0;
+
+fn pik_set_id(p: *Pik) void {
+    var digest: [std.crypto.hash.Sha1.digest_length]u8 = undefined;
+    var sha = p.shaDigest;
+    sha.final(&digest);
+    const id = p.allocator.alloc(u8, 11) catch {
+        pik_error(p, null, null);
+        return;
+    };
+    const hex = "0123456789abcdef";
+    id[0] = '-';
+    for (digest[0..5], 0..) |b, i| {
+        id[1 + i * 2] = hex[(b >> 4) & 0x0f];
+        id[2 + i * 2] = hex[b & 0x0f];
+    }
+    p.zID = id;
+}
+
+// Split up the content of a PToken into multiple tokens and
+// send each to the parser.
+fn pik_tokenize(p: *Pik, input: *PToken, parser: *PikParser, params: ?[]PToken) void {
+    _ = params;
+    var i: usize = 0;
+    var sz: usize = 0;
+    while (i < input.n and i < input.z.len and input.z[i] != 0 and p.nErr == 0) : (i += sz) {
+        var token = PToken{
+            .z = input.z[i..],
+            .eCode = 0,
+            .eEdge = 0,
+        };
+        sz = pik_token_length(&token, true);
+        if (token.eType == T_WHITESPACE) {
+            // no-op
+        } else if (sz > 50000) {
+            token.n = 1;
+            pik_error(p, &token, "token is too long - max length 50000 bytes");
+            break;
+        } else if (token.eType == T_ERROR) {
+            token.n = @min(sz, 0xffff);
+            pik_error(p, &token, "unrecognized token");
+            break;
+        } else if (sz + i > input.n) {
+            token.n = input.n - i;
+            pik_error(p, &token, "syntax error");
+            break;
+        } else if (token.eType == T_PARAMETER) {
+            // Substitute a parameter into the input stream
+            continue;
+        } else {
+            token.n = @min(sz, 0xffff);
+            if (p.nToken > PIKCHR_TOKEN_LIMIT) {
+                pik_error(p, &token, "script is too complex");
+                break;
+            }
+            p.nToken += 1;
+            // only hash EOL once + normalize
+            if (tokenKind(&token) == .EOL) {
+                if (p.bEOL == 0) {
+                    p.bEOL = 1;
+                    // treat every EOL as a newline
+                    p.shaDigest.update("\n");
+                }
+            } else {
+                p.bEOL = 0;
+                // Codeblocks (aka macros) we hash if and when they get used,
+                // XML class lists are hashed individually to discount whitespace
+                const kind = tokenKind(&token);
+                if (kind != .CODEBLOCK and kind != .XML_CLASSES) {
+                    p.shaDigest.update(token.z[0..token.n]);
+                }
+            }
+            parser.parse(tokenKind(&token), token) catch {
+                pik_error(p, &token, null);
+                break;
+            };
+        }
+    }
+}
+
+pub const RenderResult = struct {
+    text: []u8,
+    width: i32,
+    height: i32,
+
+    pub fn deinit(result: RenderResult, allocator: std.mem.Allocator) void {
+        allocator.free(result.text);
+    }
+
+    pub fn ok(result: RenderResult) bool {
+        return result.width >= 0;
+    }
+};
+
+pub const RenderError = error{OutOfMemory};
+
+// Parse the PIKCHR script contained in zText[].  Return a rendering.  Or
+// if an error is encountered, return the error text.  The error message
+// is HTML formatted.  So regardless of what happens, the return text
+// is safe to be insertd into an HTML output stream.
+//
+// If pnWidth and pnHeight are not NULL, then this routine writes the
+// width and height of the <SVG> object into the integers that they
+// point to.  A value of -1 is written if an error is seen.
+//
+// If zClass is not NULL, then it is a class name to be included in
+// the <SVG> markup.
+//
+// The returned string is contained in memory obtained from malloc()
+// and should be released by the caller.
+pub fn render(
+    allocator: std.mem.Allocator,
+    io: std.Io,
+    source: []const u8,
+    class: ?[]const u8,
+    flags: u32,
+) RenderError!RenderResult {
+    var pik = Pik.init(allocator, io, source, class, flags);
+    defer pik.deinit();
+    if ((flags & PIKCHR_DARK_MODE) != 0) {
+        pik.shaDigest.update("darkmode");
+    }
+    if ((flags & PIKCHR_EXTRA_UNIQUE_ID) != 0) {
+        pik.shaDigest.update(std.mem.asBytes(&pikchr_call_count));
+    }
+    pikchr_call_count += 1;
+
+    var parser: PikParser = undefined;
+    parser.init(allocator, &pik) catch return error.OutOfMemory;
+    defer parser.deinit();
+    pik_tokenize(&pik, &pik.sIn, &parser, null);
+    // normalize end of diagram to hash as EOL
+    if (pik.bEOL == 0) {
+        pik.shaDigest.update("\n");
+    }
+    pik_set_id(&pik);
+    if (pik.nErr == 0) {
+        parser.finalize() catch {
+            pik_error(&pik, null, null);
+        };
+    }
+    if (pik.zOut.written().len == 0 and pik.nErr == 0) {
+        pik_append(&pik, "<!-- empty pikchr diagram -->\n");
+    }
+    const text = allocator.dupe(u8, pik.zOut.written()) catch return error.OutOfMemory;
+    return .{
+        .text = text,
+        .width = if (pik.nErr != 0) -1 else pik.wSVG,
+        .height = if (pik.nErr != 0) -1 else pik.hSVG,
+    };
+}
+
 test "Pik parser module carries translated state" {
     var pik = Pik.init(std.testing.allocator, std.testing.io, "box", "pikchr", 0);
     defer pik.deinit();
@@ -3276,5 +3916,34 @@ test "Pik math and text-position helpers follow token codes" {
     const pos = pik_text_position(@intCast(pik_text_position(0, &left)), &aligned);
     try std.testing.expect((pos & TP_LJUST) != 0);
     try std.testing.expect((pos & TP_ALIGN) != 0);
+}
+
+test "Pik tokenizer classifies core tokens" {
+    var tok = PToken{ .z = "box \"hi\" -> 2nd" };
+    var n = pik_token_length(&tok, true);
+    try std.testing.expectEqual(@intFromEnum(TokenKind.CLASSNAME), tok.eType);
+    try std.testing.expectEqual(@as(usize, 3), n);
+
+    tok = .{ .z = tok.z[n + 1 ..] };
+    n = pik_token_length(&tok, true);
+    try std.testing.expectEqual(@intFromEnum(TokenKind.STRING), tok.eType);
+    try std.testing.expectEqual(@as(usize, 4), n);
+
+    tok = .{ .z = tok.z[n + 1 ..] };
+    n = pik_token_length(&tok, true);
+    try std.testing.expectEqual(@intFromEnum(TokenKind.RARROW), tok.eType);
+    try std.testing.expectEqual(@as(usize, 2), n);
+
+    tok = .{ .z = tok.z[n + 1 ..] };
+    n = pik_token_length(&tok, true);
+    try std.testing.expectEqual(@intFromEnum(TokenKind.NTH), tok.eType);
+    try std.testing.expectEqual(@as(usize, 3), n);
+}
+
+test "Pik generated render entrypoint parses simple source" {
+    const out = try render(std.testing.allocator, std.testing.io, "box\n", "pikchr", 0);
+    defer out.deinit(std.testing.allocator);
+    try std.testing.expect(out.ok());
+    try std.testing.expect(std.mem.startsWith(u8, out.text, "<svg "));
 }
 }
