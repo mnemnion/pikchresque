@@ -35,34 +35,34 @@ pub const pik_hdg_angle = [_]PNum{
 };
 
 // Built-in functions
-pub const FN_ABS = 0;
-pub const FN_COS = 1;
-pub const FN_INT = 2;
-pub const FN_MAX = 3;
-pub const FN_MIN = 4;
-pub const FN_SIN = 5;
-pub const FN_SQRT = 6;
+pub const FN_ABS: u16 = 0;
+pub const FN_COS: u16 = 1;
+pub const FN_INT: u16 = 2;
+pub const FN_MAX: u16 = 3;
+pub const FN_MIN: u16 = 4;
+pub const FN_SIN: u16 = 5;
+pub const FN_SQRT: u16 = 6;
 
 // Text position and style flags.  Stored in PToken.eCode so limited
 // to 15 bits.
-pub const TP_LJUST = 0x0001; // left justify......
-pub const TP_RJUST = 0x0002; //            ...Right justify
-pub const TP_JMASK = 0x0003; // Mask for justification bits
-pub const TP_ABOVE2 = 0x0004; // Position text way above PObj.ptAt
-pub const TP_ABOVE = 0x0008; // Position text above PObj.ptAt
-pub const TP_CENTER = 0x0010; // On the line
-pub const TP_BELOW = 0x0020; // Position text below PObj.ptAt
-pub const TP_BELOW2 = 0x0040; // Position text way below PObj.ptAt
-pub const TP_VMASK = 0x007c; // Mask for text positioning flags
-pub const TP_BIG = 0x0100; // Larger font
-pub const TP_SMALL = 0x0200; // Smaller font
-pub const TP_XTRA = 0x0400; // Amplify TP_BIG or TP_SMALL
-pub const TP_SZMASK = 0x0700; // Font size mask
-pub const TP_ITALIC = 0x1000; // Italic font
-pub const TP_BOLD = 0x2000; // Bold font
-pub const TP_MONO = 0x4000; // Monospace font family
-pub const TP_FMASK = 0x7000; // Mask for font style
-pub const TP_ALIGN = 0x8000; // Rotate to align with the line
+pub const TP_LJUST: u16 = 0x0001; // left justify......
+pub const TP_RJUST: u16 = 0x0002; //            ...Right justify
+pub const TP_JMASK: u16 = 0x0003; // Mask for justification bits
+pub const TP_ABOVE2: u16 = 0x0004; // Position text way above PObj.ptAt
+pub const TP_ABOVE: u16 = 0x0008; // Position text above PObj.ptAt
+pub const TP_CENTER: u16 = 0x0010; // On the line
+pub const TP_BELOW: u16 = 0x0020; // Position text below PObj.ptAt
+pub const TP_BELOW2: u16 = 0x0040; // Position text way below PObj.ptAt
+pub const TP_VMASK: u16 = 0x007c; // Mask for text positioning flags
+pub const TP_BIG: u16 = 0x0100; // Larger font
+pub const TP_SMALL: u16 = 0x0200; // Smaller font
+pub const TP_XTRA: u16 = 0x0400; // Amplify TP_BIG or TP_SMALL
+pub const TP_SZMASK: u16 = 0x0700; // Font size mask
+pub const TP_ITALIC: u16 = 0x1000; // Italic font
+pub const TP_BOLD: u16 = 0x2000; // Bold font
+pub const TP_MONO: u16 = 0x4000; // Monospace font family
+pub const TP_FMASK: u16 = 0x7000; // Mask for font style
+pub const TP_ALIGN: u16 = 0x8000; // Rotate to align with the line
 
 // Style attribute flags.  These track when a presentation attribute
 // such as dominant-baseline is needed.
@@ -122,7 +122,7 @@ pub const PVar = struct {
 pub const PToken = struct {
     z: []const u8 = "", // Pointer to the token text
     n: usize = 0, // Length of the token in bytes
-    eCode: i16 = 0, // Auxiliary code
+    eCode: u16 = 0, // Auxiliary code
     eType: u8 = 0, // The numeric parser code
     eEdge: u8 = 0, // Corner value for corner keywords
 };
@@ -443,7 +443,7 @@ fn pik_elem_free(p: *Pik, elem: ?*PObj) void {
 %type object {?*PObj}
 %type objectname {?*PObj}
 %type nth PToken
-%type textposition i16
+%type textposition u16
 %type rvalue PNum
 %type lvalue PToken
 %type even PToken
@@ -605,7 +605,7 @@ boolproperty ::= SOLID.       { p.cur.?.sw = pik_value(p, "thickness", null);
 textposition(A) ::= .   { A = 0; }
 textposition(A) ::= textposition(B)
    CENTER|LJUST|RJUST|ABOVE|BELOW|ITALIC|BOLD|MONO|ALIGNED|BIG|SMALL(F).
-                        { A = @intCast(pik_text_position(B, &F)); }
+                        { A = pik_text_position(B, &F); }
 
 
 position(A) ::= expr(X) COMMA expr(Y).                { A.x = X; A.y = Y; }
@@ -670,13 +670,13 @@ objectname(A) ::= PLACENAME(N).           { A = pik_find_byname(p, null, &N); }
 objectname(A) ::= objectname(B) DOT_U PLACENAME(N).
                                           { A = pik_find_byname(p, B, &N); }
 
-nth(A) ::= NTH(N) CLASSNAME(ID).      { A = ID; A.eCode = pik_nth_value(p, &N); }
-nth(A) ::= NTH(N) LAST CLASSNAME(ID). { A = ID; A.eCode = -pik_nth_value(p, &N); }
-nth(A) ::= LAST CLASSNAME(ID).        { A = ID; A.eCode = -1; }
-nth(A) ::= LAST(ID).                  { A = ID; A.eCode = -1; }
-nth(A) ::= NTH(N) LB(ID) RB.          { A = ID; A.eCode = pik_nth_value(p, &N); }
-nth(A) ::= NTH(N) LAST LB(ID) RB.     { A = ID; A.eCode = -pik_nth_value(p, &N); }
-nth(A) ::= LAST LB(ID) RB.            { A = ID; A.eCode = -1; }
+nth(A) ::= NTH(N) CLASSNAME(ID).      { A = ID; A.eCode = @intCast(pik_nth_value(p, &N)); }
+nth(A) ::= NTH(N) LAST CLASSNAME(ID). { A = ID; A.eCode = @bitCast(-pik_nth_value(p, &N)); }
+nth(A) ::= LAST CLASSNAME(ID).        { A = ID; A.eCode = @bitCast(@as(i16, -1)); }
+nth(A) ::= LAST(ID).                  { A = ID; A.eCode = @bitCast(@as(i16, -1)); }
+nth(A) ::= NTH(N) LB(ID) RB.          { A = ID; A.eCode = @intCast(pik_nth_value(p, &N)); }
+nth(A) ::= NTH(N) LAST LB(ID) RB.     { A = ID; A.eCode = @bitCast(-pik_nth_value(p, &N)); }
+nth(A) ::= LAST LB(ID) RB.            { A = ID; A.eCode = @bitCast(@as(i16, -1)); }
 
 expr(A) ::= expr(X) PLUS expr(Y).                 { A = X + Y; }
 expr(A) ::= expr(X) MINUS expr(Y).                { A = X - Y; }
@@ -1972,11 +1972,11 @@ fn pik_elem_set_exit(obj: *PObj, dir: i32) void {
 }
 
 // Change the layout direction.
-fn pik_set_direction(p: *Pik, dir: i16) void {
+fn pik_set_direction(p: *Pik, dir: u16) void {
     if (!ValidDir(dir)) return;
     p.eDir = @intCast(dir);
     if (p.list) |list| {
-        if (list.n != 0) pik_elem_set_exit(list.a[list.n - 1], dir);
+        if (list.n != 0) pik_elem_set_exit(list.a[list.n - 1], @intCast(dir));
     }
 }
 
@@ -2317,6 +2317,10 @@ fn hasKind(tok: *const PToken, kind: TokenKind) bool {
     return tok.eType == @intFromEnum(kind);
 }
 
+fn tokenCodeSigned(tok: *const PToken) i16 {
+    return @bitCast(tok.eCode);
+}
+
 // Check to see if it is ok to set the value of parameter mThis.
 // Return 0 if it is ok. If it not ok, generate an appropriate
 // error message and return non-zero.
@@ -2444,7 +2448,7 @@ fn pik_add_direction(p: *Pik, dir: ?*PToken, val: *PRel) void {
         n = pik_next_rpath(p, dir);
         p.thenFlag = 0;
     }
-    const d: i32 = if (dir) |dd| dd.eCode else p.eDir;
+    const d: i32 = if (dir) |dd| @intCast(dd.eCode) else @intCast(p.eDir);
     switch (d) {
         DIR_UP => {
             if ((p.mTPath & 2) != 0) n = pik_next_rpath(p, dir);
@@ -2502,7 +2506,17 @@ fn pik_evenwith(p: *Pik, dir: *PToken, place: *PPoint) void {
         },
         else => {},
     }
-    obj.outDir = dir.eCode;
+    obj.outDir = @intCast(dir.eCode);
+}
+
+// Prepend an XML class to a PObj.
+//
+// We prepend, rather than appending, because it's an O(1) operation, and the
+// order of class names in a class attribute is not significant.
+fn pik_xml_class_prepend(obj: *PObj, xprepend: ?*PXmlClass) void {
+    const xnext = xprepend orelse return;
+    xnext.pNext = obj.pXmlClass;
+    obj.pXmlClass = xnext;
 }
 
 // XML Class Methods
@@ -2510,15 +2524,74 @@ fn pik_evenwith(p: *Pik, dir: *PToken, place: *PPoint) void {
 // Set a single XML class on an Object.
 //
 fn pik_set_xml_class(p: *Pik, tok: *PToken) void {
-    _ = p;
-    _ = tok;
+    const obj = p.cur orelse return;
+    if ((obj.mProp & A_CLASS) != 0) {
+        pik_error(p, tok, "value already set");
+        return;
+    }
+    if (tok.n != 0 and (tok.z[0] == '_' or tok.z[0] == '$' or tok.z[0] == '@')) {
+        pik_error(p, tok, "illegal first character (_, $, or @) for class token");
+        return;
+    }
+    const xnext = p.allocator.create(PXmlClass) catch {
+        pik_error(p, null, null);
+        return;
+    };
+    const name = p.allocator.dupe(u8, tok.z[0..tok.n]) catch {
+        p.allocator.destroy(xnext);
+        pik_error(p, null, null);
+        return;
+    };
+    for (name) |*c| {
+        if (c.* == '_') c.* = '-';
+    }
+    xnext.* = .{ .zClass = name };
+    obj.mProp |= A_CLASS;
+    pik_xml_class_prepend(obj, xnext);
 }
 
 // Set a list of XML classes on an object.
 //
 fn pik_set_xml_classes(p: *Pik, tok: *PToken) void {
-    _ = p;
-    _ = tok;
+    const obj = p.cur orelse return;
+    if ((obj.mProp & A_CLASS) != 0) {
+        pik_error(p, tok, "value already set");
+        return;
+    }
+    var st: usize = 1;
+    var tok_count: i32 = -1; // one token already counted
+    var i: usize = 1;
+    while (i < tok.n) : (i += 1) {
+        const c = tok.z[i];
+        if (c != ' ' and c != '\'') continue;
+        if (i == st) {
+            st = i + 1;
+            continue;
+        }
+        const xnext = p.allocator.create(PXmlClass) catch {
+            pik_error(p, null, null);
+            return;
+        };
+        const name = p.allocator.dupe(u8, tok.z[st..i]) catch {
+            p.allocator.destroy(xnext);
+            pik_error(p, null, null);
+            return;
+        };
+        for (name) |*ch| {
+            if (ch.* == '_') ch.* = '-';
+        }
+        tok_count += 1;
+        // We only hash the tokens in a class list, because the single-class
+        // token is hashed in the tokenizer
+        p.shaDigest.update(name);
+        xnext.* = .{ .zClass = name };
+        pik_xml_class_prepend(obj, xnext);
+        st = i + 1;
+    }
+    if (tok_count > 0) {
+        obj.mProp |= A_CLASS; // `class ''` is bad style but does not set a class
+        p.nToken += @intCast(tok_count);
+    }
 }
 
 fn pik_close_path(p: *Pik, err: *PToken) void {
@@ -2629,13 +2702,61 @@ fn pik_set_at(p: *Pik, edge: ?*PToken, at: *PPoint, err: *PToken) void {
 // same as the pOther object, or the most recent object of the same
 // type if pOther is NULL.
 fn pik_same(p: *Pik, other: ?*PObj, err: *PToken) void {
-    _ = p;
-    _ = other;
-    _ = err;
+    const obj = p.cur orelse return;
+    if (p.nErr != 0) return;
+    var same_obj = other;
+    if (same_obj == null) {
+        if (p.list) |list| {
+            var i = list.n;
+            while (i > 0) {
+                i -= 1;
+                const candidate = list.a[i];
+                if (candidate.type == obj.type) {
+                    same_obj = candidate;
+                    break;
+                }
+            }
+        }
+        if (same_obj == null) {
+            pik_error(p, err, "no prior objects of the same type");
+            return;
+        }
+    }
+    const src = same_obj.?;
+    if (src.nPath != 0 and obj.type != null and obj.type.?.isLine != 0) {
+        const dx = p.aTPath[0].x - src.aPath[0].x;
+        const dy = p.aTPath[0].y - src.aPath[0].y;
+        var i: usize = 1;
+        const n: usize = @intCast(src.nPath);
+        while (i < n and i < p.aTPath.len and i < src.aPath.len) : (i += 1) {
+            p.aTPath[i].x = src.aPath[i].x + dx;
+            p.aTPath[i].y = src.aPath[i].y + dy;
+        }
+        p.nTPath = src.nPath;
+        p.mTPath = 3;
+        p.samePath = 1;
+    }
+    if (obj.type == null or obj.type.?.isLine == 0) {
+        obj.w = src.w;
+        obj.h = src.h;
+    }
+    obj.rad = src.rad;
+    obj.sw = src.sw;
+    obj.dashed = src.dashed;
+    obj.dotted = src.dotted;
+    obj.fill = src.fill;
+    obj.color = src.color;
+    obj.textcolor = src.textcolor;
+    obj.cw = src.cw;
+    obj.larrow = src.larrow;
+    obj.rarrow = src.rarrow;
+    obj.bClose = src.bClose;
+    obj.bChop = src.bChop;
+    obj.iLayer = src.iLayer;
 }
 
 // Try to add a text attribute to an object
-fn pik_add_txt(p: *Pik, txt: *PToken, pos: i16) void {
+fn pik_add_txt(p: *Pik, txt: *PToken, pos: u16) void {
     const obj = p.cur orelse return;
     if (obj.nTxt >= obj.aTxt.len) {
         pik_error(p, txt, "too many text values");
@@ -2666,22 +2787,63 @@ fn pik_add_txt(p: *Pik, txt: *PToken, pos: i16) void {
 //    2:   Fit vertically only
 //    3:   Fit both ways
 fn pik_size_to_fit(p: *Pik, fit: *PToken, which: i32) void {
-    _ = p;
-    _ = fit;
-    _ = which;
+    const obj = p.cur orelse return;
+    if (p.nErr != 0) return;
+    if (obj.nTxt == 0) {
+        pik_error(p, fit, "no text to fit to");
+        return;
+    }
+    const class = obj.type orelse return;
+    const xfit = class.xFit orelse return;
+    var bbox: PBox = undefined;
+    pik_bbox_init(&bbox);
+    pik_compute_layout_settings(p);
+    pik_append_txt(p, obj, &bbox);
+    const w = if ((which & 1) != 0 or obj.bAltAutoFit != 0)
+        (bbox.ne.x - bbox.sw.x) + p.charWidth
+    else
+        0.0;
+    const h = if ((which & 2) != 0 or obj.bAltAutoFit != 0) blk: {
+        const h1 = bbox.ne.y - obj.ptAt.y;
+        const h2 = obj.ptAt.y - bbox.sw.y;
+        break :blk 2.0 * @max(h1, h2) + 0.5 * p.charHeight;
+    } else 0.0;
+    xfit(p, obj, w, h);
+    obj.mProp |= A_FIT;
 }
 
 // Lower the layer of the current object so that it is behind the
 // given object.
 fn pik_behind(p: *Pik, other: ?*PObj) void {
-    _ = p;
-    _ = other;
+    const obj = p.cur orelse return;
+    const o = other orelse return;
+    if (p.nErr == 0 and obj.iLayer >= o.iLayer) {
+        obj.iLayer = o.iLayer - 1;
+    }
 }
 
 // Merge "text-position" flags
-fn pik_text_position(prev: i16, flag: *PToken) i32 {
-    _ = flag;
-    return prev;
+fn pik_text_position(prev: u16, flag: *PToken) u16 {
+    var res: u16 = prev;
+    switch (yyEnum(flag.eType)) {
+        .LJUST => res = (res & ~TP_JMASK) | TP_LJUST,
+        .RJUST => res = (res & ~TP_JMASK) | TP_RJUST,
+        .ABOVE => res = (res & ~TP_VMASK) | TP_ABOVE,
+        .CENTER => res = (res & ~TP_VMASK) | TP_CENTER,
+        .BELOW => res = (res & ~TP_VMASK) | TP_BELOW,
+        .ITALIC => res |= TP_ITALIC,
+        .BOLD => res |= TP_BOLD,
+        .MONO => res |= TP_MONO,
+        .ALIGNED => res |= TP_ALIGN,
+        .BIG => {
+            if ((res & TP_BIG) != 0) res |= TP_XTRA else res = (res & ~TP_SZMASK) | TP_BIG;
+        },
+        .SMALL => {
+            if ((res & TP_SMALL) != 0) res |= TP_XTRA else res = (res & ~TP_SZMASK) | TP_SMALL;
+        },
+        else => {},
+    }
+    return res;
 }
 
 // Do a linear interpolation of two positions.
@@ -2703,7 +2865,7 @@ fn pik_position_at_angle(dist: PNum, r: PNum, pt: PPoint) PPoint {
 
 // Compute the position that is dist away at a compass point
 fn pik_position_at_hdg(dist: PNum, d: *PToken, pt: PPoint) PPoint {
-    return pik_position_at_angle(dist, d.eCode, pt);
+    return pik_position_at_angle(dist, pik_hdg_angle[d.eEdge], pt);
 }
 
 // Return a "Place" associated with object pObj.  If pEdge is NULL
@@ -2711,7 +2873,11 @@ fn pik_position_at_hdg(dist: PNum, d: *PToken, pt: PPoint) PPoint {
 // described by pEdge.
 fn pik_place_of_elem(p: *Pik, obj: ?*PObj, edge: ?*PToken) PPoint {
     const o = obj orelse return cZeroPoint;
-    const cp = if (edge) |e| e.eEdge else CP_C;
+    if (edge == null) return o.ptAt;
+    const e = edge.?;
+    if (hasKind(e, .START)) return o.ptEnter;
+    if (hasKind(e, .END)) return o.ptExit;
+    const cp = e.eEdge;
     const offset = pik_elem_offset(p, o, cp);
     p.lastRef = o;
     return .{ .x = o.ptAt.x + offset.x, .y = o.ptAt.y + offset.y };
@@ -2719,10 +2885,18 @@ fn pik_place_of_elem(p: *Pik, obj: ?*PObj, edge: ?*PToken) PPoint {
 
 // Return the coordinates for the n-th vertex of a line.
 fn pik_nth_vertex(p: *Pik, nth: *PToken, err: *PToken, obj: ?*PObj) PPoint {
-    _ = p;
-    _ = nth;
-    _ = err;
-    return if (obj) |o| o.ptAt else cZeroPoint;
+    if (p.nErr != 0 or obj == null) return p.aTPath[0];
+    const o = obj.?;
+    if (o.type == null or o.type.?.isLine == 0) {
+        pik_error(p, err, "object is not a line");
+        return cZeroPoint;
+    }
+    const n = std.fmt.parseInt(i32, nth.z[0..nth.n], 10) catch 0;
+    if (n < 1 or n > o.nPath) {
+        pik_error(p, nth, "no such vertex");
+        return cZeroPoint;
+    }
+    return o.aPath[@intCast(n - 1)];
 }
 
 // Search for the NTH object.
@@ -2740,9 +2914,42 @@ fn pik_nth_vertex(p: *Pik, nth: *PToken, err: *PToken, obj: ?*PObj) PPoint {
 //
 // Raise an error if the item is not found.
 fn pik_find_nth(p: *Pik, basis: ?*PObj, nth: *PToken) ?*PObj {
-    _ = nth;
-    if (basis) |b| return b;
-    return p.cur;
+    const list = if (basis) |b| b.pSublist else p.list;
+    const l = list orelse {
+        pik_error(p, nth, "no such object");
+        return null;
+    };
+    const class: ?*const PClass = switch (yyEnum(nth.eType)) {
+        .LAST => null,
+        .LB => &sublistClass,
+        else => pik_find_class(nth) orelse {
+            pik_error(p, nth, "no such object type");
+            return null;
+        },
+    };
+    var n: i32 = tokenCodeSigned(nth);
+    if (n < 0) {
+        var i = l.n;
+        while (i > 0) {
+            i -= 1;
+            const obj = l.a[i];
+            if (class) |c| {
+                if (obj.type != c) continue;
+            }
+            n += 1;
+            if (n == 0) return obj;
+        }
+    } else {
+        for (l.a[0..l.n]) |obj| {
+            if (class) |c| {
+                if (obj.type != c) continue;
+            }
+            n -= 1;
+            if (n == 0) return obj;
+        }
+    }
+    pik_error(p, nth, "no such object");
+    return null;
 }
 
 // Search for an object by name.
@@ -2750,9 +2957,38 @@ fn pik_find_nth(p: *Pik, basis: ?*PObj, nth: *PToken) ?*PObj {
 // Search in pBasis->pSublist if pBasis is not NULL.  If pBasis is NULL
 // then search in p->list.
 fn pik_find_byname(p: *Pik, basis: ?*PObj, name: *PToken) ?*PObj {
-    _ = basis;
-    _ = name;
-    return p.cur;
+    const list = if (basis) |b| b.pSublist else p.list;
+    const l = list orelse {
+        pik_error(p, name, "no such object");
+        return null;
+    };
+    // First look explicitly tagged objects
+    var i = l.n;
+    while (i > 0) {
+        i -= 1;
+        const obj = l.a[i];
+        if (obj.zName) |z| {
+            if (std.mem.eql(u8, z, name.z[0..name.n])) {
+                p.lastRef = obj;
+                return obj;
+            }
+        }
+    }
+    // If not found, do a second pass looking for any object containing
+    // text which exactly matches pName
+    i = l.n;
+    while (i > 0) {
+        i -= 1;
+        const obj = l.a[i];
+        for (obj.aTxt[0..obj.nTxt]) |txt| {
+            if (txt.n == name.n + 2 and std.mem.eql(u8, txt.z[1 .. 1 + name.n], name.z[0..name.n])) {
+                p.lastRef = obj;
+                return obj;
+            }
+        }
+    }
+    pik_error(p, name, "no such object");
+    return null;
 }
 
 // Convert a T_NTH token (ex: "2nd", "5th"} into a numeric value and
@@ -2772,16 +3008,45 @@ fn pik_nth_value(p: *Pik, nth: *PToken) i16 {
 // Return the value of a property of an object.
 fn pik_property_of(obj: ?*PObj, prop: *PToken) PNum {
     const o = obj orelse return 0.0;
-    _ = prop;
-    return o.w;
+    return switch (yyEnum(prop.eType)) {
+        .HEIGHT => o.h,
+        .WIDTH => o.w,
+        .RADIUS => o.rad,
+        .DIAMETER => o.rad * 2.0,
+        .THICKNESS => o.sw,
+        .DASHED => o.dashed,
+        .DOTTED => o.dotted,
+        .FILL => o.fill,
+        .COLOR => o.color,
+        .TEXTCOLOR => o.textcolor,
+        .X => o.ptAt.x,
+        .Y => o.ptAt.y,
+        .TOP => o.bbox.ne.y,
+        .BOTTOM => o.bbox.sw.y,
+        .LEFT => o.bbox.sw.x,
+        .RIGHT => o.bbox.ne.x,
+        else => 0.0,
+    };
 }
 
 // Compute one of the built-in functions
 fn pik_func(p: *Pik, func: *PToken, x: PNum, y: PNum) PNum {
-    _ = p;
-    _ = func;
-    _ = y;
-    return x;
+    return switch (func.eCode) {
+        FN_ABS => if (x < 0.0) -x else x,
+        FN_COS => @cos(x),
+        FN_INT => @round(x),
+        FN_SIN => @sin(x),
+        FN_SQRT => blk: {
+            if (x < 0.0) {
+                pik_error(p, func, "sqrt of negative value");
+                break :blk 0.0;
+            }
+            break :blk @sqrt(x);
+        },
+        FN_MAX => @max(x, y),
+        FN_MIN => @min(x, y),
+        else => 0.0,
+    };
 }
 
 // Compute the distance between two points
@@ -2867,11 +3132,37 @@ fn pik_position_assert(p: *Pik, e1: *PPoint, eq: *PToken, e2: *PPoint) ?*PObj {
     return null;
 }
 
+// If the ID token in the argument is the name of a macro, return
+// the PMacro object for that macro
+fn pik_find_macro(p: *Pik, id: *PToken) ?*PMacro {
+    var mac = p.pMacros;
+    while (mac) |m| : (mac = m.pNext) {
+        if (m.macroName.n == id.n and std.mem.eql(u8, m.macroName.z[0..m.macroName.n], id.z[0..id.n])) {
+            return m;
+        }
+    }
+    return null;
+}
+
 // Add a new macro
 fn pik_add_macro(p: *Pik, id: *PToken, code: *PToken) void {
-    _ = p;
-    _ = id;
-    _ = code;
+    var new = pik_find_macro(p, id);
+    if (new == null) {
+        new = p.allocator.create(PMacro) catch {
+            pik_error(p, null, null);
+            return;
+        };
+        new.?.* = .{
+            .pNext = p.pMacros,
+            .macroName = id.*,
+        };
+        p.pMacros = new;
+    }
+    new.?.macroBody = .{
+        .z = if (code.n >= 2) code.z[1 .. code.n - 1] else "",
+        .n = if (code.n >= 2) code.n - 2 else 0,
+    };
+    new.?.inUse = 0;
 }
 
 test "Pik parser module carries translated state" {
@@ -2934,5 +3225,56 @@ test "Pik set at moves object edge" {
     try std.testing.expectEqual(@as(PNum, 2.0), east.x);
     try std.testing.expectEqual(@as(PNum, 3.0), east.y);
     _ = pik_elist_append(&pik, null, obj);
+}
+
+test "Pik XML classes and macros preserve parser state" {
+    var pik = Pik.init(std.testing.allocator, std.testing.io, "box", null, 0);
+    defer pik.deinit();
+    var tok = classToken("box");
+    const obj = pik_elem_new(&pik, &tok, null, null).?;
+    var classes = PToken{ .z = "'one_class two'", .n = "'one_class two'".len };
+    pik_set_xml_classes(&pik, &classes);
+    try std.testing.expect((obj.mProp & A_CLASS) != 0);
+    try std.testing.expectEqualStrings("two", obj.pXmlClass.?.zClass);
+    try std.testing.expectEqualStrings("one-class", obj.pXmlClass.?.pNext.?.zClass);
+
+    var id = classToken("M");
+    var body = PToken{ .z = "{box}", .n = "{box}".len };
+    pik_add_macro(&pik, &id, &body);
+    try std.testing.expectEqualStrings("box", pik.pMacros.?.macroBody.z[0..pik.pMacros.?.macroBody.n]);
+    _ = pik_elist_append(&pik, null, obj);
+}
+
+test "Pik lookup helpers find objects and properties" {
+    var pik = Pik.init(std.testing.allocator, std.testing.io, "box", null, 0);
+    defer pik.deinit();
+    var box = classToken("box");
+    const obj = pik_elem_new(&pik, &box, null, null).?;
+    var name = classToken("alpha");
+    pik_elem_setname(&pik, obj, &name);
+    _ = pik_elist_append(&pik, null, obj);
+
+    var nth = classToken("box");
+    nth.eCode = 1;
+    try std.testing.expectEqual(obj, pik_find_nth(&pik, null, &nth).?);
+    try std.testing.expectEqual(obj, pik_find_byname(&pik, null, &name).?);
+
+    var width = PToken{ .eType = @intFromEnum(TokenKind.WIDTH) };
+    var height = PToken{ .eType = @intFromEnum(TokenKind.HEIGHT) };
+    try std.testing.expectEqual(obj.w, pik_property_of(obj, &width));
+    try std.testing.expectEqual(obj.h, pik_property_of(obj, &height));
+}
+
+test "Pik math and text-position helpers follow token codes" {
+    var pik = Pik.init(std.testing.allocator, std.testing.io, "", null, 0);
+    defer pik.deinit();
+    var sqrt_tok = PToken{ .eCode = FN_SQRT };
+    try std.testing.expectEqual(@as(PNum, 3.0), pik_func(&pik, &sqrt_tok, 9.0, 0.0));
+
+    var left = PToken{ .eType = @intFromEnum(TokenKind.LJUST) };
+    var aligned = PToken{ .eType = @intFromEnum(TokenKind.ALIGNED) };
+    const pos = pik_text_position(@intCast(pik_text_position(0, &left)), &aligned);
+    try std.testing.expect((pos & TP_LJUST) != 0);
+    try std.testing.expect((pos & TP_ALIGN) != 0);
 }
 }
