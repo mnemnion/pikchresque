@@ -1242,7 +1242,7 @@ fn boxOffset(p: *Pik, obj: *PObj, cp: i32) PPoint {
         CP_SW => pt = .{ .x = rx - w2, .y = rx - h2 },
         CP_W => pt = .{ .x = -w2, .y = 0.0 },
         CP_NW => pt = .{ .x = rx - w2, .y = h2 - rx },
-        else => {},
+        else => std.debug.assert(false),
     }
     return pt;
 }
@@ -1384,7 +1384,7 @@ fn cylinderOffset(p: *Pik, obj: *PObj, cp: i32) PPoint {
         CP_SW => pt = .{ .x = -w2, .y = -h2 },
         CP_W => pt = .{ .x = -w2, .y = 0.0 },
         CP_NW => pt = .{ .x = -w2, .y = h2 },
-        else => {},
+        else => std.debug.assert(false),
     }
     return pt;
 }
@@ -2399,7 +2399,7 @@ fn diamondOffset(p: *Pik, obj: *PObj, cp: i32) PPoint {
         CP_SW => pt = .{ .x = -w4, .y = -h4 },
         CP_W => pt = .{ .x = -w2, .y = 0.0 },
         CP_NW => pt = .{ .x = -w4, .y = h4 },
-        else => {},
+        else => std.debug.assert(false),
     }
     return pt;
 }
@@ -2451,7 +2451,7 @@ fn fileOffset(p: *Pik, obj: *PObj, cp: i32) PPoint {
         CP_SW => pt = .{ .x = -w2, .y = -h2 },
         CP_W => pt = .{ .x = -w2, .y = 0.0 },
         CP_NW => pt = .{ .x = -w2, .y = h2 },
-        else => {},
+        else => std.debug.assert(false),
     }
     return pt;
 }
@@ -2551,7 +2551,7 @@ fn ellipseOffset(p: *Pik, obj: *PObj, cp: i32) PPoint {
         CP_SW => pt = .{ .x = -w2, .y = -h2 },
         CP_W => pt = .{ .x = -w, .y = 0.0 },
         CP_NW => pt = .{ .x = -w2, .y = h2 },
-        else => {},
+        else => std.debug.assert(false),
     }
     return pt;
 }
@@ -3318,7 +3318,8 @@ fn pik_elem_new(p: *Pik, id: ?*PToken, str: ?*PToken, sublist: ?*PList) ?*PObj {
     }
     if (str) |s| {
         var n = classToken("text");
-        obj.type = pik_find_class(&n).?;
+        obj.type = pik_find_class(&n);
+        std.debug.assert(obj.type != null);
         obj.errTok = s.*;
         obj.type.?.xInit.?(p, obj);
         pik_add_txt(p, s, s.eCode);
@@ -3379,7 +3380,7 @@ fn pik_set_description(p: *Pik, desc: *PToken) void {
 
 // Set the output direction and exit point for an object
 fn pik_elem_set_exit(obj: *PObj, dir: i32) void {
-    if (!ValidDir(dir)) return;
+    std.debug.assert(ValidDir(dir));
     obj.outDir = dir;
     if (obj.type == null or obj.type.?.isLine == 0 or obj.bClose != 0) {
         obj.ptExit = obj.ptAt;
@@ -3394,7 +3395,7 @@ fn pik_elem_set_exit(obj: *PObj, dir: i32) void {
 
 // Change the layout direction.
 fn pik_set_direction(p: *Pik, dir: u16) void {
-    if (!ValidDir(dir)) return;
+    std.debug.assert(ValidDir(dir));
     p.eDir = @intCast(dir);
     if (p.list) |list| {
         if (list.n != 0) pik_elem_set_exit(list.a[list.n - 1], @intCast(dir));
@@ -3829,6 +3830,7 @@ fn pik_after_adding_attributes(p: *Pik, obj: ?*PObj) void {
     // of the default length in the current direction
     if (class.isLine != 0 and p.nTPath < 2) {
         _ = pik_next_rpath(p, null);
+        std.debug.assert(p.nTPath == 2);
         switch (o.inDir) {
             DIR_DOWN => p.aTPath[1].y -= o.h,
             DIR_LEFT => p.aTPath[1].x -= o.w,
