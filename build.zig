@@ -39,26 +39,31 @@ pub fn build(b: *std.Build) void {
     grammar_step.dependOn(&install_generated_tokens.step);
     grammar_step.dependOn(&install_generated_report.step);
 
+    const grammar_mod = b.createModule(.{
+        .root_source_file = grammar_output_dir.path(b, "pikchr.zig"),
+        .target = target,
+        .optimize = optimize,
+    });
+
     const pikchresque_mod = b.addModule("pikchresque", .{
         .root_source_file = b.path("src/pikchresque.zig"),
         .target = target,
         .optimize = optimize,
     });
-    pikchresque_mod.link_libc = true;
-    pikchresque_mod.addCSourceFile(.{ .file = b.path("pikchr/pikchr.c") });
+    pikchresque_mod.addImport("pikchr", grammar_mod);
 
     const lib_mod = b.createModule(.{
         .root_source_file = b.path("src/root.zig"),
         .target = target,
         .optimize = optimize,
     });
-    lib_mod.link_libc = true;
-    lib_mod.addCSourceFile(.{ .file = b.path("pikchr/pikchr.c") });
+    lib_mod.addImport("pikchr", grammar_mod);
 
     const lib = b.addLibrary(.{
         .name = "pikchresque",
         .root_module = lib_mod,
     });
+    lib.step.dependOn(&grammar_write_out.step);
 
     b.installArtifact(lib);
 
@@ -74,6 +79,7 @@ pub fn build(b: *std.Build) void {
         .name = "pikchresque",
         .root_module = exe_mod,
     });
+    exe.step.dependOn(&grammar_write_out.step);
 
     b.installArtifact(exe);
 
@@ -96,14 +102,10 @@ pub fn build(b: *std.Build) void {
         .root_module = pikchresque_mod,
         .filters = test_filters,
     });
+    module_unit_tests.step.dependOn(&grammar_write_out.step);
 
     const run_module_unit_tests = b.addRunArtifact(module_unit_tests);
 
-    const grammar_mod = b.createModule(.{
-        .root_source_file = grammar_output_dir.path(b, "pikchr.zig"),
-        .target = target,
-        .optimize = optimize,
-    });
     const grammar_unit_tests = b.addTest(.{
         .root_module = grammar_mod,
         .filters = test_filters,
@@ -115,6 +117,7 @@ pub fn build(b: *std.Build) void {
         .root_module = lib_mod,
         .filters = test_filters,
     });
+    lib_unit_tests.step.dependOn(&grammar_write_out.step);
 
     const run_lib_unit_tests = b.addRunArtifact(lib_unit_tests);
 
@@ -122,6 +125,7 @@ pub fn build(b: *std.Build) void {
         .root_module = exe_mod,
         .filters = test_filters,
     });
+    exe_unit_tests.step.dependOn(&grammar_write_out.step);
 
     const run_exe_unit_tests = b.addRunArtifact(exe_unit_tests);
 
