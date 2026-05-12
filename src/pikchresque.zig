@@ -28,7 +28,7 @@ pub fn render(
     class: []const u8,
     flags: u32,
 ) RenderError!Rendered {
-    const out = try pikchr.render(allocator, std.Io.failing, source, class, flags);
+    const out = try pikchr.render(allocator, source, class, flags);
     return .{
         .allocator = allocator,
         .text = out.text,

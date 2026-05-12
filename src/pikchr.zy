@@ -245,8 +245,7 @@ pub const PMacro = struct {
 // Each call to the pikchr() subroutine uses an instance of the following
 // object to pass around context to all of its subroutines.
 pub const Pik = struct {
-    allocator: std.mem.Allocator, // Allocator for all per-render memory
-    io: std.Io, // I/O provider used by parser/render helpers
+    allocator: Allocator, // Allocator for all per-render memory
     nErr: u32 = 0, // Number of errors seen
     nToken: u32 = 0, // Number of tokens parsed
     sIn: PToken = .{}, // Input Pikchr-language text
@@ -292,15 +291,13 @@ pub const Pik = struct {
     aCtx: [10]PToken = [_]PToken{.{}} ** 10, // Nested error contexts
 
     pub fn init(
-        allocator: std.mem.Allocator,
-        io: std.Io,
+        allocator: Allocator,
         source: []const u8,
         class: ?[]const u8,
         flags: u32,
     ) Pik {
         return .{
             .allocator = allocator,
-            .io = io,
             .sIn = .{ .z = source, .n = source.len },
             .zOut = .init(allocator),
             .zClass = class,
@@ -500,6 +497,13 @@ fn pik_elem_free(p: *Pik, elem: ?*PObj) void {
     p.allocator.destroy(obj);
 }
 } // end include
+
+%include{
+
+const Allocator = std.mem.Allocator;
+const OOM = Allocator.Error;
+
+}
 
 %name PikParser
 %token_type PToken
@@ -5461,7 +5465,7 @@ pub const RenderResult = struct {
     width: i32,
     height: i32,
 
-    pub fn deinit(result: RenderResult, allocator: std.mem.Allocator) void {
+    pub fn deinit(result: RenderResult, allocator: Allocator) void {
         allocator.free(result.text);
     }
 
@@ -5470,7 +5474,7 @@ pub const RenderResult = struct {
     }
 };
 
-pub const RenderError = error{OutOfMemory};
+pub const RenderError = OOM;
 
 // Parse the PIKCHR script contained in zText[].  Return a rendering.  Or
 // if an error is encountered, return the error text.  The error message
@@ -5487,13 +5491,12 @@ pub const RenderError = error{OutOfMemory};
 // The returned string is contained in memory obtained from malloc()
 // and should be released by the caller.
 pub fn render(
-    allocator: std.mem.Allocator,
-    io: std.Io,
+    allocator: Allocator,
     source: []const u8,
     class: ?[]const u8,
     flags: u32,
 ) RenderError!RenderResult {
-    var pik = Pik.init(allocator, io, source, class, flags);
+    var pik = Pik.init(allocator, source, class, flags);
     defer pik.deinit();
     if ((flags & PIKCHR_DARK_MODE) != 0) {
         pik.shaDigest.update("darkmode");
@@ -5529,7 +5532,7 @@ pub fn render(
 }
 
 test "Pik parser module carries translated state" {
-    var pik = Pik.init(std.testing.allocator, std.testing.io, "box", "pikchr", 0);
+    var pik = Pik.init(std.testing.allocator, "box", "pikchr", 0);
     defer pik.deinit();
     try std.testing.expectEqual(@as(u8, DIR_RIGHT), pik.eDir);
     try std.testing.expectEqualStrings("box", pik.sIn.z);
@@ -5539,7 +5542,7 @@ test "Pik parser module carries translated state" {
 }
 
 test "Pik object allocation initializes class defaults" {
-    var pik = Pik.init(std.testing.allocator, std.testing.io, "box", null, 0);
+    var pik = Pik.init(std.testing.allocator, "box", null, 0);
     defer pik.deinit();
     var tok = classToken("box");
     const obj = pik_elem_new(&pik, &tok, null, null).?;
@@ -5550,7 +5553,7 @@ test "Pik object allocation initializes class defaults" {
 }
 
 test "Pik render consumes object list into allocating writer" {
-    var pik = Pik.init(std.testing.allocator, std.testing.io, "box", "pikchr", 0);
+    var pik = Pik.init(std.testing.allocator, "box", "pikchr", 0);
     defer pik.deinit();
     var tok = classToken("box");
     const obj = pik_elem_new(&pik, &tok, null, null).?;
@@ -5563,7 +5566,7 @@ test "Pik render consumes object list into allocating writer" {
 }
 
 test "Pik line direction builds path before render" {
-    var pik = Pik.init(std.testing.allocator, std.testing.io, "line", null, 0);
+    var pik = Pik.init(std.testing.allocator, "line", null, 0);
     defer pik.deinit();
     var tok = classToken("line");
     const obj = pik_elem_new(&pik, &tok, null, null).?;
@@ -5576,7 +5579,7 @@ test "Pik line direction builds path before render" {
 }
 
 test "Pik set at records edge placement" {
-    var pik = Pik.init(std.testing.allocator, std.testing.io, "box", null, 0);
+    var pik = Pik.init(std.testing.allocator, "box", null, 0);
     defer pik.deinit();
     var tok = classToken("box");
     const obj = pik_elem_new(&pik, &tok, null, null).?;
@@ -5596,7 +5599,7 @@ test "Pik set at records edge placement" {
 }
 
 test "Pik XML classes and macros preserve parser state" {
-    var pik = Pik.init(std.testing.allocator, std.testing.io, "box", null, 0);
+    var pik = Pik.init(std.testing.allocator, "box", null, 0);
     defer pik.deinit();
     var tok = classToken("box");
     const obj = pik_elem_new(&pik, &tok, null, null).?;
@@ -5614,7 +5617,7 @@ test "Pik XML classes and macros preserve parser state" {
 }
 
 test "Pik lookup helpers find objects and properties" {
-    var pik = Pik.init(std.testing.allocator, std.testing.io, "box", null, 0);
+    var pik = Pik.init(std.testing.allocator, "box", null, 0);
     defer pik.deinit();
     var box = classToken("box");
     const obj = pik_elem_new(&pik, &box, null, null).?;
@@ -5634,7 +5637,7 @@ test "Pik lookup helpers find objects and properties" {
 }
 
 test "Pik math and text-position helpers follow token codes" {
-    var pik = Pik.init(std.testing.allocator, std.testing.io, "", null, 0);
+    var pik = Pik.init(std.testing.allocator, "", null, 0);
     defer pik.deinit();
     var sqrt_tok = PToken{ .eCode = FN_SQRT };
     try std.testing.expectEqual(@as(PNum, 3.0), pik_func(&pik, &sqrt_tok, 9.0, 0.0));
@@ -5669,21 +5672,21 @@ test "Pik tokenizer classifies core tokens" {
 }
 
 test "Pik generated render entrypoint parses simple source" {
-    const out = try render(std.testing.allocator, std.testing.io, "box\n", "pikchr", 0);
+    const out = try render(std.testing.allocator, "box\n", "pikchr", 0);
     defer out.deinit(std.testing.allocator);
     try std.testing.expect(out.ok());
     try std.testing.expect(std.mem.startsWith(u8, out.text, "<svg "));
 }
 
 test "Pik generated render expands macros" {
-    const out = try render(std.testing.allocator, std.testing.io, "define b {box \"hi\"}\nb\n", "pikchr", 0);
+    const out = try render(std.testing.allocator, "define b {box \"hi\"}\nb\n", "pikchr", 0);
     defer out.deinit(std.testing.allocator);
     try std.testing.expect(out.ok());
     try std.testing.expect(std.mem.indexOf(u8, out.text, "hi") != null);
 }
 
 test "Pik generated render expands macro arguments" {
-    const out = try render(std.testing.allocator, std.testing.io, "define b {box $1}\nb(\"hi\")\n", "pikchr", 0);
+    const out = try render(std.testing.allocator, "define b {box $1}\nb(\"hi\")\n", "pikchr", 0);
     defer out.deinit(std.testing.allocator);
     try std.testing.expect(out.ok());
     try std.testing.expect(std.mem.indexOf(u8, out.text, "hi") != null);
