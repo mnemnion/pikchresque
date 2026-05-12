@@ -272,10 +272,10 @@ pub const Pik = struct {
     samePath: u8 = 0, // aTPath copied by "same"
     bEOL: u8 = 0, // Flag for if we're in a run of T_EOL (hashing)
     mAttr: u8 = 0, // Flags for when to include certain styles
-    zClass: ?[]const u8 = null, // Class name for the <svg>
-    zID: ?[]u8 = null, // Suffix for id fields
-    zTitle: ?[]u8 = null, // Text of title or label
-    zDesc: ?[]u8 = null, // Text of extended description
+    zClass: []const u8 = "", // Class name for the <svg>
+    zID: []const u8 = "", // Suffix for id fields
+    zTitle: []const u8 = "", // Text of title or label
+    zDesc: []const u8 = "", // Text of extended description
     wSVG: i32 = 0, // Width of the <svg>
     hSVG: i32 = 0, // Height of the <svg>
     fgcolor: i32 = -1, // foreground color value, or -1 for none
@@ -293,7 +293,7 @@ pub const Pik = struct {
     pub fn init(
         allocator: Allocator,
         source: []const u8,
-        class: ?[]const u8,
+        class: []const u8,
         flags: u32,
     ) Pik {
         return .{
@@ -307,9 +307,9 @@ pub const Pik = struct {
 
     pub fn deinit(p: *Pik) void {
         p.zOut.deinit();
-        if (p.zID) |z| p.allocator.free(z);
-        if (p.zTitle) |z| p.allocator.free(z);
-        if (p.zDesc) |z| p.allocator.free(z);
+        if (p.zID.len != 0) p.allocator.free(p.zID);
+        if (p.zTitle.len != 0) p.allocator.free(p.zTitle);
+        if (p.zDesc.len != 0) p.allocator.free(p.zDesc);
         var v = p.pVar;
         while (v) |vv| {
             const next = vv.pNext;
@@ -3154,32 +3154,26 @@ fn pik_render(p: *Pik, list: ?*PList) void {
     p.wSVG = pik_round(p.rScale * w);
     p.hSVG = pik_round(p.rScale * h);
     pik_append(p, "<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;'");
-    if (p.zClass) |class| {
-        pik_append(p, " class=\"");
-        pik_append(p, class);
-        pik_append(p, "\" id=\"");
-        pik_append(p, class);
-        if (p.zID) |id| pik_append(p, id);
-        pik_append(p, "\"");
-    } else {
-        pik_append(p, " id=\"id-");
-        if (p.zID) |id| pik_append(p, id);
-        pik_append(p, "\"");
-    }
+    pik_append(p, " class=\"");
+    pik_append(p, p.zClass);
+    pik_append(p, "\" id=\"");
+    pik_append(p, p.zClass);
+    pik_append(p, p.zID);
+    pik_append(p, "\"");
     pik_append(p, " role=\"img\"");
     var aria_start = false;
-    if (p.zTitle) |title| {
+    if (p.zTitle.len != 0) {
         if (p.bLabel != 0) {
             pik_append(p, " aria-label=\"");
-            pik_append_str(p, title, 0x6);
+            pik_append_str(p, p.zTitle, 0x6);
             pik_append(p, "\"");
         } else {
             aria_start = true;
             pik_append(p, " aria-labelledby=\"title");
-            if (p.zID) |id| pik_append(p, id);
+            pik_append(p, p.zID);
         }
     }
-    if (p.zDesc) |_| {
+    if (p.zDesc.len != 0) {
         if (!aria_start) {
             aria_start = true;
             pik_append(p, " aria-labelledby=\"");
@@ -3187,7 +3181,7 @@ fn pik_render(p: *Pik, list: ?*PList) void {
             pik_append(p, " ");
         }
         pik_append(p, "desc");
-        if (p.zID) |id| pik_append(p, id);
+        pik_append(p, p.zID);
     }
     if (aria_start) {
         pik_append(p, "\"");
@@ -3204,8 +3198,8 @@ fn pik_render(p: *Pik, list: ?*PList) void {
     pik_append_dis(p, " ", h, "\">\n");
     // CSS
     pik_append(p, "<style>\n#");
-    if (p.zClass) |class| pik_append(p, class);
-    if (p.zID) |id| pik_append(p, id);
+    pik_append(p, p.zClass);
+    pik_append(p, p.zID);
     pik_append(p, " {\n");
     if ((p.mAttr & ATTR_BASELINE) != 0) {
         pik_append(p, "._D {dominant-baseline:central}\n");
@@ -3232,20 +3226,20 @@ fn pik_render(p: *Pik, list: ?*PList) void {
         pik_append(p, "._Fm {font-family:monospace}\n");
     }
     pik_append(p, "}\n</style>\n");
-    if (p.zTitle) |title| {
+    if (p.zTitle.len != 0) {
         if (p.bLabel == 0) {
             pik_append(p, "<title id=\"title");
-            if (p.zID) |id| pik_append(p, id);
+            pik_append(p, p.zID);
             pik_append(p, "\">\n");
-            pik_append_str(p, title, 0x2);
+            pik_append_str(p, p.zTitle, 0x2);
             pik_append(p, "\n</title>\n");
         }
     }
-    if (p.zDesc) |desc| {
+    if (p.zDesc.len != 0) {
         pik_append(p, "<desc id=\"desc");
-        if (p.zID) |id| pik_append(p, id);
+        pik_append(p, p.zID);
         pik_append(p, "\">\n");
-        pik_append_str(p, desc, 0x2);
+        pik_append_str(p, p.zDesc, 0x2);
         pik_append(p, "\n</desc>\n");
     }
     pik_elist_render(p, l);
@@ -3356,7 +3350,7 @@ fn pik_elem_new(p: *Pik, id: ?*PToken, str: ?*PToken, sublist: ?*PList) ?*PObj {
 
 // Set a title or label for the Pikchr diagram.
 fn pik_set_title(p: *Pik, title: *PToken, label: i32) void {
-    if (p.zTitle) |old| p.allocator.free(old);
+    if (p.zTitle.len != 0) p.allocator.free(p.zTitle);
     p.zTitle = p.allocator.dupe(u8, tokenInner(title)) catch {
         pik_error(p, title, null);
         return;
@@ -3366,7 +3360,7 @@ fn pik_set_title(p: *Pik, title: *PToken, label: i32) void {
 
 // Set a description for the Pikchr diagram.
 fn pik_set_description(p: *Pik, desc: *PToken) void {
-    if (p.zDesc) |old| p.allocator.free(old);
+    if (p.zDesc.len != 0) p.allocator.free(p.zDesc);
     p.zDesc = p.allocator.dupe(u8, tokenInner(desc)) catch {
         pik_error(p, desc, null);
         return;
@@ -5485,15 +5479,14 @@ pub const RenderError = OOM;
 // width and height of the <SVG> object into the integers that they
 // point to.  A value of -1 is written if an error is seen.
 //
-// If zClass is not NULL, then it is a class name to be included in
-// the <SVG> markup.
+// zClass is the class name to be included in the <SVG> markup.
 //
 // The returned string is contained in memory obtained from malloc()
 // and should be released by the caller.
 pub fn render(
     allocator: Allocator,
     source: []const u8,
-    class: ?[]const u8,
+    class: []const u8,
     flags: u32,
 ) RenderError!RenderResult {
     var pik = Pik.init(allocator, source, class, flags);
@@ -5536,13 +5529,13 @@ test "Pik parser module carries translated state" {
     defer pik.deinit();
     try std.testing.expectEqual(@as(u8, DIR_RIGHT), pik.eDir);
     try std.testing.expectEqualStrings("box", pik.sIn.z);
-    try std.testing.expectEqualStrings("pikchr", pik.zClass.?);
+    try std.testing.expectEqualStrings("pikchr", pik.zClass);
     pik_append(&pik, "svg");
     try std.testing.expectEqualStrings("svg", pik.zOut.written());
 }
 
 test "Pik object allocation initializes class defaults" {
-    var pik = Pik.init(std.testing.allocator, "box", null, 0);
+    var pik = Pik.init(std.testing.allocator, "box", "pikchr", 0);
     defer pik.deinit();
     var tok = classToken("box");
     const obj = pik_elem_new(&pik, &tok, null, null).?;
@@ -5566,7 +5559,7 @@ test "Pik render consumes object list into allocating writer" {
 }
 
 test "Pik line direction builds path before render" {
-    var pik = Pik.init(std.testing.allocator, "line", null, 0);
+    var pik = Pik.init(std.testing.allocator, "line", "pikchr", 0);
     defer pik.deinit();
     var tok = classToken("line");
     const obj = pik_elem_new(&pik, &tok, null, null).?;
@@ -5579,7 +5572,7 @@ test "Pik line direction builds path before render" {
 }
 
 test "Pik set at records edge placement" {
-    var pik = Pik.init(std.testing.allocator, "box", null, 0);
+    var pik = Pik.init(std.testing.allocator, "box", "pikchr", 0);
     defer pik.deinit();
     var tok = classToken("box");
     const obj = pik_elem_new(&pik, &tok, null, null).?;
@@ -5599,7 +5592,7 @@ test "Pik set at records edge placement" {
 }
 
 test "Pik XML classes and macros preserve parser state" {
-    var pik = Pik.init(std.testing.allocator, "box", null, 0);
+    var pik = Pik.init(std.testing.allocator, "box", "pikchr", 0);
     defer pik.deinit();
     var tok = classToken("box");
     const obj = pik_elem_new(&pik, &tok, null, null).?;
@@ -5617,7 +5610,7 @@ test "Pik XML classes and macros preserve parser state" {
 }
 
 test "Pik lookup helpers find objects and properties" {
-    var pik = Pik.init(std.testing.allocator, "box", null, 0);
+    var pik = Pik.init(std.testing.allocator, "box", "pikchr", 0);
     defer pik.deinit();
     var box = classToken("box");
     const obj = pik_elem_new(&pik, &box, null, null).?;
@@ -5637,7 +5630,7 @@ test "Pik lookup helpers find objects and properties" {
 }
 
 test "Pik math and text-position helpers follow token codes" {
-    var pik = Pik.init(std.testing.allocator, "", null, 0);
+    var pik = Pik.init(std.testing.allocator, "", "pikchr", 0);
     defer pik.deinit();
     var sqrt_tok = PToken{ .eCode = FN_SQRT };
     try std.testing.expectEqual(@as(PNum, 3.0), pik_func(&pik, &sqrt_tok, 9.0, 0.0));
