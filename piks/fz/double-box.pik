@@ -1,0 +1,10 @@
+First: box color blue "first box"
+move right
+box "second box" bold color red textcolor blue
+move right
+box fill NavajoWhite textcolor RebeccaPurple color orange "third box" bold big
+move to First.s; move down
+textcolor = red
+box "fourth box"
+move right
+box "fifth box" color green

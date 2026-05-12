@@ -1,0 +1,16 @@
+
+G1 :  [
+     RedCirc: circle color red; move;
+    G2:  [
+         Bcirc: circle color blue class 'blue_circle'
+         move;
+    ] class '   a_1     a_2   a_3 a_4 a_5     '
+     circle color green class a_6
+    arrow from G2 to RedCirc "arrow" above
+] class 'b_1 b_2 b_3 b_4 b_5'
+ box $1 $2 class '    '
+move right; diamond
+
+box color red textcolor blue "box" bold class 'blue_box'
+
+dji = (textcolor)

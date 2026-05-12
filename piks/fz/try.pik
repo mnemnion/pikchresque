@@ -1,0 +1,6 @@
+define square {box width boxht}
+
+square "4";
+square class a_nice_square with w at last.e "1 2 \a 3";
+square class 'square_one square_two' with n at last.s "2";
+square(1, 12) with e at last.w "3";

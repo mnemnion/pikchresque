@@ -1,0 +1,8 @@
+down
+circle class red_light
+move
+circle class 'yellow_light'
+move
+circle class green_light
+
+line from (2,3) to (3,3) then to (3,4) close fill green;
