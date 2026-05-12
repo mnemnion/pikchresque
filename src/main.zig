@@ -136,7 +136,10 @@ pub fn main(init: std.process.Init) !void {
         };
         defer out.deinit();
 
-        if (!svg_only and !out.ok() and !dont_stop) exit_code = 1;
+        if (!out.ok()) {
+            exit_code = 1;
+            if (!svg_only and !dont_stop) std.process.exit(1);
+        }
         if (svg_only) {
             try stdout.print("{s}\n", .{out.text});
         } else {

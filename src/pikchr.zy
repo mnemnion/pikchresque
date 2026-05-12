@@ -5490,6 +5490,7 @@ pub const RenderResult = struct {
     text: []u8,
     width: i32,
     height: i32,
+    n_err: u32,
 
     pub fn deinit(result: RenderResult, allocator: Allocator) void {
         allocator.free(result.text);
@@ -5553,6 +5554,7 @@ pub fn render(
         .text = text,
         .width = if (pik.nErr != 0) -1 else pik.wSVG,
         .height = if (pik.nErr != 0) -1 else pik.hSVG,
+        .n_err = pik.nErr,
     };
 }
 

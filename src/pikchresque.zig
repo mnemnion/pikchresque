@@ -10,13 +10,14 @@ pub const Rendered = struct {
     text: []u8,
     width: i32,
     height: i32,
+    n_err: u32,
 
     pub fn deinit(rendered: Rendered) void {
         rendered.allocator.free(rendered.text);
     }
 
     pub fn ok(rendered: Rendered) bool {
-        return rendered.width >= 0;
+        return rendered.n_err == 0;
     }
 };
 
@@ -34,6 +35,7 @@ pub fn render(
         .text = out.text,
         .width = out.width,
         .height = out.height,
+        .n_err = out.n_err,
     };
 }
 
