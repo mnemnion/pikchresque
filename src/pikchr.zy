@@ -195,7 +195,7 @@ pub const PObj = struct {
     ptExit: PPoint = .{}, // Exit point
     pSublist: ?*PList = null, // Substructure for [...] objects
     pXmlClass: ?*PXmlClass = null, // Optional list of assigned XML classes
-    zName: ?[]u8 = null, // Name assigned to this statement
+    zName: []const u8 = "", // Name assigned to this statement
     w: PNum = 0.0, // "width" property
     h: PNum = 0.0, // "height" property
     rad: PNum = 0.0, // "radius" property
@@ -484,7 +484,7 @@ fn pik_elist_free(p: *Pik, list: ?*PList) void {
 // Free a single object, and its substructure
 fn pik_elem_free(p: *Pik, elem: ?*PObj) void {
     const obj = elem orelse return;
-    if (obj.zName) |z| p.allocator.free(z);
+    if (obj.zName.len != 0) p.allocator.free(obj.zName);
     var xclass = obj.pXmlClass;
     while (xclass) |xc| {
         const next = xc.pNext;
@@ -1436,9 +1436,9 @@ fn pik_append_tag_open(p: *Pik, obj: ?*PObj, tag: []const u8) void {
             pik_append(p, class.zName);
         }
     }
-    if (o.zName) |name| {
+    if (o.zName.len != 0) {
         pik_append(p, " ");
-        pik_append_text(p, name, 4);
+        pik_append_text(p, o.zName, 4);
     }
     var xclass = o.pXmlClass;
     while (xclass) |xc| : (xclass = xc.pNext) {
@@ -2240,7 +2240,7 @@ fn pik_draw_arrowhead(p: *Pik, f: *PPoint, t: *PPoint, obj: *PObj) void {
 //   - 0: no close (not compound)
 //   - 1: close (group made here)
 fn pik_append_group(p: *Pik, obj: *PObj) i32 {
-    var needs_group: i32 = if (obj.zName == null and (obj.larrow != 0 or obj.rarrow != 0 or obj.pSublist != null)) 1 else 0;
+    var needs_group: i32 = if (obj.zName.len == 0 and (obj.larrow != 0 or obj.rarrow != 0 or obj.pSublist != null)) 1 else 0;
     if (needs_group != 0) {
         needs_group = 1;
         pik_append_tag_open(p, obj, "g");
@@ -3041,8 +3041,8 @@ fn pik_bbox_add_elist(p: *Pik, list: *PList, w_arrow: PNum) void {
 // command.
 fn pik_elem_render(p: *Pik, obj: *PObj) void {
     pik_append(p, "<!-- ");
-    if (obj.zName) |name| {
-        pik_append_text(p, name, 0);
+    if (obj.zName.len != 0) {
+        pik_append_text(p, obj.zName, 0);
         pik_append(p, ": ");
     }
     if (obj.type) |class| pik_append_text(p, class.zName, 0);
@@ -3115,10 +3115,10 @@ fn pik_elist_render(p: *Pik, list: *PList) void {
         dot.nTxt = 1;
         dot.aTxt[0].eCode = TP_ABOVE;
         for (list.a[0..list.n]) |obj| {
-            const name = obj.zName orelse continue;
+            if (obj.zName.len == 0) continue;
             dot.ptAt = obj.ptAt;
-            dot.aTxt[0].z = name;
-            dot.aTxt[0].n = name.len;
+            dot.aTxt[0].z = obj.zName;
+            dot.aTxt[0].n = obj.zName.len;
             dotRender(p, &dot);
         }
     }
@@ -3405,7 +3405,7 @@ fn pik_set_direction(p: *Pik, dir: u16) void {
 // Attach a name to an object
 fn pik_elem_setname(p: *Pik, obj: ?*PObj, name: *PToken) void {
     const o = obj orelse return;
-    if (o.zName) |old| p.allocator.free(old);
+    if (o.zName.len != 0) p.allocator.free(o.zName);
     o.zName = p.allocator.dupe(u8, name.z[0..name.n]) catch {
         pik_error(p, name, null);
         return;
@@ -4717,11 +4717,9 @@ fn pik_find_byname(p: *Pik, basis: ?*PObj, name: *PToken) ?*PObj {
     while (i > 0) {
         i -= 1;
         const obj = l.a[i];
-        if (obj.zName) |z| {
-            if (std.mem.eql(u8, z, name.z[0..name.n])) {
-                p.lastRef = obj;
-                return obj;
-            }
+        if (std.mem.eql(u8, obj.zName, name.z[0..name.n])) {
+            p.lastRef = obj;
+            return obj;
         }
     }
     // If not found, do a second pass looking for any object containing
