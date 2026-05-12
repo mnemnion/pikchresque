@@ -3350,7 +3350,14 @@ fn pik_elem_new(p: *Pik, id: ?*PToken, str: ?*PToken, sublist: ?*PList) ?*PObj {
 
 // Set a title or label for the Pikchr diagram.
 fn pik_set_title(p: *Pik, title: *PToken, label: i32) void {
-    if (p.zTitle.len != 0) p.allocator.free(p.zTitle);
+    if (p.zTitle.len != 0) {
+        if (p.bLabel != 0) {
+            pik_error(p, title, "diagram already has a label");
+        } else {
+            pik_error(p, title, "diagram already has a title");
+        }
+        return;
+    }
     p.zTitle = p.allocator.dupe(u8, tokenInner(title)) catch {
         pik_error(p, title, null);
         return;
@@ -3360,7 +3367,10 @@ fn pik_set_title(p: *Pik, title: *PToken, label: i32) void {
 
 // Set a description for the Pikchr diagram.
 fn pik_set_description(p: *Pik, desc: *PToken) void {
-    if (p.zDesc.len != 0) p.allocator.free(p.zDesc);
+    if (p.zDesc.len != 0) {
+        pik_error(p, desc, "diagram already has a description");
+        return;
+    }
     p.zDesc = p.allocator.dupe(u8, tokenInner(desc)) catch {
         pik_error(p, desc, null);
         return;
@@ -3406,16 +3416,27 @@ fn pik_elem_setname(p: *Pik, obj: ?*PObj, name: *PToken) void {
 // The name might be a built-in variable or a color name.  In either case,
 // a new application-defined variable is set.  Since app-defined variables
 // are searched first, this will override any built-in variables.
+fn pik_apply_var_op(p: *Pik, v: *PVar, val: PNum, op: *PToken) void {
+    switch (op.eCode) {
+        @intFromEnum(TokenKind.PLUS) => v.val += val,
+        @intFromEnum(TokenKind.STAR) => v.val *= val,
+        @intFromEnum(TokenKind.SLASH) => {
+            if (val == 0.0) {
+                pik_error(p, op, "division by zero");
+            } else {
+                v.val /= val;
+            }
+        },
+        else => v.val = val,
+    }
+}
+
 fn pik_set_var(p: *Pik, id: *PToken, val: PNum, op: *PToken) void {
     var found = p.pVar;
     while (found) |v| : (found = v.pNext) {
         if (pik_token_eq(id, v.zName) == 0) {
             const old_val = v.val;
-            switch (op.eCode) {
-                @intFromEnum(TokenKind.PLUS) => v.val += val,
-                @intFromEnum(TokenKind.STAR) => v.val *= val,
-                else => v.val = val,
-            }
+            pik_apply_var_op(p, v, val, op);
             if (std.mem.eql(u8, v.zName, "color")) pik_sync_textcolor(p, old_val, v.val);
             p.bLayoutVars = 0;
             return;
@@ -3437,11 +3458,7 @@ fn pik_set_var(p: *Pik, id: *PToken, val: PNum, op: *PToken) void {
     };
     p.pVar = v;
     const old_val = v.val;
-    switch (op.eCode) {
-        @intFromEnum(TokenKind.PLUS) => v.val += val,
-        @intFromEnum(TokenKind.STAR) => v.val *= val,
-        else => v.val = val,
-    }
+    pik_apply_var_op(p, v, val, op);
     if (std.mem.eql(u8, v.zName, "color")) pik_sync_textcolor(p, old_val, v.val);
     p.bLayoutVars = 0;
 }
@@ -3959,6 +3976,19 @@ fn tokenCodeSigned(tok: *const PToken) i16 {
 //
 // To be ok, bit mThis must be clear and no more than one of
 // the bits identified by mBlockers may be set.
+fn pik_param_ok(p: *Pik, obj: *PObj, id: *PToken, mask: u32) i32 {
+    if ((obj.mProp & mask) != 0) {
+        pik_error(p, id, "value is already set");
+        return 1;
+    }
+    if ((obj.mCalc & mask) != 0) {
+        pik_error(p, id, "value already fixed by prior constraints");
+        return 1;
+    }
+    obj.mProp |= mask;
+    return 0;
+}
+
 //
 // Set a numeric property like "width 7" or "radius 200%".
 //
@@ -3988,12 +4018,8 @@ fn pik_set_numprop(p: *Pik, prop: *PToken, val: *PRel) void {
     } else {
         return;
     }
-    if ((obj.mProp & mask) != 0) {
-        pik_error(p, prop, "value already set");
-        return;
-    }
+    if (pik_param_ok(p, obj, prop, mask) != 0) return;
     target.* = val.rAbs + target.* * val.rRel;
-    obj.mProp |= mask;
     if (obj.type) |class| if (class.xNumProp) |x| x(p, obj, prop);
 }
 
@@ -4001,19 +4027,11 @@ fn pik_set_numprop(p: *Pik, prop: *PToken, val: *PRel) void {
 fn pik_set_clrprop(p: *Pik, prop: *PToken, val: PNum) void {
     const obj = p.cur orelse return;
     if (hasKind(prop, .FILL)) {
-        if ((obj.mProp & A_FILL) != 0) {
-            pik_error(p, prop, "value already set");
-            return;
-        }
+        if (pik_param_ok(p, obj, prop, A_FILL) != 0) return;
         obj.fill = val;
-        obj.mProp |= A_FILL;
     } else if (hasKind(prop, .COLOR)) {
-        if ((obj.mProp & A_COLOR) != 0) {
-            pik_error(p, prop, "value already set");
-            return;
-        }
+        if (pik_param_ok(p, obj, prop, A_COLOR) != 0) return;
         obj.color = val;
-        obj.mProp |= A_COLOR;
         // without these lines we would have a breaking change
         if (comptime pik_pedantic) {
             // Probably, setting fg color should not set textcolor, tho
@@ -4022,12 +4040,8 @@ fn pik_set_clrprop(p: *Pik, prop: *PToken, val: PNum) void {
             }
         }
     } else if (hasKind(prop, .TEXTCOLOR)) {
-        if ((obj.mProp & A_TEXTCOLOR) != 0) {
-            pik_error(p, prop, "value already set");
-            return;
-        }
+        if (pik_param_ok(p, obj, prop, A_TEXTCOLOR) != 0) return;
         obj.textcolor = val;
-        obj.mProp |= A_TEXTCOLOR;
     }
     if (obj.type) |class| if (class.xNumProp) |x| x(p, obj, prop);
 }
@@ -4038,13 +4052,14 @@ fn pik_set_clrprop(p: *Pik, prop: *PToken, val: PNum) void {
 // a default.
 fn pik_set_dashed(p: *Pik, prop: *PToken, val: ?*PNum) void {
     const obj = p.cur orelse return;
-    if ((obj.mProp & A_DASHED) != 0) {
-        pik_error(p, prop, "value already set");
-        return;
-    }
     const x = if (val) |v| v.* else pik_value(p, "dashwid", null);
-    if (hasKind(prop, .DOTTED)) obj.dotted = x else obj.dashed = x;
-    obj.mProp |= A_DASHED;
+    if (hasKind(prop, .DOTTED)) {
+        obj.dotted = x;
+        obj.dashed = 0.0;
+    } else {
+        obj.dashed = x;
+        obj.dotted = 0.0;
+    }
 }
 
 // If the current path information came from a "same" or "same as"
@@ -4231,8 +4246,16 @@ fn pik_set_xml_classes(p: *Pik, tok: *PToken) void {
 }
 
 fn pik_close_path(p: *Pik, err: *PToken) void {
-    _ = err;
-    if (p.cur) |obj| obj.bClose = 1;
+    const obj = p.cur orelse return;
+    if (p.nTPath < 3) {
+        pik_error(p, err, "need at least 3 vertexes in order to close the polygon");
+        return;
+    }
+    if (obj.bClose != 0) {
+        pik_error(p, err, "polygon already closed");
+        return;
+    }
+    obj.bClose = 1;
 }
 
 // Set the "from" of an object
@@ -4846,13 +4869,21 @@ fn pik_bbox_addellipse(box: *PBox, x: PNum, y: PNum, rx: PNum, ry: PNum) void {
 
 // Process an "assert( e1 == e2 )" statement.  Always return NULL.
 fn pik_assert(p: *Pik, e1: PNum, eq: *PToken, e2: PNum) ?*PObj {
-    if (e1 != e2) pik_error(p, eq, "assertion failed");
+    if (e1 != e2) {
+        var buf: [300]u8 = undefined;
+        const msg = std.fmt.bufPrint(&buf, "{d} != {d}", .{ e1, e2 }) catch "";
+        pik_error(p, eq, msg);
+    }
     return null;
 }
 
 // Process an "assert( place1 == place2 )" statement.  Always return NULL.
 fn pik_position_assert(p: *Pik, e1: *PPoint, eq: *PToken, e2: *PPoint) ?*PObj {
-    if (e1.x != e2.x or e1.y != e2.y) pik_error(p, eq, "assertion failed");
+    if (e1.x != e2.x or e1.y != e2.y) {
+        var buf: [210]u8 = undefined;
+        const msg = std.fmt.bufPrint(&buf, "({d},{d}) != ({d},{d})", .{ e1.x, e1.y, e2.x, e2.y }) catch "";
+        pik_error(p, eq, msg);
+    }
     return null;
 }
 
