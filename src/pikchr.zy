@@ -3421,6 +3421,7 @@ fn pik_apply_var_op(p: *Pik, v: *PVar, val: PNum, op: *PToken) void {
     switch (op.eCode) {
         @intFromEnum(TokenKind.PLUS) => v.val += val,
         @intFromEnum(TokenKind.STAR) => v.val *= val,
+        @intFromEnum(TokenKind.MINUS) => v.val -= val,
         @intFromEnum(TokenKind.SLASH) => {
             if (val == 0.0) {
                 pik_error(p, op, "division by zero");
