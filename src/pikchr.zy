@@ -80,15 +80,19 @@ pub const ATTR_FILL_NO = 0x80; // fill="transparent"
 
 // An object to hold a position in 2-D space
 pub const PPoint = struct {
-    x: PNum = 0.0, // X coordinate
-    y: PNum = 0.0, // Y coordinate
+    x: PNum, // X coordinate
+    y: PNum, // Y coordinate
+
+    pub const zero: PPoint = .{ .x = 0.0, .y = 0.0 };
 };
-pub const cZeroPoint = PPoint{ .x = 0.0, .y = 0.0 };
+pub const cZeroPoint: PPoint = .zero;
 
 // A bounding box
 pub const PBox = struct {
-    sw: PPoint = .{}, // Lower-left corner
-    ne: PPoint = .{}, // Top-right corner
+    sw: PPoint, // Lower-left corner
+    ne: PPoint, // Top-right corner
+
+    pub const zero: PBox = .{ .sw = .zero, .ne = .zero };
 };
 
 // An Absolute or a relative distance.  The absolute distance
@@ -100,15 +104,20 @@ pub const PBox = struct {
 //          value = PRel.rAbs + value*PRel.rRel
 //
 pub const PRel = struct {
-    rAbs: PNum = 0.0, // Absolute value
-    rRel: PNum = 0.0, // Value relative to current value
+    rAbs: PNum, // Absolute value
+    rRel: PNum, // Value relative to current value
+
+    pub const zero: PRel = .{ .rAbs = 0.0, .rRel = 0.0 };
+    pub const start: PRel = .{ .rAbs = 0.0, .rRel = 1.0 };
 };
 
 // A node in a linked list of SVG classes.
 //
 pub const PXmlClass = struct {
-    zClass: []u8 = &.{}, // Class identifier
-    pNext: ?*PXmlClass = null, // Next class in an element's list
+    zClass: []u8, // Class identifier
+    pNext: ?*PXmlClass, // Next class in an element's list
+
+    pub const zero: PXmlClass = .{ .zClass = &.{}, .pNext = null };
 };
 
 // A variable created by the ID = EXPR construct of the PIKCHR script
@@ -116,18 +125,22 @@ pub const PXmlClass = struct {
 // PIKCHR (and PIC) scripts do not use many variables, so it is reasonable
 // to store them all on a linked list.
 pub const PVar = struct {
-    zName: []u8 = &.{}, // Name of the variable
-    val: PNum = 0.0, // Value of the variable
-    pNext: ?*PVar = null, // Next variable in a list of them all
+    zName: []u8, // Name of the variable
+    val: PNum, // Value of the variable
+    pNext: ?*PVar, // Next variable in a list of them all
+
+    pub const zero: PVar = .{ .zName = &.{}, .val = 0.0, .pNext = null };
 };
 
 // A single token in the parser input stream
 pub const PToken = struct {
-    z: []const u8 = "", // Pointer to the token text
-    n: usize = 0, // Length of the token in bytes
-    eCode: u16 = 0, // Auxiliary code
-    eType: u8 = 0, // The numeric parser code
-    eEdge: u8 = 0, // Corner value for corner keywords
+    z: []const u8, // Pointer to the token text
+    n: usize, // Length of the token in bytes
+    eCode: u16, // Auxiliary code
+    eType: u8, // The numeric parser code
+    eEdge: u8, // Corner value for corner keywords
+
+    pub const zero: PToken = .{ .z = "", .n = 0, .eCode = 0, .eType = 0, .eEdge = 0 };
 };
 
 // Return negative, zero, or positive if pToken is less than, equal to
@@ -189,122 +202,213 @@ pub const C_TEXT = 0x04;
 
 // A single graphics object
 pub const PObj = struct {
-    type: ?*const PClass = null,            // Object type or class
-    errTok: PToken = .{},                   // Reference token for error messages
-    ptAt: PPoint = .{},                     // Reference point for the object
-    ptEnter: PPoint = .{},                  // Entry point
-    ptExit: PPoint = .{},                   // Exit point
-    pSublist: ?*PList = null,               // Substructure for [...] objects
-    pXmlClass: ?*PXmlClass = null,          // Optional list of assigned XML classes
-    zName: []const u8 = "",                 // Name assigned to this statement
-    w: PNum = 0.0,                          // "width" property
-    h: PNum = 0.0,                          // "height" property
-    rad: PNum = 0.0,                        // "radius" property
-    sw: PNum = 0.0,                         // "thickness" property. (Mnemonic: "stroke width")
-    dotted: PNum = 0.0,                     // "dotted" property.   <=0.0 for off
-    dashed: PNum = 0.0,                     // "dashed" property.   <=0.0 for off
-    fill: PNum = 0.0,                       // "fill" property.  Negative for off
-    color: PNum = 0.0,                      // "color" property
-    textcolor: PNum = 0.0,                  // "textcolor" property
-    with: PPoint = .{},                     // Position constraint from WITH clause
-    eWith: u8 = 0,                          // Type of heading point on WITH clause
-    cw: u8 = 0,                             // True for clockwise arc
-    larrow: u8 = 0,                         // Arrow at beginning (<- or <->)
-    rarrow: u8 = 0,                         // Arrow at end  (-> or <->)
-    bClose: u8 = 0,                         // True if "close" is seen
-    bChop: u8 = 0,                          // True if "chop" is seen
-    bAltAutoFit: u8 = 0,                    // Always send both h and w into xFit()
-    nTxt: usize = 0,                        // Number of text values
-    mProp: u32 = 0,                         // Masks of properties set so far
-    mCalc: u32 = 0,                         // Values computed from other constraints
-    aTxt: [5]PToken = [_]PToken{.{}} ** 5,  // Text with .eCode holding TP flags
-    iLayer: i32 = 0,                        // Rendering order
-    inDir: i32 = 0,                         // Entry direction
-    outDir: i32 = 0,                        // Exit direction
-    nPath: i32 = 0,                         // Number of path points
-    aPath: []PPoint = &.{},                 // Array of path points
-    pFrom: ?*PObj = null,                   // End-point objects of a path
-    pTo: ?*PObj = null,                     // End-point objects of a path
-    bbox: PBox = .{},                       // Bounding box
+    type: ?*const PClass,    // Object type or class
+    errTok: PToken,          // Reference token for error messages
+    ptAt: PPoint,            // Reference point for the object
+    ptEnter: PPoint,         // Entry point
+    ptExit: PPoint,          // Exit point
+    pSublist: ?*PList,       // Substructure for [...] objects
+    pXmlClass: ?*PXmlClass,  // Optional list of assigned XML classes
+    zName: []const u8,       // Name assigned to this statement
+    w: PNum,                 // "width" property
+    h: PNum,                 // "height" property
+    rad: PNum,               // "radius" property
+    sw: PNum,                // "thickness" property. (Mnemonic: "stroke width")
+    dotted: PNum,            // "dotted" property.   <=0.0 for off
+    dashed: PNum,            // "dashed" property.   <=0.0 for off
+    fill: PNum,              // "fill" property.  Negative for off
+    color: PNum,             // "color" property
+    textcolor: PNum,         // "textcolor" property
+    with: PPoint,            // Position constraint from WITH clause
+    eWith: u8,               // Type of heading point on WITH clause
+    cw: u8,                  // True for clockwise arc
+    larrow: u8,              // Arrow at beginning (<- or <->)
+    rarrow: u8,              // Arrow at end  (-> or <->)
+    bClose: u8,              // True if "close" is seen
+    bChop: u8,               // True if "chop" is seen
+    bAltAutoFit: u8,         // Always send both h and w into xFit()
+    nTxt: usize,             // Number of text values
+    mProp: u32,              // Masks of properties set so far
+    mCalc: u32,              // Values computed from other constraints
+    aTxt: [5]PToken,         // Text with .eCode holding TP flags
+    iLayer: i32,             // Rendering order
+    inDir: i32,              // Entry direction
+    outDir: i32,             // Exit direction
+    nPath: i32,              // Number of path points
+    aPath: []PPoint,         // Array of path points
+    pFrom: ?*PObj,           // End-point objects of a path
+    pTo: ?*PObj,             // End-point objects of a path
+    bbox: PBox,              // Bounding box
+
+    pub const start: PObj = .{
+        .type = null,
+        .errTok = .zero,
+        .ptAt = .zero,
+        .ptEnter = .zero,
+        .ptExit = .zero,
+        .pSublist = null,
+        .pXmlClass = null,
+        .zName = "",
+        .w = 0.0,
+        .h = 0.0,
+        .rad = 0.0,
+        .sw = 0.0,
+        .dotted = 0.0,
+        .dashed = 0.0,
+        .fill = 0.0,
+        .color = 0.0,
+        .textcolor = 0.0,
+        .with = .zero,
+        .eWith = 0,
+        .cw = 0,
+        .larrow = 0,
+        .rarrow = 0,
+        .bClose = 0,
+        .bChop = 0,
+        .bAltAutoFit = 0,
+        .nTxt = 0,
+        .mProp = 0,
+        .mCalc = 0,
+        .aTxt = [_]PToken{.zero} ** 5,
+        .iLayer = 0,
+        .inDir = 0,
+        .outDir = 0,
+        .nPath = 0,
+        .aPath = &.{},
+        .pFrom = null,
+        .pTo = null,
+        .bbox = .zero,
+    };
 };
 
 // A list of graphics objects
 pub const PList = struct {
-    n: usize = 0, // Number of statements in the list
-    nAlloc: usize = 0, // Allocated slots in a[]
-    a: []*PObj = &.{}, // Pointers to individual objects
+    n: usize, // Number of statements in the list
+    nAlloc: usize, // Allocated slots in a[]
+    a: []*PObj, // Pointers to individual objects
+
+    pub const zero: PList = .{ .n = 0, .nAlloc = 0, .a = &.{} };
 };
 
 // A macro definition
 pub const PMacro = struct {
-    pNext: ?*PMacro = null, // Next in the list
-    macroName: PToken = .{}, // Name of the macro
-    macroBody: PToken = .{}, // Body of the macro
-    inUse: i32 = 0, // Do not allow recursion
+    pNext: ?*PMacro, // Next in the list
+    macroName: PToken, // Name of the macro
+    macroBody: PToken, // Body of the macro
+    inUse: i32, // Do not allow recursion
+
+    pub const zero: PMacro = .{ .pNext = null, .macroName = .zero, .macroBody = .zero, .inUse = 0 };
 };
 
 // zig fmt: off
+const sha1_options = std.crypto.hash.Sha1.Options{};
+
 // Each call to the pikchr() subroutine uses an instance of the following
 // object to pass around context to all of its subroutines.
 pub const Pik = struct {
-    allocator: Allocator,                                              // Allocator for all per-render memory
-    nErr: u32 = 0,                                                     // Number of errors seen
-    nToken: u32 = 0,                                                   // Number of tokens parsed
-    sIn: PToken = .{},                                                 // Input Pikchr-language text
-    zOut: std.Io.Writer.Allocating,                                    // Result accumulates here
-    shaDigest: std.crypto.hash.Sha1 = std.crypto.hash.Sha1.init(.{}),  // The hashing context for tokens
-    eDir: u8 = DIR_RIGHT,                                              // Current direction
-    mFlags: u32 = 0,                                                   // Flags passed to pikchr()
-    cur: ?*PObj = null,                                                // Object under construction
-    lastRef: ?*PObj = null,                                            // Last object references by name
-    list: ?*PList = null,                                              // Object list under construction
-    pMacros: ?*PMacro = null,                                          // List of all defined macros
-    pVar: ?*PVar = null,                                               // Application-defined variables
-    bbox: PBox = .{},                                                  // Bounding box around all statements
+    allocator: Allocator,             // Allocator for all per-render memory
+    nErr: u32,                        // Number of errors seen
+    nToken: u32,                      // Number of tokens parsed
+    sIn: PToken,                      // Input Pikchr-language text
+    zOut: std.Io.Writer.Allocating,   // Result accumulates here
+    shaDigest: std.crypto.hash.Sha1,  // The hashing context for tokens
+    eDir: u8,                         // Current direction
+    mFlags: u32,                      // Flags passed to pikchr()
+    cur: ?*PObj,                      // Object under construction
+    lastRef: ?*PObj,                  // Last object references by name
+    list: ?*PList,                    // Object list under construction
+    pMacros: ?*PMacro,                // List of all defined macros
+    pVar: ?*PVar,                     // Application-defined variables
+    bbox: PBox,                       // Bounding box around all statements
     // Cache of layout values.  <=0.0 for unknown...
-    rScale: PNum = 0.0,                                                // Multiply to convert inches to pixels
-    fontScale: PNum = 0.0,                                             // Scale fonts by this percent
-    charWidth: PNum = 0.0,                                             // Character width
-    charHeight: PNum = 0.0,                                            // Character height
-    wArrow: PNum = 0.0,                                                // Width of arrowhead at the fat end
-    hArrow: PNum = 0.0,                                                // Ht of arrowhead - dist from tip to fat end
-    bLayoutVars: u8 = 0,                                               // True if cache is valid
-    thenFlag: u8 = 0,                                                  // True if "then" seen
-    bLabel: u8 = 0,                                                    // True if zTitle should be rendered as a label
-    samePath: u8 = 0,                                                  // aTPath copied by "same"
-    bEOL: u8 = 0,                                                      // Flag for if we're in a run of T_EOL (hashing)
-    mAttr: u8 = 0,                                                     // Flags for when to include certain styles
-    zClass: []const u8 = "",                                           // Class name for the <svg>
-    zID: []const u8 = "",                                              // Suffix for id fields
-    zTitle: []const u8 = "",                                           // Text of title or label
-    zDesc: []const u8 = "",                                            // Text of extended description
-    wSVG: i32 = 0,                                                     // Width of the <svg>
-    hSVG: i32 = 0,                                                     // Height of the <svg>
-    fgcolor: i32 = -1,                                                 // foreground color value, or -1 for none
-    bgcolor: i32 = -1,                                                 // background color value, or -1 for none
-    seenColor: [150]u8 = [_]u8{0} ** 150,                              // which built-in colors have been seen
+    rScale: PNum,                     // Multiply to convert inches to pixels
+    fontScale: PNum,                  // Scale fonts by this percent
+    charWidth: PNum,                  // Character width
+    charHeight: PNum,                 // Character height
+    wArrow: PNum,                     // Width of arrowhead at the fat end
+    hArrow: PNum,                     // Ht of arrowhead - dist from tip to fat end
+    bLayoutVars: u8,                  // True if cache is valid
+    thenFlag: u8,                     // True if "then" seen
+    bLabel: u8,                       // True if zTitle should be rendered as a label
+    samePath: u8,                     // aTPath copied by "same"
+    bEOL: u8,                         // Flag for if we're in a run of T_EOL (hashing)
+    mAttr: u8,                        // Flags for when to include certain styles
+    zClass: []const u8,               // Class name for the <svg>
+    zID: []const u8,                  // Suffix for id fields
+    zTitle: []const u8,               // Text of title or label
+    zDesc: []const u8,                // Text of extended description
+    wSVG: i32,                        // Width of the <svg>
+    hSVG: i32,                        // Height of the <svg>
+    fgcolor: i32,                     // foreground color value, or -1 for none
+    bgcolor: i32,                     // background color value, or -1 for none
+    seenColor: [150]u8,               // which built-in colors have been seen
     // Paths for lines are constructed here first, then transferred into
     // the PObj object at the end:
-    nTPath: i32 = 0,                                // Number of entries on aTPath[]
-    mTPath: i32 = 0,                                // For last entry, 1: x set,  2: y set
-    aTPath: [1000]PPoint = [_]PPoint{.{}} ** 1000,  // Path under construction
+    nTPath: i32,                      // Number of entries on aTPath[]
+    mTPath: i32,                      // For last entry, 1: x set,  2: y set
+    aTPath: [1000]PPoint,             // Path under construction
     // Error contexts
-    nCtx: u32 = 0,                                  // Number of error contexts
-    aCtx: [10]PToken = [_]PToken{.{}} ** 10,        // Nested error contexts
+    nCtx: u32,                        // Number of error contexts
+    aCtx: [10]PToken,                 // Nested error contexts
 // zig fmt: on
+
+    pub const start: Pik = .{
+        .allocator = undefined,
+        .nErr = 0,
+        .nToken = 0,
+        .sIn = .zero,
+        .zOut = undefined,
+        .shaDigest = std.crypto.hash.Sha1.init(sha1_options),
+        .eDir = DIR_RIGHT,
+        .mFlags = 0,
+        .cur = null,
+        .lastRef = null,
+        .list = null,
+        .pMacros = null,
+        .pVar = null,
+        .bbox = .zero,
+        .rScale = 0.0,
+        .fontScale = 0.0,
+        .charWidth = 0.0,
+        .charHeight = 0.0,
+        .wArrow = 0.0,
+        .hArrow = 0.0,
+        .bLayoutVars = 0,
+        .thenFlag = 0,
+        .bLabel = 0,
+        .samePath = 0,
+        .bEOL = 0,
+        .mAttr = 0,
+        .zClass = "",
+        .zID = "",
+        .zTitle = "",
+        .zDesc = "",
+        .wSVG = 0,
+        .hSVG = 0,
+        .fgcolor = -1,
+        .bgcolor = -1,
+        .seenColor = [_]u8{0} ** 150,
+        .nTPath = 0,
+        .mTPath = 0,
+        .aTPath = [_]PPoint{.zero} ** 1000,
+        .nCtx = 0,
+        .aCtx = [_]PToken{.zero} ** 10,
+    };
+
     pub fn init(
         allocator: Allocator,
         source: []const u8,
         class: []const u8,
         flags: u32,
     ) Pik {
-        return .{
-            .allocator = allocator,
-            .sIn = .{ .z = source, .n = source.len },
-            .zOut = .init(allocator),
-            .zClass = class,
-            .mFlags = flags,
-        };
+        var pik: Pik = .start;
+        pik.allocator = allocator;
+        pik.sIn.z = source;
+        pik.sIn.n = source.len;
+        pik.zOut = .init(allocator);
+        pik.zClass = class;
+        pik.mFlags = flags;
+        return pik;
     }
 
     pub fn deinit(p: *Pik) void {
@@ -1026,114 +1130,121 @@ const PIKCHR_TOKEN_LIMIT = 100000;
 const PikWord = struct {
     zWord: []const u8, // Text of the keyword
     eType: TokenKind, // Token code
-    eCode: u16 = 0, // Extra code for the token
-    eEdge: u8 = 0, // CP_* code for corner/edge keywords
+    eCode: u16, // Extra code for the token
+    eEdge: u8, // CP_* code for corner/edge keywords
+
+    fn word(zWord: []const u8, eType: TokenKind, eCode: u16, eEdge: u8) PikWord {
+        return .{ .zWord = zWord, .eType = eType, .eCode = eCode, .eEdge = eEdge };
+    }
 };
 
 // Keywords
 const pik_keywords = [_]PikWord{
-    .{ .zWord = "above", .eType = .ABOVE },
-    .{ .zWord = "abs", .eType = .FUNC1, .eCode = FN_ABS },
-    .{ .zWord = "aligned", .eType = .ALIGNED },
-    .{ .zWord = "and", .eType = .AND },
-    .{ .zWord = "as", .eType = .AS },
-    .{ .zWord = "assert", .eType = .ASSERT },
-    .{ .zWord = "at", .eType = .AT },
-    .{ .zWord = "behind", .eType = .BEHIND },
-    .{ .zWord = "below", .eType = .BELOW },
-    .{ .zWord = "between", .eType = .BETWEEN },
-    .{ .zWord = "big", .eType = .BIG },
-    .{ .zWord = "bold", .eType = .BOLD },
-    .{ .zWord = "bot", .eType = .EDGEPT, .eEdge = CP_S },
-    .{ .zWord = "bottom", .eType = .BOTTOM, .eEdge = CP_S },
-    .{ .zWord = "c", .eType = .EDGEPT, .eEdge = CP_C },
-    .{ .zWord = "ccw", .eType = .CCW },
-    .{ .zWord = "center", .eType = .CENTER, .eEdge = CP_C },
-    .{ .zWord = "chop", .eType = .CHOP },
-    .{ .zWord = "class", .eType = .CLASS },
-    .{ .zWord = "close", .eType = .CLOSE },
-    .{ .zWord = "color", .eType = .COLOR },
-    .{ .zWord = "cos", .eType = .FUNC1, .eCode = FN_COS },
-    .{ .zWord = "cw", .eType = .CW },
-    .{ .zWord = "dashed", .eType = .DASHED },
-    .{ .zWord = "define", .eType = .DEFINE },
-    .{ .zWord = "description", .eType = .DESCRIBE },
-    .{ .zWord = "diameter", .eType = .DIAMETER },
-    .{ .zWord = "dist", .eType = .DIST },
-    .{ .zWord = "dotted", .eType = .DOTTED },
-    .{ .zWord = "down", .eType = .DOWN, .eCode = DIR_DOWN },
-    .{ .zWord = "e", .eType = .EDGEPT, .eEdge = CP_E },
-    .{ .zWord = "east", .eType = .EDGEPT, .eEdge = CP_E },
-    .{ .zWord = "end", .eType = .END, .eEdge = CP_END },
-    .{ .zWord = "even", .eType = .EVEN },
-    .{ .zWord = "fill", .eType = .FILL },
-    .{ .zWord = "first", .eType = .NTH },
-    .{ .zWord = "fit", .eType = .FIT },
-    .{ .zWord = "from", .eType = .FROM },
-    .{ .zWord = "go", .eType = .GO },
-    .{ .zWord = "heading", .eType = .HEADING },
-    .{ .zWord = "height", .eType = .HEIGHT },
-    .{ .zWord = "ht", .eType = .HEIGHT },
-    .{ .zWord = "in", .eType = .IN },
-    .{ .zWord = "int", .eType = .FUNC1, .eCode = FN_INT },
-    .{ .zWord = "invis", .eType = .INVIS },
-    .{ .zWord = "invisible", .eType = .INVIS },
-    .{ .zWord = "italic", .eType = .ITALIC },
-    .{ .zWord = "label", .eType = .LABEL },
-    .{ .zWord = "last", .eType = .LAST },
-    .{ .zWord = "left", .eType = .LEFT, .eCode = DIR_LEFT, .eEdge = CP_W },
-    .{ .zWord = "ljust", .eType = .LJUST },
-    .{ .zWord = "max", .eType = .FUNC2, .eCode = FN_MAX },
-    .{ .zWord = "min", .eType = .FUNC2, .eCode = FN_MIN },
-    .{ .zWord = "mono", .eType = .MONO },
-    .{ .zWord = "monospace", .eType = .MONO },
-    .{ .zWord = "n", .eType = .EDGEPT, .eEdge = CP_N },
-    .{ .zWord = "ne", .eType = .EDGEPT, .eEdge = CP_NE },
-    .{ .zWord = "north", .eType = .EDGEPT, .eEdge = CP_N },
-    .{ .zWord = "nw", .eType = .EDGEPT, .eEdge = CP_NW },
-    .{ .zWord = "of", .eType = .OF },
-    .{ .zWord = "previous", .eType = .LAST },
-    .{ .zWord = "print", .eType = .PRINT },
-    .{ .zWord = "rad", .eType = .RADIUS },
-    .{ .zWord = "radius", .eType = .RADIUS },
-    .{ .zWord = "right", .eType = .RIGHT, .eCode = DIR_RIGHT, .eEdge = CP_E },
-    .{ .zWord = "rjust", .eType = .RJUST },
-    .{ .zWord = "s", .eType = .EDGEPT, .eEdge = CP_S },
-    .{ .zWord = "same", .eType = .SAME },
-    .{ .zWord = "se", .eType = .EDGEPT, .eEdge = CP_SE },
-    .{ .zWord = "sin", .eType = .FUNC1, .eCode = FN_SIN },
-    .{ .zWord = "small", .eType = .SMALL },
-    .{ .zWord = "solid", .eType = .SOLID },
-    .{ .zWord = "south", .eType = .EDGEPT, .eEdge = CP_S },
-    .{ .zWord = "sqrt", .eType = .FUNC1, .eCode = FN_SQRT },
-    .{ .zWord = "start", .eType = .START, .eEdge = CP_START },
-    .{ .zWord = "sw", .eType = .EDGEPT, .eEdge = CP_SW },
-    .{ .zWord = "t", .eType = .TOP, .eEdge = CP_N },
-    .{ .zWord = "textcolor", .eType = .TEXTCOLOR },
-    .{ .zWord = "the", .eType = .THE },
-    .{ .zWord = "then", .eType = .THEN },
-    .{ .zWord = "thick", .eType = .THICK },
-    .{ .zWord = "thickness", .eType = .THICKNESS },
-    .{ .zWord = "thin", .eType = .THIN },
-    .{ .zWord = "this", .eType = .THIS },
-    .{ .zWord = "title", .eType = .TITLE },
-    .{ .zWord = "to", .eType = .TO },
-    .{ .zWord = "top", .eType = .TOP, .eEdge = CP_N },
-    .{ .zWord = "until", .eType = .UNTIL },
-    .{ .zWord = "up", .eType = .UP, .eCode = DIR_UP },
-    .{ .zWord = "vertex", .eType = .VERTEX },
-    .{ .zWord = "w", .eType = .EDGEPT, .eEdge = CP_W },
-    .{ .zWord = "way", .eType = .WAY },
-    .{ .zWord = "west", .eType = .EDGEPT, .eEdge = CP_W },
-    .{ .zWord = "wid", .eType = .WIDTH },
-    .{ .zWord = "width", .eType = .WIDTH },
-    .{ .zWord = "with", .eType = .WITH },
-    .{ .zWord = "x", .eType = .X },
-    .{ .zWord = "y", .eType = .Y },
+    .word("above", .ABOVE, 0, 0),
+    .word("abs", .FUNC1, FN_ABS, 0),
+    .word("aligned", .ALIGNED, 0, 0),
+    .word("and", .AND, 0, 0),
+    .word("as", .AS, 0, 0),
+    .word("assert", .ASSERT, 0, 0),
+    .word("at", .AT, 0, 0),
+    .word("behind", .BEHIND, 0, 0),
+    .word("below", .BELOW, 0, 0),
+    .word("between", .BETWEEN, 0, 0),
+    .word("big", .BIG, 0, 0),
+    .word("bold", .BOLD, 0, 0),
+    .word("bot", .EDGEPT, 0, CP_S),
+    .word("bottom", .BOTTOM, 0, CP_S),
+    .word("c", .EDGEPT, 0, CP_C),
+    .word("ccw", .CCW, 0, 0),
+    .word("center", .CENTER, 0, CP_C),
+    .word("chop", .CHOP, 0, 0),
+    .word("class", .CLASS, 0, 0),
+    .word("close", .CLOSE, 0, 0),
+    .word("color", .COLOR, 0, 0),
+    .word("cos", .FUNC1, FN_COS, 0),
+    .word("cw", .CW, 0, 0),
+    .word("dashed", .DASHED, 0, 0),
+    .word("define", .DEFINE, 0, 0),
+    .word("description", .DESCRIBE, 0, 0),
+    .word("diameter", .DIAMETER, 0, 0),
+    .word("dist", .DIST, 0, 0),
+    .word("dotted", .DOTTED, 0, 0),
+    .word("down", .DOWN, DIR_DOWN, 0),
+    .word("e", .EDGEPT, 0, CP_E),
+    .word("east", .EDGEPT, 0, CP_E),
+    .word("end", .END, 0, CP_END),
+    .word("even", .EVEN, 0, 0),
+    .word("fill", .FILL, 0, 0),
+    .word("first", .NTH, 0, 0),
+    .word("fit", .FIT, 0, 0),
+    .word("from", .FROM, 0, 0),
+    .word("go", .GO, 0, 0),
+    .word("heading", .HEADING, 0, 0),
+    .word("height", .HEIGHT, 0, 0),
+    .word("ht", .HEIGHT, 0, 0),
+    .word("in", .IN, 0, 0),
+    .word("int", .FUNC1, FN_INT, 0),
+    .word("invis", .INVIS, 0, 0),
+    .word("invisible", .INVIS, 0, 0),
+    .word("italic", .ITALIC, 0, 0),
+    .word("label", .LABEL, 0, 0),
+    .word("last", .LAST, 0, 0),
+    .word("left", .LEFT, DIR_LEFT, CP_W),
+    .word("ljust", .LJUST, 0, 0),
+    .word("max", .FUNC2, FN_MAX, 0),
+    .word("min", .FUNC2, FN_MIN, 0),
+    .word("mono", .MONO, 0, 0),
+    .word("monospace", .MONO, 0, 0),
+    .word("n", .EDGEPT, 0, CP_N),
+    .word("ne", .EDGEPT, 0, CP_NE),
+    .word("north", .EDGEPT, 0, CP_N),
+    .word("nw", .EDGEPT, 0, CP_NW),
+    .word("of", .OF, 0, 0),
+    .word("previous", .LAST, 0, 0),
+    .word("print", .PRINT, 0, 0),
+    .word("rad", .RADIUS, 0, 0),
+    .word("radius", .RADIUS, 0, 0),
+    .word("right", .RIGHT, DIR_RIGHT, CP_E),
+    .word("rjust", .RJUST, 0, 0),
+    .word("s", .EDGEPT, 0, CP_S),
+    .word("same", .SAME, 0, 0),
+    .word("se", .EDGEPT, 0, CP_SE),
+    .word("sin", .FUNC1, FN_SIN, 0),
+    .word("small", .SMALL, 0, 0),
+    .word("solid", .SOLID, 0, 0),
+    .word("south", .EDGEPT, 0, CP_S),
+    .word("sqrt", .FUNC1, FN_SQRT, 0),
+    .word("start", .START, 0, CP_START),
+    .word("sw", .EDGEPT, 0, CP_SW),
+    .word("t", .TOP, 0, CP_N),
+    .word("textcolor", .TEXTCOLOR, 0, 0),
+    .word("the", .THE, 0, 0),
+    .word("then", .THEN, 0, 0),
+    .word("thick", .THICK, 0, 0),
+    .word("thickness", .THICKNESS, 0, 0),
+    .word("thin", .THIN, 0, 0),
+    .word("this", .THIS, 0, 0),
+    .word("title", .TITLE, 0, 0),
+    .word("to", .TO, 0, 0),
+    .word("top", .TOP, 0, CP_N),
+    .word("until", .UNTIL, 0, 0),
+    .word("up", .UP, DIR_UP, 0),
+    .word("vertex", .VERTEX, 0, 0),
+    .word("w", .EDGEPT, 0, CP_W),
+    .word("way", .WAY, 0, 0),
+    .word("west", .EDGEPT, 0, CP_W),
+    .word("wid", .WIDTH, 0, 0),
+    .word("width", .WIDTH, 0, 0),
+    .word("with", .WITH, 0, 0),
+    .word("x", .X, 0, 0),
+    .word("y", .Y, 0, 0),
 };
 
 fn classToken(name: []const u8) PToken {
-    return .{ .z = name, .n = name.len };
+    var token: PToken = .zero;
+    token.z = name;
+    token.n = name.len;
+    return token;
 }
 
 fn nullRender(p: *Pik, obj: *PObj) void {
@@ -3107,7 +3218,7 @@ fn pik_elist_render(p: *Pik, list: *PList) void {
     var miss: i32 = 0;
     const color_label = pik_value(p, "debug_label_color", &miss);
     if (miss == 0 and color_label >= 0.0) {
-        var dot = PObj{};
+        var dot: PObj = .start;
         dot.type = &noopClass;
         dot.rad = 0.015;
         dot.sw = 0.015;
@@ -3257,7 +3368,7 @@ fn pik_elist_append(p: *Pik, list: ?*PList, obj: ?*PObj) ?*PList {
         pik_error(p, null, null);
         return null;
     };
-    if (list == null) l.* = .{};
+    if (list == null) l.* = .zero;
     if (l.n >= l.nAlloc) {
         const n_new = (l.n + 5) * 2;
         l.a = p.allocator.realloc(l.a, n_new) catch {
@@ -3286,7 +3397,7 @@ fn pik_elem_new(p: *Pik, id: ?*PToken, str: ?*PToken, sublist: ?*PList) ?*PObj {
         pik_elist_free(p, sublist);
         return null;
     };
-    obj.* = .{};
+    obj.* = .start;
     p.cur = obj;
     p.nTPath = 1;
     p.thenFlag = 0;
@@ -4201,7 +4312,8 @@ fn pik_set_xml_class(p: *Pik, tok: *PToken) void {
     for (name) |*c| {
         if (c.* == '_') c.* = '-';
     }
-    xnext.* = .{ .zClass = name };
+    xnext.* = .zero;
+    xnext.zClass = name;
     obj.mProp |= A_CLASS;
     pik_xml_class_prepend(obj, xnext);
 }
@@ -4240,7 +4352,8 @@ fn pik_set_xml_classes(p: *Pik, tok: *PToken) void {
         // We only hash the tokens in a class list, because the single-class
         // token is hashed in the tokenizer
         p.shaDigest.update(name);
-        xnext.* = .{ .zClass = name };
+        xnext.* = .zero;
+        xnext.zClass = name;
         pik_xml_class_prepend(obj, xnext);
         st = i + 1;
     }
@@ -4910,16 +5023,14 @@ fn pik_add_macro(p: *Pik, id: *PToken, code: *PToken) void {
             pik_error(p, null, null);
             return;
         };
-        new.?.* = .{
-            .pNext = p.pMacros,
-            .macroName = id.*,
-        };
+        new.?.* = .zero;
+        new.?.pNext = p.pMacros;
+        new.?.macroName = id.*;
         p.pMacros = new;
     }
-    new.?.macroBody = .{
-        .z = if (code.n >= 2) code.z[1 .. code.n - 1] else "",
-        .n = if (code.n >= 2) code.n - 2 else 0,
-    };
+    new.?.macroBody = .zero;
+    new.?.macroBody.z = if (code.n >= 2) code.z[1 .. code.n - 1] else "";
+    new.?.macroBody.n = if (code.n >= 2) code.n - 2 else 0;
     new.?.inUse = 0;
 }
 
@@ -5113,7 +5224,8 @@ fn pik_token_length(token: *PToken, allow_codeblock: bool) usize {
             var i: usize = 1;
             var depth: i32 = if (allow_codeblock) 1 else 0;
             while (i < z.len and depth > 0) {
-                var x = PToken{ .z = z[i..] };
+                var x: PToken = .zero;
+                x.z = z[i..];
                 const len = pik_token_length(&x, false);
                 if (len == 1) {
                     if (z[i] == '{') depth += 1;
@@ -5342,13 +5454,16 @@ fn pik_parse_macro_args(
     args[0].z = z[1..];
     var i: usize = 1;
     while (i < z.len and z[i] != ')') {
-        var x = PToken{ .z = z[i..] };
+        var x: PToken = .zero;
+        x.z = z[i..];
         const sz = pik_token_length(&x, false);
         if (sz == 1) {
             if (z[i] == ',' and depth <= 0) {
                 args[n_arg].n = i - i_start;
                 if (n_arg == 8) {
-                    var err = PToken{ .z = z, .n = 1 };
+                    var err: PToken = .zero;
+                    err.z = z;
+                    err.n = 1;
                     pik_error(p, &err, "too many macro arguments - max 9");
                     return 0;
                 }
@@ -5390,7 +5505,9 @@ fn pik_parse_macro_args(
         }
         return i + 1;
     }
-    var err = PToken{ .z = z, .n = 1 };
+    var err: PToken = .zero;
+    err.z = z;
+    err.n = 1;
     pik_error(p, &err, "unterminated macro argument list");
     return 0;
 }
@@ -5401,11 +5518,8 @@ fn pik_tokenize(p: *Pik, input: *PToken, parser: *PikParser, params: ?[]PToken) 
     var i: usize = 0;
     var sz: usize = 0;
     while (i < input.n and i < input.z.len and input.z[i] != 0 and p.nErr == 0) : (i += sz) {
-        var token = PToken{
-            .z = input.z[i..],
-            .eCode = 0,
-            .eEdge = 0,
-        };
+        var token: PToken = .zero;
+        token.z = input.z[i..];
         sz = pik_token_length(&token, true);
         if (token.eType == T_WHITESPACE) {
             // no-op
@@ -5439,7 +5553,7 @@ fn pik_tokenize(p: *Pik, input: *PToken, parser: *PikParser, params: ?[]PToken) 
             break :blk pik_find_macro(p, &token) != null;
         }) {
             const mac = pik_find_macro(p, &token).?;
-            var args = [_]PToken{.{}} ** 9;
+            var args = [_]PToken{.zero} ** 9;
             const j = i + sz;
             if (mac.inUse != 0) {
                 pik_error(p, &mac.macroName, "recursive macro definition");
@@ -5599,7 +5713,7 @@ test "Pik line direction builds path before render" {
     defer pik.deinit();
     var tok = classToken("line");
     const obj = pik_elem_new(&pik, &tok, null, null).?;
-    var rel = PRel{ .rAbs = 0.0, .rRel = 1.0 };
+    var rel: PRel = .start;
     pik_add_direction(&pik, null, &rel);
     pik_after_adding_attributes(&pik, obj);
     try std.testing.expectEqual(@as(i32, 2), obj.nPath);
@@ -5612,7 +5726,8 @@ test "Pik set at records edge placement" {
     defer pik.deinit();
     var tok = classToken("box");
     const obj = pik_elem_new(&pik, &tok, null, null).?;
-    var edge = PToken{ .eEdge = CP_E };
+    var edge: PToken = .zero;
+    edge.eEdge = CP_E;
     var err = classToken("at");
     var at = PPoint{ .x = 2.0, .y = 3.0 };
     pik_set_at(&pik, &edge, &at, &err);
@@ -5632,14 +5747,18 @@ test "Pik XML classes and macros preserve parser state" {
     defer pik.deinit();
     var tok = classToken("box");
     const obj = pik_elem_new(&pik, &tok, null, null).?;
-    var classes = PToken{ .z = "'one_class two'", .n = "'one_class two'".len };
+    var classes: PToken = .zero;
+    classes.z = "'one_class two'";
+    classes.n = "'one_class two'".len;
     pik_set_xml_classes(&pik, &classes);
     try std.testing.expect((obj.mProp & A_CLASS) != 0);
     try std.testing.expectEqualStrings("two", obj.pXmlClass.?.zClass);
     try std.testing.expectEqualStrings("one-class", obj.pXmlClass.?.pNext.?.zClass);
 
     var id = classToken("M");
-    var body = PToken{ .z = "{box}", .n = "{box}".len };
+    var body: PToken = .zero;
+    body.z = "{box}";
+    body.n = "{box}".len;
     pik_add_macro(&pik, &id, &body);
     try std.testing.expectEqualStrings("box", pik.pMacros.?.macroBody.z[0..pik.pMacros.?.macroBody.n]);
     _ = pik_elist_append(&pik, null, obj);
@@ -5659,8 +5778,10 @@ test "Pik lookup helpers find objects and properties" {
     try std.testing.expectEqual(obj, pik_find_nth(&pik, null, &nth).?);
     try std.testing.expectEqual(obj, pik_find_byname(&pik, null, &name).?);
 
-    var width = PToken{ .eType = @intFromEnum(TokenKind.WIDTH) };
-    var height = PToken{ .eType = @intFromEnum(TokenKind.HEIGHT) };
+    var width: PToken = .zero;
+    width.eType = @intFromEnum(TokenKind.WIDTH);
+    var height: PToken = .zero;
+    height.eType = @intFromEnum(TokenKind.HEIGHT);
     try std.testing.expectEqual(obj.w, pik_property_of(obj, &width));
     try std.testing.expectEqual(obj.h, pik_property_of(obj, &height));
 }
@@ -5668,33 +5789,44 @@ test "Pik lookup helpers find objects and properties" {
 test "Pik math and text-position helpers follow token codes" {
     var pik = Pik.init(std.testing.allocator, "", "pikchr", 0);
     defer pik.deinit();
-    var sqrt_tok = PToken{ .eCode = FN_SQRT };
+    var sqrt_tok: PToken = .zero;
+    sqrt_tok.eCode = FN_SQRT;
     try std.testing.expectEqual(@as(PNum, 3.0), pik_func(&pik, &sqrt_tok, 9.0, 0.0));
 
-    var left = PToken{ .eType = @intFromEnum(TokenKind.LJUST) };
-    var aligned = PToken{ .eType = @intFromEnum(TokenKind.ALIGNED) };
+    var left: PToken = .zero;
+    left.eType = @intFromEnum(TokenKind.LJUST);
+    var aligned: PToken = .zero;
+    aligned.eType = @intFromEnum(TokenKind.ALIGNED);
     const pos = pik_text_position(@intCast(pik_text_position(0, &left)), &aligned);
     try std.testing.expect((pos & TP_LJUST) != 0);
     try std.testing.expect((pos & TP_ALIGN) != 0);
 }
 
 test "Pik tokenizer classifies core tokens" {
-    var tok = PToken{ .z = "box \"hi\" -> 2nd" };
+    const source = "box \"hi\" -> 2nd";
+    var tok: PToken = .zero;
+    tok.z = source;
     var n = pik_token_length(&tok, true);
     try std.testing.expectEqual(@intFromEnum(TokenKind.CLASSNAME), tok.eType);
     try std.testing.expectEqual(@as(usize, 3), n);
 
-    tok = .{ .z = tok.z[n + 1 ..] };
+    var rest = tok.z[n + 1 ..];
+    tok = .zero;
+    tok.z = rest;
     n = pik_token_length(&tok, true);
     try std.testing.expectEqual(@intFromEnum(TokenKind.STRING), tok.eType);
     try std.testing.expectEqual(@as(usize, 4), n);
 
-    tok = .{ .z = tok.z[n + 1 ..] };
+    rest = tok.z[n + 1 ..];
+    tok = .zero;
+    tok.z = rest;
     n = pik_token_length(&tok, true);
     try std.testing.expectEqual(@intFromEnum(TokenKind.RARROW), tok.eType);
     try std.testing.expectEqual(@as(usize, 2), n);
 
-    tok = .{ .z = tok.z[n + 1 ..] };
+    rest = tok.z[n + 1 ..];
+    tok = .zero;
+    tok.z = rest;
     n = pik_token_length(&tok, true);
     try std.testing.expectEqual(@intFromEnum(TokenKind.NTH), tok.eType);
     try std.testing.expectEqual(@as(usize, 3), n);
