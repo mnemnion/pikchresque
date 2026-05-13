@@ -152,6 +152,7 @@ pub const DIR_RIGHT = 0;
 pub const DIR_DOWN = 1;
 pub const DIR_LEFT = 2;
 pub const DIR_UP = 3;
+
 fn ValidDir(x: anytype) bool {
     return x >= 0 and x <= 3;
 }
@@ -188,43 +189,43 @@ pub const C_TEXT = 0x04;
 
 // A single graphics object
 pub const PObj = struct {
-    type: ?*const PClass = null, // Object type or class
-    errTok: PToken = .{}, // Reference token for error messages
-    ptAt: PPoint = .{}, // Reference point for the object
-    ptEnter: PPoint = .{}, // Entry point
-    ptExit: PPoint = .{}, // Exit point
-    pSublist: ?*PList = null, // Substructure for [...] objects
-    pXmlClass: ?*PXmlClass = null, // Optional list of assigned XML classes
-    zName: []const u8 = "", // Name assigned to this statement
-    w: PNum = 0.0, // "width" property
-    h: PNum = 0.0, // "height" property
-    rad: PNum = 0.0, // "radius" property
-    sw: PNum = 0.0, // "thickness" property. (Mnemonic: "stroke width")
-    dotted: PNum = 0.0, // "dotted" property.   <=0.0 for off
-    dashed: PNum = 0.0, // "dashed" property.   <=0.0 for off
-    fill: PNum = 0.0, // "fill" property.  Negative for off
-    color: PNum = 0.0, // "color" property
-    textcolor: PNum = 0.0, // "textcolor" property
-    with: PPoint = .{}, // Position constraint from WITH clause
-    eWith: u8 = 0, // Type of heading point on WITH clause
-    cw: u8 = 0, // True for clockwise arc
-    larrow: u8 = 0, // Arrow at beginning (<- or <->)
-    rarrow: u8 = 0, // Arrow at end  (-> or <->)
-    bClose: u8 = 0, // True if "close" is seen
-    bChop: u8 = 0, // True if "chop" is seen
-    bAltAutoFit: u8 = 0, // Always send both h and w into xFit()
-    nTxt: usize = 0, // Number of text values
-    mProp: u32 = 0, // Masks of properties set so far
-    mCalc: u32 = 0, // Values computed from other constraints
-    aTxt: [5]PToken = [_]PToken{.{}} ** 5, // Text with .eCode holding TP flags
-    iLayer: i32 = 0, // Rendering order
-    inDir: i32 = 0, // Entry direction
-    outDir: i32 = 0, // Exit direction
-    nPath: i32 = 0, // Number of path points
-    aPath: []PPoint = &.{}, // Array of path points
-    pFrom: ?*PObj = null, // End-point objects of a path
-    pTo: ?*PObj = null, // End-point objects of a path
-    bbox: PBox = .{}, // Bounding box
+    type: ?*const PClass = null,            // Object type or class
+    errTok: PToken = .{},                   // Reference token for error messages
+    ptAt: PPoint = .{},                     // Reference point for the object
+    ptEnter: PPoint = .{},                  // Entry point
+    ptExit: PPoint = .{},                   // Exit point
+    pSublist: ?*PList = null,               // Substructure for [...] objects
+    pXmlClass: ?*PXmlClass = null,          // Optional list of assigned XML classes
+    zName: []const u8 = "",                 // Name assigned to this statement
+    w: PNum = 0.0,                          // "width" property
+    h: PNum = 0.0,                          // "height" property
+    rad: PNum = 0.0,                        // "radius" property
+    sw: PNum = 0.0,                         // "thickness" property. (Mnemonic: "stroke width")
+    dotted: PNum = 0.0,                     // "dotted" property.   <=0.0 for off
+    dashed: PNum = 0.0,                     // "dashed" property.   <=0.0 for off
+    fill: PNum = 0.0,                       // "fill" property.  Negative for off
+    color: PNum = 0.0,                      // "color" property
+    textcolor: PNum = 0.0,                  // "textcolor" property
+    with: PPoint = .{},                     // Position constraint from WITH clause
+    eWith: u8 = 0,                          // Type of heading point on WITH clause
+    cw: u8 = 0,                             // True for clockwise arc
+    larrow: u8 = 0,                         // Arrow at beginning (<- or <->)
+    rarrow: u8 = 0,                         // Arrow at end  (-> or <->)
+    bClose: u8 = 0,                         // True if "close" is seen
+    bChop: u8 = 0,                          // True if "chop" is seen
+    bAltAutoFit: u8 = 0,                    // Always send both h and w into xFit()
+    nTxt: usize = 0,                        // Number of text values
+    mProp: u32 = 0,                         // Masks of properties set so far
+    mCalc: u32 = 0,                         // Values computed from other constraints
+    aTxt: [5]PToken = [_]PToken{.{}} ** 5,  // Text with .eCode holding TP flags
+    iLayer: i32 = 0,                        // Rendering order
+    inDir: i32 = 0,                         // Entry direction
+    outDir: i32 = 0,                        // Exit direction
+    nPath: i32 = 0,                         // Number of path points
+    aPath: []PPoint = &.{},                 // Array of path points
+    pFrom: ?*PObj = null,                   // End-point objects of a path
+    pTo: ?*PObj = null,                     // End-point objects of a path
+    bbox: PBox = .{},                       // Bounding box
 };
 
 // A list of graphics objects
@@ -242,54 +243,55 @@ pub const PMacro = struct {
     inUse: i32 = 0, // Do not allow recursion
 };
 
+// zig fmt: off
 // Each call to the pikchr() subroutine uses an instance of the following
 // object to pass around context to all of its subroutines.
 pub const Pik = struct {
-    allocator: Allocator, // Allocator for all per-render memory
-    nErr: u32 = 0, // Number of errors seen
-    nToken: u32 = 0, // Number of tokens parsed
-    sIn: PToken = .{}, // Input Pikchr-language text
-    zOut: std.Io.Writer.Allocating, // Result accumulates here
-    shaDigest: std.crypto.hash.Sha1 = std.crypto.hash.Sha1.init(.{}), // The hashing context for tokens
-    eDir: u8 = DIR_RIGHT, // Current direction
-    mFlags: u32 = 0, // Flags passed to pikchr()
-    cur: ?*PObj = null, // Object under construction
-    lastRef: ?*PObj = null, // Last object references by name
-    list: ?*PList = null, // Object list under construction
-    pMacros: ?*PMacro = null, // List of all defined macros
-    pVar: ?*PVar = null, // Application-defined variables
-    bbox: PBox = .{}, // Bounding box around all statements
+    allocator: Allocator,                                              // Allocator for all per-render memory
+    nErr: u32 = 0,                                                     // Number of errors seen
+    nToken: u32 = 0,                                                   // Number of tokens parsed
+    sIn: PToken = .{},                                                 // Input Pikchr-language text
+    zOut: std.Io.Writer.Allocating,                                    // Result accumulates here
+    shaDigest: std.crypto.hash.Sha1 = std.crypto.hash.Sha1.init(.{}),  // The hashing context for tokens
+    eDir: u8 = DIR_RIGHT,                                              // Current direction
+    mFlags: u32 = 0,                                                   // Flags passed to pikchr()
+    cur: ?*PObj = null,                                                // Object under construction
+    lastRef: ?*PObj = null,                                            // Last object references by name
+    list: ?*PList = null,                                              // Object list under construction
+    pMacros: ?*PMacro = null,                                          // List of all defined macros
+    pVar: ?*PVar = null,                                               // Application-defined variables
+    bbox: PBox = .{},                                                  // Bounding box around all statements
     // Cache of layout values.  <=0.0 for unknown...
-    rScale: PNum = 0.0, // Multiply to convert inches to pixels
-    fontScale: PNum = 0.0, // Scale fonts by this percent
-    charWidth: PNum = 0.0, // Character width
-    charHeight: PNum = 0.0, // Character height
-    wArrow: PNum = 0.0, // Width of arrowhead at the fat end
-    hArrow: PNum = 0.0, // Ht of arrowhead - dist from tip to fat end
-    bLayoutVars: u8 = 0, // True if cache is valid
-    thenFlag: u8 = 0, // True if "then" seen
-    bLabel: u8 = 0, // True if zTitle should be rendered as a label
-    samePath: u8 = 0, // aTPath copied by "same"
-    bEOL: u8 = 0, // Flag for if we're in a run of T_EOL (hashing)
-    mAttr: u8 = 0, // Flags for when to include certain styles
-    zClass: []const u8 = "", // Class name for the <svg>
-    zID: []const u8 = "", // Suffix for id fields
-    zTitle: []const u8 = "", // Text of title or label
-    zDesc: []const u8 = "", // Text of extended description
-    wSVG: i32 = 0, // Width of the <svg>
-    hSVG: i32 = 0, // Height of the <svg>
-    fgcolor: i32 = -1, // foreground color value, or -1 for none
-    bgcolor: i32 = -1, // background color value, or -1 for none
-    seenColor: [150]u8 = [_]u8{0} ** 150, // which built-in colors have been seen
+    rScale: PNum = 0.0,                                                // Multiply to convert inches to pixels
+    fontScale: PNum = 0.0,                                             // Scale fonts by this percent
+    charWidth: PNum = 0.0,                                             // Character width
+    charHeight: PNum = 0.0,                                            // Character height
+    wArrow: PNum = 0.0,                                                // Width of arrowhead at the fat end
+    hArrow: PNum = 0.0,                                                // Ht of arrowhead - dist from tip to fat end
+    bLayoutVars: u8 = 0,                                               // True if cache is valid
+    thenFlag: u8 = 0,                                                  // True if "then" seen
+    bLabel: u8 = 0,                                                    // True if zTitle should be rendered as a label
+    samePath: u8 = 0,                                                  // aTPath copied by "same"
+    bEOL: u8 = 0,                                                      // Flag for if we're in a run of T_EOL (hashing)
+    mAttr: u8 = 0,                                                     // Flags for when to include certain styles
+    zClass: []const u8 = "",                                           // Class name for the <svg>
+    zID: []const u8 = "",                                              // Suffix for id fields
+    zTitle: []const u8 = "",                                           // Text of title or label
+    zDesc: []const u8 = "",                                            // Text of extended description
+    wSVG: i32 = 0,                                                     // Width of the <svg>
+    hSVG: i32 = 0,                                                     // Height of the <svg>
+    fgcolor: i32 = -1,                                                 // foreground color value, or -1 for none
+    bgcolor: i32 = -1,                                                 // background color value, or -1 for none
+    seenColor: [150]u8 = [_]u8{0} ** 150,                              // which built-in colors have been seen
     // Paths for lines are constructed here first, then transferred into
     // the PObj object at the end:
-    nTPath: i32 = 0, // Number of entries on aTPath[]
-    mTPath: i32 = 0, // For last entry, 1: x set,  2: y set
-    aTPath: [1000]PPoint = [_]PPoint{.{}} ** 1000, // Path under construction
+    nTPath: i32 = 0,                                // Number of entries on aTPath[]
+    mTPath: i32 = 0,                                // For last entry, 1: x set,  2: y set
+    aTPath: [1000]PPoint = [_]PPoint{.{}} ** 1000,  // Path under construction
     // Error contexts
-    nCtx: u32 = 0, // Number of error contexts
-    aCtx: [10]PToken = [_]PToken{.{}} ** 10, // Nested error contexts
-
+    nCtx: u32 = 0,                                  // Number of error contexts
+    aCtx: [10]PToken = [_]PToken{.{}} ** 10,        // Nested error contexts
+// zig fmt: on
     pub fn init(
         allocator: Allocator,
         source: []const u8,
