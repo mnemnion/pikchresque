@@ -134,23 +134,22 @@ pub const PVar = struct {
 
 // A single token in the parser input stream
 pub const PToken = struct {
-    z: []const u8, // Pointer to the token text
-    n: usize, // Length of the token in bytes
+    z: []const u8, // Token text
     eCode: u16, // Auxiliary code
     eType: u8, // The numeric parser code
     eEdge: u8, // Corner value for corner keywords
 
-    pub const zero: PToken = .{ .z = "", .n = 0, .eCode = 0, .eType = 0, .eEdge = 0 };
+    pub const zero: PToken = .{ .z = "", .eCode = 0, .eType = 0, .eEdge = 0 };
 };
 
 // Return negative, zero, or positive if pToken is less than, equal to
 // or greater than the zero-terminated string z[]
 fn pik_token_eq(pToken: *PToken, z: []const u8) i32 {
-    const n = @min(pToken.n, z.len);
+    const n = @min(pToken.z.len, z.len);
     const c = std.mem.order(u8, pToken.z[0..n], z[0..n]);
     if (c != .eq) return if (c == .lt) -1 else 1;
-    if (pToken.n < z.len) return -1;
-    if (pToken.n > z.len) return 1;
+    if (pToken.z.len < z.len) return -1;
+    if (pToken.z.len > z.len) return 1;
     return 0;
 }
 
@@ -404,7 +403,6 @@ pub const Pik = struct {
         var pik: Pik = .start;
         pik.allocator = allocator;
         pik.sIn.z = source;
-        pik.sIn.n = source.len;
         pik.zOut = .init(allocator);
         pik.zClass = class;
         pik.mFlags = flags;
@@ -476,14 +474,14 @@ fn pik_error_context(p: *Pik, token: *const PToken, n_context: i32) void {
     var i_bump: usize = 0; // Bump the location of the error cursor
     var z_lineno: [24]u8 = undefined; // Buffer in which to generate line numbers
 
-    if (p.sIn.n == 0) return;
+    if (p.sIn.z.len == 0) return;
     const in_start = @intFromPtr(p.sIn.z.ptr);
-    const in_end = in_start + p.sIn.n;
+    const in_end = in_start + p.sIn.z.len;
     const tok_start = @intFromPtr(token.z.ptr);
     if (tok_start < in_start) {
         i_err_pt = 0;
     } else if (tok_start >= in_end) {
-        i_err_pt = @intCast(p.sIn.n - 1);
+        i_err_pt = @intCast(p.sIn.z.len - 1);
         i_bump = 1;
     } else {
         i_err_pt = @intCast(tok_start - in_start);
@@ -497,12 +495,12 @@ fn pik_error_context(p: *Pik, token: *const PToken, n_context: i32) void {
         if (p.sIn.z[i] == '\n') i_lineno += 1;
     }
     while (i_first_lineno + n_context < i_lineno) {
-        while (i_start < p.sIn.n and p.sIn.z[i_start] != '\n') i_start += 1;
-        if (i_start < p.sIn.n) i_start += 1;
+        while (i_start < p.sIn.z.len and p.sIn.z[i_start] != '\n') i_start += 1;
+        if (i_start < p.sIn.z.len) i_start += 1;
         i_first_lineno += 1;
     }
     i_end = @intCast(i_err_pt);
-    while (i_end < p.sIn.n and p.sIn.z[i_end] != '\n') i_end += 1;
+    while (i_end < p.sIn.z.len and p.sIn.z[i_end] != '\n') i_end += 1;
     if (i_end < i_start) i_start = i_end;
     while (i_first_lineno <= i_lineno) : (i_first_lineno += 1) {
         const lineno = std.fmt.bufPrint(&z_lineno, "{d}", .{i_first_lineno}) catch "";
@@ -512,9 +510,9 @@ fn pik_error_context(p: *Pik, token: *const PToken, n_context: i32) void {
         pik_append(p, lineno);
         pik_append(p, " */  ");
         i = i_start;
-        while (i < p.sIn.n and p.sIn.z[i] != '\n') i += 1;
+        while (i < p.sIn.z.len and p.sIn.z[i] != '\n') i += 1;
         pik_append_errtxt(p, p.sIn.z[i_start..i]);
-        i_start = if (i < p.sIn.n) i + 1 else i;
+        i_start = if (i < p.sIn.z.len) i + 1 else i;
         pik_append(p, "\n");
     }
     i = @intCast(i_err_pt);
@@ -524,7 +522,7 @@ fn pik_error_context(p: *Pik, token: *const PToken, n_context: i32) void {
     i = 0;
     while (i < i_err_col + 11 + i_bump) : (i += 1) pik_append(p, " ");
     i = 0;
-    while (i < token.n) : (i += 1) pik_append(p, "^");
+    while (i < token.z.len) : (i += 1) pik_append(p, "^");
     pik_append(p, "\n");
 }
 
@@ -706,9 +704,9 @@ rvalue(A) ::= PLACENAME(C).  { A = pik_lookup_color(p, &C); }
 print ::= PRINT.
 prlist ::= pritem.
 prlist ::= prlist prsep pritem.
-pritem ::= FILL(X).        { pik_append_num10(p, "", pik_value(p, X.z[0..X.n], null)); }
-pritem ::= COLOR(X).       { pik_append_num10(p, "", pik_value(p, X.z[0..X.n], null)); }
-pritem ::= THICKNESS(X).   { pik_append_num10(p, "", pik_value(p, X.z[0..X.n], null)); }
+pritem ::= FILL(X).        { pik_append_num10(p, "", pik_value(p, X.z, null)); }
+pritem ::= COLOR(X).       { pik_append_num10(p, "", pik_value(p, X.z, null)); }
+pritem ::= THICKNESS(X).   { pik_append_num10(p, "", pik_value(p, X.z, null)); }
 pritem ::= rvalue(X).      { pik_append_num10(p, "", X); }
 pritem ::= STRING(S).      { pik_append_text(p, tokenInner(&S), 0); }
 prsep  ::= COMMA.          { pik_append(p, " "); }
@@ -904,8 +902,8 @@ expr(A) ::= object(B) DOT_L colorproperty(P).     { A = pik_property_of(B, &P); 
 
 // Return the contents of a STRING token without the outer quote marks.
 fn tokenInner(t: *const PToken) []const u8 {
-    if (t.n < 2) return "";
-    return t.z[1 .. t.n - 1];
+    if (t.z.len < 2) return "";
+    return t.z[1 .. t.z.len - 1];
 }
 
 const Builtin = struct {
@@ -1243,7 +1241,6 @@ const pik_keywords = [_]PikWord{
 fn classToken(name: []const u8) PToken {
     var token: PToken = .zero;
     token.z = name;
-    token.n = name.len;
     return token;
 }
 
@@ -1512,7 +1509,7 @@ fn dotInit(p: *Pik, obj: *PObj) void {
 
 fn dotNumProp(p: *Pik, obj: *PObj, id: *PToken) void {
     _ = p;
-    const name = id.z[0..id.n];
+    const name = id.z;
     if (std.mem.eql(u8, name, "color")) obj.fill = obj.color;
     if (std.mem.eql(u8, name, "fill")) obj.color = obj.fill;
 }
@@ -1940,7 +1937,7 @@ const awChar = [_]u8{
 fn pik_text_length(t: *const PToken, is_monospace: bool) i32 {
     const std_avg: i32 = 100;
     const mono_avg: i32 = 82;
-    const z = t.z[0..t.n];
+    const z = t.z;
     var cnt: i32 = 0;
     var j: usize = 1;
     while (j + 1 < z.len) : (j += 1) {
@@ -2164,7 +2161,7 @@ fn pik_append_txt(p: *Pik, obj: *PObj, box: ?*PBox) void {
             }
         }
         pik_append(p, ">");
-        const z = if (t.n >= 2 and t.z[0] == '"') t.z[1 .. t.n - 1] else t.z[0..t.n];
+        const z = if (t.z.len >= 2 and t.z[0] == '"') t.z[1 .. t.z.len - 1] else t.z;
         pik_append_str(p, z, 0x3);
         pik_append(p, "</text>\n");
     }
@@ -3105,7 +3102,7 @@ const aClass = [_]PClass{
 // Convert an object class name into a PClass pointer
 fn pik_find_class(id: *PToken) ?*const PClass {
     for (&aClass) |*class| {
-        if (std.mem.eql(u8, class.zName, id.z[0..id.n])) return class;
+        if (std.mem.eql(u8, class.zName, id.z)) return class;
     }
     return null;
 }
@@ -3231,7 +3228,6 @@ fn pik_elist_render(p: *Pik, list: *PList) void {
             if (obj.zName.len == 0) continue;
             dot.ptAt = obj.ptAt;
             dot.aTxt[0].z = obj.zName;
-            dot.aTxt[0].n = obj.zName.len;
             dotRender(p, &dot);
         }
     }
@@ -3519,7 +3515,7 @@ fn pik_set_direction(p: *Pik, dir: u16) void {
 fn pik_elem_setname(p: *Pik, obj: ?*PObj, name: *PToken) void {
     const o = obj orelse return;
     if (o.zName.len != 0) p.allocator.free(o.zName);
-    o.zName = p.allocator.dupe(u8, name.z[0..name.n]) catch {
+    o.zName = p.allocator.dupe(u8, name.z) catch {
         pik_error(p, name, null);
         return;
     };
@@ -3561,14 +3557,14 @@ fn pik_set_var(p: *Pik, id: *PToken, val: PNum, op: *PToken) void {
         pik_error(p, id, null);
         return;
     };
-    const name = p.allocator.dupe(u8, id.z[0..id.n]) catch {
+    const name = p.allocator.dupe(u8, id.z) catch {
         p.allocator.destroy(v);
         pik_error(p, id, null);
         return;
     };
     v.* = .{
         .zName = name,
-        .val = pik_value(p, id.z[0..id.n], null),
+        .val = pik_value(p, id.z, null),
         .pNext = p.pVar,
     };
     p.pVar = v;
@@ -3653,7 +3649,7 @@ fn pik_value(p: *Pik, z: []const u8, miss: ?*i32) PNum {
 // an error.
 fn pik_lookup_color(p: ?*Pik, id: *PToken) PNum {
     for (aColor) |color| {
-        if (std.ascii.eqlIgnoreCase(id.z[0..id.n], color.zName)) {
+        if (std.ascii.eqlIgnoreCase(id.z, color.zName)) {
             return @floatFromInt(color.val);
         }
     }
@@ -3672,7 +3668,7 @@ fn pik_lookup_color(p: ?*Pik, id: *PToken) PNum {
 // If no such variable is found, throw an error.
 fn pik_get_var(p: *Pik, id: *PToken) PNum {
     var miss: i32 = 0;
-    const v = pik_value(p, id.z[0..id.n], &miss);
+    const v = pik_value(p, id.z, &miss);
     if (miss == 0) return v;
     const c = pik_lookup_color(null, id);
     if (c > -90.0) return c;
@@ -3694,7 +3690,7 @@ fn pik_get_var(p: *Pik, id: *PToken) PNum {
 // This routine returns the result in inches.  If a different unit
 // is specified, the conversion happens automatically.
 fn pik_atof(t: *PToken) PNum {
-    const text = t.z[0..t.n];
+    const text = t.z;
     if (text.len >= 3 and text[0] == '0' and (text[1] == 'x' or text[1] == 'X')) {
         return @floatFromInt(std.fmt.parseInt(i64, text[2..], 16) catch 0);
     }
@@ -4296,7 +4292,7 @@ fn pik_set_xml_class(p: *Pik, tok: *PToken) void {
         pik_error(p, tok, "value already set");
         return;
     }
-    if (tok.n != 0 and (tok.z[0] == '_' or tok.z[0] == '$' or tok.z[0] == '@')) {
+    if (tok.z.len != 0 and (tok.z[0] == '_' or tok.z[0] == '$' or tok.z[0] == '@')) {
         pik_error(p, tok, "illegal first character (_, $, or @) for class token");
         return;
     }
@@ -4304,7 +4300,7 @@ fn pik_set_xml_class(p: *Pik, tok: *PToken) void {
         pik_error(p, null, null);
         return;
     };
-    const name = p.allocator.dupe(u8, tok.z[0..tok.n]) catch {
+    const name = p.allocator.dupe(u8, tok.z) catch {
         p.allocator.destroy(xnext);
         pik_error(p, null, null);
         return;
@@ -4329,7 +4325,7 @@ fn pik_set_xml_classes(p: *Pik, tok: *PToken) void {
     var st: usize = 1;
     var tok_count: i32 = -1; // one token already counted
     var i: usize = 1;
-    while (i < tok.n) : (i += 1) {
+    while (i < tok.z.len) : (i += 1) {
         const c = tok.z[i];
         if (c != ' ' and c != '\'') continue;
         if (i == st) {
@@ -4753,7 +4749,7 @@ fn pik_nth_vertex(p: *Pik, nth: *PToken, err: *PToken, obj: ?*PObj) PPoint {
         return cZeroPoint;
     }
     var n: i32 = 0;
-    for (nth.z[0..nth.n]) |c| {
+    for (nth.z) |c| {
         if (!std.ascii.isDigit(c)) break;
         n = n * 10 + @as(i32, c - '0');
     }
@@ -4832,7 +4828,7 @@ fn pik_find_byname(p: *Pik, basis: ?*PObj, name: *PToken) ?*PObj {
     while (i > 0) {
         i -= 1;
         const obj = l.a[i];
-        if (std.mem.eql(u8, obj.zName, name.z[0..name.n])) {
+        if (std.mem.eql(u8, obj.zName, name.z)) {
             p.lastRef = obj;
             return obj;
         }
@@ -4844,7 +4840,7 @@ fn pik_find_byname(p: *Pik, basis: ?*PObj, name: *PToken) ?*PObj {
         i -= 1;
         const obj = l.a[i];
         for (obj.aTxt[0..obj.nTxt]) |txt| {
-            if (txt.n == name.n + 2 and std.mem.eql(u8, txt.z[1 .. 1 + name.n], name.z[0..name.n])) {
+            if (txt.z.len == name.z.len + 2 and std.mem.eql(u8, txt.z[1 .. 1 + name.z.len], name.z)) {
                 p.lastRef = obj;
                 return obj;
             }
@@ -4858,7 +4854,7 @@ fn pik_find_byname(p: *Pik, basis: ?*PObj, name: *PToken) ?*PObj {
 // return that value.  Throw an error if the value is too big.
 fn pik_nth_value(p: *Pik, nth: *PToken) i16 {
     var i: usize = 0;
-    while (i < nth.n and std.ascii.isDigit(nth.z[i])) : (i += 1) {}
+    while (i < nth.z.len and std.ascii.isDigit(nth.z[i])) : (i += 1) {}
     var v: i32 = if (i == 0) 0 else std.fmt.parseInt(i32, nth.z[0..i], 10) catch 0;
     if (v > 1000) {
         pik_error(p, nth, "value too big - max '1000th'");
@@ -5008,7 +5004,7 @@ fn pik_position_assert(p: *Pik, e1: *PPoint, eq: *PToken, e2: *PPoint) ?*PObj {
 fn pik_find_macro(p: *Pik, id: *PToken) ?*PMacro {
     var mac = p.pMacros;
     while (mac) |m| : (mac = m.pNext) {
-        if (m.macroName.n == id.n and std.mem.eql(u8, m.macroName.z[0..m.macroName.n], id.z[0..id.n])) {
+        if (std.mem.eql(u8, m.macroName.z, id.z)) {
             return m;
         }
     }
@@ -5029,8 +5025,7 @@ fn pik_add_macro(p: *Pik, id: *PToken, code: *PToken) void {
         p.pMacros = new;
     }
     new.?.macroBody = .zero;
-    new.?.macroBody.z = if (code.n >= 2) code.z[1 .. code.n - 1] else "";
-    new.?.macroBody.n = if (code.n >= 2) code.n - 2 else 0;
+    new.?.macroBody.z = if (code.z.len >= 2) code.z[1 .. code.z.len - 1] else "";
     new.?.inUse = 0;
 }
 
@@ -5386,7 +5381,7 @@ fn pik_token_length_default(token: *PToken) usize {
             token.eEdge = found.eEdge;
             return i;
         }
-        token.n = i;
+        token.z = z[0..i];
         if (pik_find_class(token) != null) {
             setTokenType(token, .CLASSNAME);
         } else {
@@ -5451,7 +5446,7 @@ fn pik_parse_macro_args(
     var n_arg: usize = 0;
     var i_start: usize = 1;
     var depth: i32 = 0;
-    args[0].z = z[1..];
+    args[0].z = z[1..1];
     var i: usize = 1;
     while (i < z.len and z[i] != ')') {
         var x: PToken = .zero;
@@ -5459,16 +5454,15 @@ fn pik_parse_macro_args(
         const sz = pik_token_length(&x, false);
         if (sz == 1) {
             if (z[i] == ',' and depth <= 0) {
-                args[n_arg].n = i - i_start;
+                args[n_arg].z = z[i_start..i];
                 if (n_arg == 8) {
                     var err: PToken = .zero;
-                    err.z = z;
-                    err.n = 1;
+                    err.z = z[0..1];
                     pik_error(p, &err, "too many macro arguments - max 9");
                     return 0;
                 }
                 n_arg += 1;
-                args[n_arg].z = z[i + 1 ..];
+                args[n_arg].z = z[i + 1 .. i + 1];
                 i_start = i + 1;
                 depth = 0;
             } else if (z[i] == '(' or z[i] == '{' or z[i] == '[') {
@@ -5480,34 +5474,32 @@ fn pik_parse_macro_args(
         i += sz;
     }
     if (i < z.len and z[i] == ')') {
-        args[n_arg].n = i - i_start;
+        args[n_arg].z = z[i_start..i];
         // Remove leading and trailing whitespace from each argument.
         // If what remains is one of $1, $2, ... $9 then transfer the
         // corresponding argument from the outer context
         for (args[0 .. n_arg + 1]) |*arg| {
-            while (arg.n > 0 and std.ascii.isWhitespace(arg.z[0])) {
-                arg.n -= 1;
+            while (arg.z.len > 0 and std.ascii.isWhitespace(arg.z[0])) {
                 arg.z = arg.z[1..];
             }
-            while (arg.n > 0 and std.ascii.isWhitespace(arg.z[arg.n - 1])) {
-                arg.n -= 1;
+            while (arg.z.len > 0 and std.ascii.isWhitespace(arg.z[arg.z.len - 1])) {
+                arg.z = arg.z[0 .. arg.z.len - 1];
             }
-            if (arg.n == 2 and arg.z[0] == '$' and arg.z[1] >= '1' and arg.z[1] <= '9') {
+            if (arg.z.len == 2 and arg.z[0] == '$' and arg.z[1] >= '1' and arg.z[1] <= '9') {
                 if (outer) |out| {
                     arg.* = out[arg.z[1] - '1'];
                 } else {
-                    arg.n = 0;
+                    arg.z = "";
                 }
             }
             if (arg.z.len != 0) {
-                p.shaDigest.update(arg.z[0..arg.n]);
+                p.shaDigest.update(arg.z);
             }
         }
         return i + 1;
     }
     var err: PToken = .zero;
-    err.z = z;
-    err.n = 1;
+    err.z = z[0..1];
     pik_error(p, &err, "unterminated macro argument list");
     return 0;
 }
@@ -5517,29 +5509,29 @@ fn pik_parse_macro_args(
 fn pik_tokenize(p: *Pik, input: *PToken, parser: *PikParser, params: ?[]PToken) void {
     var i: usize = 0;
     var sz: usize = 0;
-    while (i < input.n and i < input.z.len and input.z[i] != 0 and p.nErr == 0) : (i += sz) {
+    while (i < input.z.len and input.z[i] != 0 and p.nErr == 0) : (i += sz) {
         var token: PToken = .zero;
         token.z = input.z[i..];
         sz = pik_token_length(&token, true);
         if (token.eType == T_WHITESPACE) {
             // no-op
         } else if (sz > 50000) {
-            token.n = 1;
+            token.z = token.z[0..1];
             pik_error(p, &token, "token is too long - max length 50000 bytes");
             break;
         } else if (token.eType == T_ERROR) {
-            token.n = @min(sz, 0xffff);
+            token.z = token.z[0..@min(sz, 0xffff)];
             pik_error(p, &token, "unrecognized token");
             break;
-        } else if (sz + i > input.n) {
-            token.n = input.n - i;
+        } else if (sz + i > input.z.len) {
+            token.z = token.z[0 .. input.z.len - i];
             pik_error(p, &token, "syntax error");
             break;
         } else if (token.eType == T_PARAMETER) {
             // Substitute a parameter into the input stream
             const idx: usize = token.eCode;
-            if (params == null or params.?[idx].n == 0) continue;
-            token.n = @min(sz, 0xffff);
+            if (params == null or params.?[idx].z.len == 0) continue;
+            token.z = token.z[0..@min(sz, 0xffff)];
             if (p.nCtx >= p.aCtx.len) {
                 pik_error(p, &token, "macros nested too deep");
             } else {
@@ -5549,7 +5541,7 @@ fn pik_tokenize(p: *Pik, input: *PToken, parser: *PikParser, params: ?[]PToken) 
                 p.nCtx -= 1;
             }
         } else if (tokenKind(&token) == .ID and blk: {
-            token.n = @min(sz, 0xffff);
+            token.z = token.z[0..@min(sz, 0xffff)];
             break :blk pik_find_macro(p, &token) != null;
         }) {
             const mac = pik_find_macro(p, &token).?;
@@ -5559,7 +5551,7 @@ fn pik_tokenize(p: *Pik, input: *PToken, parser: *PikParser, params: ?[]PToken) 
                 pik_error(p, &mac.macroName, "recursive macro definition");
                 break;
             }
-            token.n = @min(sz, 0xffff);
+            token.z = token.z[0..@min(sz, 0xffff)];
             if (p.nCtx >= p.aCtx.len) {
                 pik_error(p, &token, "macros nested too deep");
                 break;
@@ -5567,12 +5559,12 @@ fn pik_tokenize(p: *Pik, input: *PToken, parser: *PikParser, params: ?[]PToken) 
             mac.inUse = 1;
             p.aCtx[p.nCtx] = token;
             p.nCtx += 1;
-            sz += pik_parse_macro_args(p, input.z[j..input.n], &args, params);
+            sz += pik_parse_macro_args(p, input.z[j..], &args, params);
             pik_tokenize(p, &mac.macroBody, parser, args[0..]);
             p.nCtx -= 1;
             mac.inUse = 0;
         } else {
-            token.n = @min(sz, 0xffff);
+            token.z = token.z[0..@min(sz, 0xffff)];
             if (p.nToken > PIKCHR_TOKEN_LIMIT) {
                 pik_error(p, &token, "script is too complex");
                 break;
@@ -5591,7 +5583,7 @@ fn pik_tokenize(p: *Pik, input: *PToken, parser: *PikParser, params: ?[]PToken) 
                 // XML class lists are hashed individually to discount whitespace
                 const kind = tokenKind(&token);
                 if (kind != .CODEBLOCK and kind != .XML_CLASSES) {
-                    p.shaDigest.update(token.z[0..token.n]);
+                    p.shaDigest.update(token.z);
                 }
             }
             parser.parse(tokenKind(&token), token) catch {
@@ -5749,7 +5741,6 @@ test "Pik XML classes and macros preserve parser state" {
     const obj = pik_elem_new(&pik, &tok, null, null).?;
     var classes: PToken = .zero;
     classes.z = "'one_class two'";
-    classes.n = "'one_class two'".len;
     pik_set_xml_classes(&pik, &classes);
     try std.testing.expect((obj.mProp & A_CLASS) != 0);
     try std.testing.expectEqualStrings("two", obj.pXmlClass.?.zClass);
@@ -5758,9 +5749,8 @@ test "Pik XML classes and macros preserve parser state" {
     var id = classToken("M");
     var body: PToken = .zero;
     body.z = "{box}";
-    body.n = "{box}".len;
     pik_add_macro(&pik, &id, &body);
-    try std.testing.expectEqualStrings("box", pik.pMacros.?.macroBody.z[0..pik.pMacros.?.macroBody.n]);
+    try std.testing.expectEqualStrings("box", pik.pMacros.?.macroBody.z);
     _ = pik_elist_append(&pik, null, obj);
 }
 
@@ -5804,27 +5794,28 @@ test "Pik math and text-position helpers follow token codes" {
 
 test "Pik tokenizer classifies core tokens" {
     const source = "box \"hi\" -> 2nd";
+    var rest: []const u8 = source;
     var tok: PToken = .zero;
-    tok.z = source;
+    tok.z = rest;
     var n = pik_token_length(&tok, true);
     try std.testing.expectEqual(@intFromEnum(TokenKind.CLASSNAME), tok.eType);
     try std.testing.expectEqual(@as(usize, 3), n);
 
-    var rest = tok.z[n + 1 ..];
+    rest = rest[n + 1 ..];
     tok = .zero;
     tok.z = rest;
     n = pik_token_length(&tok, true);
     try std.testing.expectEqual(@intFromEnum(TokenKind.STRING), tok.eType);
     try std.testing.expectEqual(@as(usize, 4), n);
 
-    rest = tok.z[n + 1 ..];
+    rest = rest[n + 1 ..];
     tok = .zero;
     tok.z = rest;
     n = pik_token_length(&tok, true);
     try std.testing.expectEqual(@intFromEnum(TokenKind.RARROW), tok.eType);
     try std.testing.expectEqual(@as(usize, 2), n);
 
-    rest = tok.z[n + 1 ..];
+    rest = rest[n + 1 ..];
     tok = .zero;
     tok.z = rest;
     n = pik_token_length(&tok, true);
