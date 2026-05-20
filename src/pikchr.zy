@@ -7,6 +7,7 @@
 
 
 pub const pik_pedantic = true; // maximum compatibility
+pub const pik_no_style = true;
 
 pub const PNum = f64; // Numeric value
 
@@ -355,8 +356,10 @@ pub const Pik = struct {
     fgcolor: i32,                     // foreground color value, or -1 for none
     bgcolor: i32,                     // background color value, or -1 for none
     seenColor: [150]u8,               // which built-in colors have been seen
-    hFill: ColorMap,                  // fill/text color to generated class tag
+    hFill: ColorMap,                  // background fill color to generated class tag
+    hFgFill: ColorMap,                // foreground fill color to generated class tag
     hStroke: ColorMap,                // stroke color to generated class tag
+    hBgStroke: ColorMap,              // background stroke color to generated class tag
     varGen: ColorTag,                 // Next generated color class tag
     // Paths for lines are constructed here first, then transferred into
     // the PObj object at the end:
@@ -405,7 +408,9 @@ pub const Pik = struct {
         .bgcolor = -1,
         .seenColor = [_]u8{0} ** 150,
         .hFill = .empty,
+        .hFgFill = .empty,
         .hStroke = .empty,
+        .hBgStroke = .empty,
         .varGen = .{ 'a', 0, 0, 0 },
         .nTPath = 0,
         .mTPath = 0,
@@ -432,7 +437,9 @@ pub const Pik = struct {
     pub fn deinit(p: *Pik) void {
         p.zOut.deinit();
         p.hFill.deinit(p.allocator);
+        p.hFgFill.deinit(p.allocator);
         p.hStroke.deinit(p.allocator);
+        p.hBgStroke.deinit(p.allocator);
         if (p.zID.len != 0) p.allocator.free(p.zID);
         if (p.zTitle.len != 0) p.allocator.free(p.zTitle);
         if (p.zDesc.len != 0) p.allocator.free(p.zDesc);
@@ -1324,6 +1331,15 @@ fn arcRender(p: *Pik, obj: *PObj) void {
     if (obj.fill < 0.0) {
         pik_append(p, " _T");
     }
+    if (obj.sw >= 0.0 and obj.color >= 0.0) {
+        if (pik_style_stroke_map(p, obj, 0).get(obj.color)) |tag| {
+            pik_append(p, " _s");
+            pik_append_color_tag(p, tag);
+        } else {
+            pik_error(p, null, "internal error: missing generated color class");
+            return;
+        }
+    }
     pik_append(p, "\" ");
     pik_append_xy(p, "d=\"M", f.x, f.y);
     pik_append_xy(p, "Q", m.x, m.y);
@@ -1485,6 +1501,24 @@ fn cylinderRender(p: *Pik, obj: *PObj) void {
         pik_append_tag_open(p, obj, "path");
         if (obj.fill < 0.0) {
             pik_append(p, " _T");
+        }
+        if (obj.sw >= 0.0 and obj.color >= 0.0) {
+            if (pik_style_stroke_map(p, obj, 3).get(obj.color)) |tag| {
+                pik_append(p, " _s");
+                pik_append_color_tag(p, tag);
+            } else {
+                pik_error(p, null, "internal error: missing generated color class");
+                return;
+            }
+        }
+        if (obj.fill >= 0.0) {
+            if (pik_style_fill_map(p, obj, 3).get(obj.fill)) |tag| {
+                pik_append(p, " _f");
+                pik_append_color_tag(p, tag);
+            } else {
+                pik_error(p, null, "internal error: missing generated color class");
+                return;
+            }
         }
         pik_append(p, "\" ");
         pik_append_xy(p, "d=\"M", pt.x - w2, pt.y + h2 - rad);
@@ -1695,7 +1729,7 @@ fn pik_append_style(p: *Pik, obj: *PObj, e_fill: i32) void {
             if (e_fill == 2) fill_is_bg = false;
             if (e_fill == 3) clr_is_bg = true;
         }
-        pik_append_clr(p, "fill=\"", obj.fill, "\"", fill_is_bg);
+        if (comptime !pik_no_style) pik_append_clr(p, "fill=\"", obj.fill, "\"", fill_is_bg);
     } else {
         p.mAttr |= ATTR_FILL_NO;
     }
@@ -1705,7 +1739,7 @@ fn pik_append_style(p: *Pik, obj: *PObj, e_fill: i32) void {
         if (obj.nPath > 2 and obj.rad <= obj.sw) {
             pik_append(p, " stroke-linejoin=\"round\"");
         }
-        pik_append_clr(p, " stroke=\"", obj.color, "\"", clr_is_bg);
+        if (comptime !pik_no_style) pik_append_clr(p, " stroke=\"", obj.color, "\"", clr_is_bg);
         if (obj.dotted > 0.0) {
             const v = obj.dotted;
             if (sw < 2.1 / p.rScale) sw = 2.1 / p.rScale;
@@ -1717,6 +1751,25 @@ fn pik_append_style(p: *Pik, obj: *PObj, e_fill: i32) void {
             pik_append_dis(p, " ", v, "\"");
         }
     }
+}
+
+fn pik_style_e_fill(obj: *const PObj) i32 {
+    const class = obj.type orelse return 0;
+    if (class.xRender == null or class.xRender == nullRender or class.xRender == textRender) return 0;
+    if (class.xInit == dotInit) return 2;
+    if (class.xInit == fileInit) return 1;
+    if (class.isLine != 0) return if (obj.bClose != 0) 3 else 0;
+    return 3;
+}
+
+fn pik_style_stroke_map(p: *Pik, obj: *const PObj, e_fill: i32) *ColorMap {
+    if (obj.fill >= 0.0 and e_fill == 3 and obj.fill == obj.color) return &p.hBgStroke;
+    return &p.hStroke;
+}
+
+fn pik_style_fill_map(p: *Pik, obj: *const PObj, e_fill: i32) *ColorMap {
+    if (obj.fill == obj.color and e_fill == 2) return &p.hFgFill;
+    return &p.hFill;
 }
 
 // Compute the vertical locations for all text items in the
@@ -2135,6 +2188,15 @@ fn pik_append_txt(p: *Pik, obj: *PObj, box: ?*PBox) void {
         nx += x;
         y += orig_y;
         pik_append_tag_open(p, obj, "text");
+        if (obj.textcolor >= 0.0) {
+            if (p.hFgFill.get(obj.textcolor)) |tag| {
+                pik_append(p, " _f");
+                pik_append_color_tag(p, tag);
+            } else {
+                pik_error(p, null, "internal error: missing generated color class");
+                return;
+            }
+        }
         // _D is dominant baseline, every text element has it
         pik_append(p, " _D");
         p.mAttr |= ATTR_BASELINE;
@@ -2163,8 +2225,10 @@ fn pik_append_txt(p: *Pik, obj: *PObj, box: ?*PBox) void {
         pik_append(p, "\" ");
         pik_append_x(p, "x=\"", nx, "\"");
         pik_append_y(p, " y=\"", y, "\"");
-        if (obj.textcolor >= 0.0) {
-            pik_append_clr(p, " fill=\"", obj.textcolor, "\"", false);
+        if (comptime !pik_no_style) {
+            if (obj.textcolor >= 0.0) {
+                pik_append_clr(p, " fill=\"", obj.textcolor, "\"", false);
+            }
         }
         xtra_font_scale *= p.fontScale;
         if (xtra_font_scale <= 0.99 or xtra_font_scale >= 1.01) {
@@ -2198,6 +2262,24 @@ fn boxRender(p: *Pik, obj: *PObj) void {
     if (obj.sw >= 0.0) {
         pik_append_tag_open(p, obj, "path");
         if (obj.fill < 0.0) pik_append(p, " _T");
+        if (obj.sw >= 0.0 and obj.color >= 0.0) {
+            if (pik_style_stroke_map(p, obj, 3).get(obj.color)) |tag| {
+                pik_append(p, " _s");
+                pik_append_color_tag(p, tag);
+            } else {
+                pik_error(p, null, "internal error: missing generated color class");
+                return;
+            }
+        }
+        if (obj.fill >= 0.0) {
+            if (pik_style_fill_map(p, obj, 3).get(obj.fill)) |tag| {
+                pik_append(p, " _f");
+                pik_append_color_tag(p, tag);
+            } else {
+                pik_error(p, null, "internal error: missing generated color class");
+                return;
+            }
+        }
         pik_append(p, "\" ");
         if (rad <= 0.0) {
             pik_append_xy(p, "d=\"M", pt.x - w2, pt.y - h2);
@@ -2252,6 +2334,24 @@ fn circleRender(p: *Pik, obj: *PObj) void {
     if (obj.sw >= 0.0) {
         pik_append_tag_open(p, obj, "circle");
         if (obj.fill < 0.0) pik_append(p, " _T");
+        if (obj.sw >= 0.0 and obj.color >= 0.0) {
+            if (pik_style_stroke_map(p, obj, 3).get(obj.color)) |tag| {
+                pik_append(p, " _s");
+                pik_append_color_tag(p, tag);
+            } else {
+                pik_error(p, null, "internal error: missing generated color class");
+                return;
+            }
+        }
+        if (obj.fill >= 0.0) {
+            if (pik_style_fill_map(p, obj, 3).get(obj.fill)) |tag| {
+                pik_append(p, " _f");
+                pik_append_color_tag(p, tag);
+            } else {
+                pik_error(p, null, "internal error: missing generated color class");
+                return;
+            }
+        }
         pik_append(p, "\" ");
         pik_append_x(p, "cx=\"", obj.ptAt.x, "\"");
         pik_append_y(p, " cy=\"", obj.ptAt.y, "\"");
@@ -2267,6 +2367,24 @@ fn dotRender(p: *Pik, obj: *PObj) void {
     if (obj.sw >= 0.0) {
         pik_append_tag_open(p, obj, "circle");
         if (obj.fill < 0.0) pik_append(p, " _T");
+        if (obj.sw >= 0.0 and obj.color >= 0.0) {
+            if (pik_style_stroke_map(p, obj, 2).get(obj.color)) |tag| {
+                pik_append(p, " _s");
+                pik_append_color_tag(p, tag);
+            } else {
+                pik_error(p, null, "internal error: missing generated color class");
+                return;
+            }
+        }
+        if (obj.fill >= 0.0) {
+            if (pik_style_fill_map(p, obj, 2).get(obj.fill)) |tag| {
+                pik_append(p, " _f");
+                pik_append_color_tag(p, tag);
+            } else {
+                pik_error(p, null, "internal error: missing generated color class");
+                return;
+            }
+        }
         pik_append(p, "\" ");
         pik_append_x(p, "cx=\"", obj.ptAt.x, "\"");
         pik_append_y(p, " cy=\"", obj.ptAt.y, "\"");
@@ -2285,6 +2403,24 @@ fn diamondRender(p: *Pik, obj: *PObj) void {
     if (obj.sw >= 0.0) {
         pik_append_tag_open(p, obj, "path");
         if (obj.fill < 0.0) pik_append(p, " _T");
+        if (obj.sw >= 0.0 and obj.color >= 0.0) {
+            if (pik_style_stroke_map(p, obj, 3).get(obj.color)) |tag| {
+                pik_append(p, " _s");
+                pik_append_color_tag(p, tag);
+            } else {
+                pik_error(p, null, "internal error: missing generated color class");
+                return;
+            }
+        }
+        if (obj.fill >= 0.0) {
+            if (pik_style_fill_map(p, obj, 3).get(obj.fill)) |tag| {
+                pik_append(p, " _f");
+                pik_append_color_tag(p, tag);
+            } else {
+                pik_error(p, null, "internal error: missing generated color class");
+                return;
+            }
+        }
         pik_append(p, "\" ");
         pik_append_xy(p, "d=\"M", pt.x - w2, pt.y);
         pik_append_xy(p, "L", pt.x, pt.y - h2);
@@ -2302,6 +2438,24 @@ fn ellipseRender(p: *Pik, obj: *PObj) void {
     if (obj.sw >= 0.0) {
         pik_append_tag_open(p, obj, "ellipse");
         if (obj.fill < 0.0) pik_append(p, " _T");
+        if (obj.sw >= 0.0 and obj.color >= 0.0) {
+            if (pik_style_stroke_map(p, obj, 3).get(obj.color)) |tag| {
+                pik_append(p, " _s");
+                pik_append_color_tag(p, tag);
+            } else {
+                pik_error(p, null, "internal error: missing generated color class");
+                return;
+            }
+        }
+        if (obj.fill >= 0.0) {
+            if (pik_style_fill_map(p, obj, 3).get(obj.fill)) |tag| {
+                pik_append(p, " _f");
+                pik_append_color_tag(p, tag);
+            } else {
+                pik_error(p, null, "internal error: missing generated color class");
+                return;
+            }
+        }
         pik_append(p, "\" ");
         pik_append_x(p, "cx=\"", obj.ptAt.x, "\"");
         pik_append_y(p, " cy=\"", obj.ptAt.y, "\"");
@@ -2358,11 +2512,33 @@ fn pik_draw_arrowhead(p: *Pik, f: *PPoint, t: *PPoint, obj: *PObj) void {
     bx = f.x + e1 * dx;
     by = f.y + e1 * dy;
     pik_append_tag_open(p, obj, "polygon");
+    if (comptime pik_no_style) {
+        if (obj.sw >= 0.0 and obj.color >= 0.0) {
+            if (p.hStroke.get(obj.color)) |tag| {
+                pik_append(p, " _s");
+                pik_append_color_tag(p, tag);
+            } else {
+                pik_error(p, null, "internal error: missing generated color class");
+                return;
+            }
+            if (p.hFgFill.get(obj.color)) |tag| {
+                pik_append(p, " _f");
+                pik_append_color_tag(p, tag);
+            } else {
+                pik_error(p, null, "internal error: missing generated color class");
+                return;
+            }
+        }
+    }
     pik_append(p, "\" ");
     pik_append_xy(p, "points=\"", t.x, t.y);
     pik_append_xy(p, " ", bx - ddx, by - ddy);
     pik_append_xy(p, " ", bx + ddx, by + ddy);
-    pik_append_clr(p, "\" fill=\"", obj.color, "\" />\n", false);
+    if (comptime pik_no_style) {
+        pik_append(p, "\" />\n");
+    } else {
+        pik_append_clr(p, "\" fill=\"", obj.color, "\" />\n", false);
+    }
     pik_chop(f, t, h / 2.0);
 }
 
@@ -2388,6 +2564,24 @@ fn lineRender(p: *Pik, obj: *PObj) void {
     if (obj.sw > 0.0) {
         pik_append_tag_open(p, obj, "path");
         if ((obj.bClose != 0 and obj.fill < 0.0) or obj.bClose == 0) pik_append(p, " _T");
+        if (obj.sw >= 0.0 and obj.color >= 0.0) {
+            if (pik_style_stroke_map(p, obj, if (obj.bClose != 0) 3 else 0).get(obj.color)) |tag| {
+                pik_append(p, " _s");
+                pik_append_color_tag(p, tag);
+            } else {
+                pik_error(p, null, "internal error: missing generated color class");
+                return;
+            }
+        }
+        if (obj.bClose != 0 and obj.fill >= 0.0) {
+            if (pik_style_fill_map(p, obj, if (obj.bClose != 0) 3 else 0).get(obj.fill)) |tag| {
+                pik_append(p, " _f");
+                pik_append_color_tag(p, tag);
+            } else {
+                pik_error(p, null, "internal error: missing generated color class");
+                return;
+            }
+        }
         pik_append(p, "\" ");
         pik_append(p, "d=\"M");
         if (obj.nPath > 0 and obj.aPath.len > 0) {
@@ -2455,6 +2649,24 @@ fn radiusPath(p: *Pik, obj: *PObj, r: PNum) void {
     pik_append_tag_open(p, obj, "path");
     if (obj.bClose == 0) {
         pik_append(p, " _T");
+    }
+    if (obj.sw >= 0.0 and obj.color >= 0.0) {
+        if (pik_style_stroke_map(p, obj, if (obj.bClose != 0) 3 else 0).get(obj.color)) |tag| {
+            pik_append(p, " _s");
+            pik_append_color_tag(p, tag);
+        } else {
+            pik_error(p, null, "internal error: missing generated color class");
+            return;
+        }
+    }
+    if (obj.bClose != 0 and obj.fill >= 0.0) {
+        if (pik_style_fill_map(p, obj, if (obj.bClose != 0) 3 else 0).get(obj.fill)) |tag| {
+            pik_append(p, " _f");
+            pik_append_color_tag(p, tag);
+        } else {
+            pik_error(p, null, "internal error: missing generated color class");
+            return;
+        }
     }
     pik_append(p, "\" ");
     pik_append_xy(p, "d=\"M", a[0].x, a[0].y);
@@ -2607,6 +2819,24 @@ fn fileRender(p: *Pik, obj: *PObj) void {
         if (obj.fill < 0.0) {
             pik_append(p, " _T");
         }
+        if (obj.sw >= 0.0 and obj.color >= 0.0) {
+            if (pik_style_stroke_map(p, obj, 1).get(obj.color)) |tag| {
+                pik_append(p, " _s");
+                pik_append_color_tag(p, tag);
+            } else {
+                pik_error(p, null, "internal error: missing generated color class");
+                return;
+            }
+        }
+        if (obj.fill >= 0.0) {
+            if (pik_style_fill_map(p, obj, 1).get(obj.fill)) |tag| {
+                pik_append(p, " _f");
+                pik_append_color_tag(p, tag);
+            } else {
+                pik_error(p, null, "internal error: missing generated color class");
+                return;
+            }
+        }
         pik_append(p, "\" ");
         pik_append_xy(p, "d=\"M", pt.x - w2, pt.y - h2);
         pik_append_xy(p, "L", pt.x + w2, pt.y - h2);
@@ -2618,6 +2848,15 @@ fn fileRender(p: *Pik, obj: *PObj) void {
         pik_append(p, " />\n");
         pik_append_tag_open(p, obj, "path");
         pik_append(p, " _T");
+        if (obj.sw >= 0.0 and obj.color >= 0.0) {
+            if (pik_style_stroke_map(p, obj, 0).get(obj.color)) |tag| {
+                pik_append(p, " _s");
+                pik_append_color_tag(p, tag);
+            } else {
+                pik_error(p, null, "internal error: missing generated color class");
+                return;
+            }
+        }
         pik_append(p, "\" ");
         pik_append_xy(p, "d=\"M", pt.x + (w2 - rad), pt.y + h2);
         pik_append_xy(p, "L", pt.x + (w2 - rad), pt.y + (h2 - rad));
@@ -3284,6 +3523,12 @@ fn pik_render(p: *Pik, list: ?*PList) void {
     const h = p.bbox.ne.y - p.bbox.sw.y;
     p.wSVG = pik_round(p.rScale * w);
     p.hSVG = pik_round(p.rScale * h);
+    var debug_label_miss: i32 = 0;
+    const debug_label_color = pik_value(p, "debug_label_color", &debug_label_miss);
+    if (debug_label_miss == 0 and debug_label_color >= 0.0) {
+        pik_remember_color(p, &p.hStroke, debug_label_color);
+        pik_remember_color(p, &p.hFgFill, debug_label_color);
+    }
     pik_append(p, "<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;'");
     pik_append(p, " class=\"");
     pik_append(p, p.zClass);
@@ -3982,8 +4227,12 @@ fn pik_append_color_css(p: *Pik) void {
     while (!pik_color_tag_eq(tag, p.varGen)) {
         if (pik_color_for_tag(&p.hFill, tag)) |color| {
             pik_append_color_css_for_tag(p, "_f", "fill", tag, color, true);
+        } else if (pik_color_for_tag(&p.hFgFill, tag)) |color| {
+            pik_append_color_css_for_tag(p, "_f", "fill", tag, color, false);
         } else if (pik_color_for_tag(&p.hStroke, tag)) |color| {
             pik_append_color_css_for_tag(p, "_s", "stroke", tag, color, false);
+        } else if (pik_color_for_tag(&p.hBgStroke, tag)) |color| {
+            pik_append_color_css_for_tag(p, "_s", "stroke", tag, color, true);
         }
         pik_next_color_tag(&tag);
     }
@@ -3995,16 +4244,21 @@ fn pik_after_adding_attributes(p: *Pik, obj: ?*PObj) void {
     const o = obj orelse return;
     if (p.nErr != 0) return;
     const class = o.type orelse return;
-    const use_fill = !(o.fill < 0.0 or (class.isLine != 0 and o.bClose == 0));
+    const e_fill = pik_style_e_fill(o);
+    const use_fill = o.fill >= 0.0 and e_fill != 0;
 
-    if (o.sw >= 0.0 and o.color >= 0.0) {
+    if ((e_fill != 0 or class.isLine != 0) and o.sw >= 0.0 and o.color >= 0.0) {
+        pik_remember_color(p, pik_style_stroke_map(p, o, e_fill), o.color);
+    }
+    if ((o.larrow != 0 or o.rarrow != 0) and o.sw > 0.0 and o.color >= 0.0) {
         pik_remember_color(p, &p.hStroke, o.color);
+        pik_remember_color(p, &p.hFgFill, o.color);
     }
     if (o.nTxt != 0 and o.textcolor >= 0.0) {
-        pik_remember_color(p, &p.hFill, o.textcolor);
+        pik_remember_color(p, &p.hFgFill, o.textcolor);
     }
     if (use_fill) {
-        pik_remember_color(p, &p.hFill, o.fill);
+        pik_remember_color(p, pik_style_fill_map(p, o, e_fill), o.fill);
     }
 
     // Check for transparency
@@ -5811,15 +6065,77 @@ test "Pik after adding attributes records color tags" {
     _ = pik_elist_append(&pik, null, obj);
 
     try std.testing.expectEqual(@as(ColorMap.Size, 1), pik.hStroke.count());
-    try std.testing.expectEqual(@as(ColorMap.Size, 2), pik.hFill.count());
+    try std.testing.expectEqual(@as(ColorMap.Size, 0), pik.hBgStroke.count());
+    try std.testing.expectEqual(@as(ColorMap.Size, 1), pik.hFgFill.count());
+    try std.testing.expectEqual(@as(ColorMap.Size, 1), pik.hFill.count());
 
     const stroke = pik.hStroke.get(obj.color).?;
-    const text = pik.hFill.get(obj.textcolor).?;
+    const text = pik.hFgFill.get(obj.textcolor).?;
     const fill = pik.hFill.get(obj.fill).?;
     try std.testing.expectEqualSlices(u8, &.{ 'a', 0, 0, 0 }, &stroke);
     try std.testing.expectEqualSlices(u8, &.{ 'b', 0, 0, 0 }, &text);
     try std.testing.expectEqualSlices(u8, &.{ 'c', 0, 0, 0 }, &fill);
     try std.testing.expectEqualSlices(u8, &.{ 'd', 0, 0, 0 }, &pik.varGen);
+}
+
+test "Pik after adding attributes records dot fill as foreground fill" {
+    var pik = Pik.init(std.testing.allocator, "dot", "pikchr", 0);
+    defer pik.deinit();
+    var tok = classToken("dot");
+    const obj = pik_elem_new(&pik, &tok, null, null).?;
+    obj.color = 0x112233;
+    obj.fill = obj.color;
+    pik_after_adding_attributes(&pik, obj);
+    _ = pik_elist_append(&pik, null, obj);
+
+    try std.testing.expectEqual(@as(ColorMap.Size, 1), pik.hStroke.count());
+    try std.testing.expectEqual(@as(ColorMap.Size, 0), pik.hBgStroke.count());
+    try std.testing.expectEqual(@as(ColorMap.Size, 0), pik.hFill.count());
+    try std.testing.expectEqual(@as(ColorMap.Size, 1), pik.hFgFill.count());
+
+    const stroke = pik.hStroke.get(obj.color).?;
+    const fill = pik.hFgFill.get(obj.fill).?;
+    try std.testing.expectEqualSlices(u8, &.{ 'a', 0, 0, 0 }, &stroke);
+    try std.testing.expectEqualSlices(u8, &.{ 'b', 0, 0, 0 }, &fill);
+    try std.testing.expectEqualSlices(u8, &.{ 'c', 0, 0, 0 }, &pik.varGen);
+}
+
+test "Pik after adding attributes records matching box color as background stroke" {
+    var pik = Pik.init(std.testing.allocator, "box", "pikchr", 0);
+    defer pik.deinit();
+    var tok = classToken("box");
+    const obj = pik_elem_new(&pik, &tok, null, null).?;
+    obj.color = 0x112233;
+    obj.fill = obj.color;
+    pik_after_adding_attributes(&pik, obj);
+    _ = pik_elist_append(&pik, null, obj);
+
+    try std.testing.expectEqual(@as(ColorMap.Size, 0), pik.hStroke.count());
+    try std.testing.expectEqual(@as(ColorMap.Size, 1), pik.hBgStroke.count());
+    try std.testing.expectEqual(@as(ColorMap.Size, 1), pik.hFill.count());
+    try std.testing.expectEqual(@as(ColorMap.Size, 0), pik.hFgFill.count());
+
+    const stroke = pik.hBgStroke.get(obj.color).?;
+    const fill = pik.hFill.get(obj.fill).?;
+    try std.testing.expectEqualSlices(u8, &.{ 'a', 0, 0, 0 }, &stroke);
+    try std.testing.expectEqualSlices(u8, &.{ 'b', 0, 0, 0 }, &fill);
+    try std.testing.expectEqualSlices(u8, &.{ 'c', 0, 0, 0 }, &pik.varGen);
+}
+
+test "Pik color class emission reports missing generated tags as internal error" {
+    var pik = Pik.init(std.testing.allocator, "box", "pikchr", 0);
+    defer pik.deinit();
+    var tok = classToken("box");
+    const obj = pik_elem_new(&pik, &tok, null, null).?;
+    obj.sw = 1.0;
+    obj.color = 0x112233;
+    obj.fill = -1.0;
+    _ = pik_elist_append(&pik, null, obj);
+
+    boxRender(&pik, obj);
+
+    try std.testing.expectEqual(@as(u32, 1), pik.nErr);
+    try std.testing.expect(std.mem.indexOf(u8, pik.zOut.written(), "internal error: missing generated color class") != null);
 }
 
 test "Pik object allocation initializes class defaults" {
@@ -5983,8 +6299,11 @@ test "Pik generated render emits color class CSS" {
     try std.testing.expect(std.mem.indexOf(u8, out.text, "._sa {stroke:rgb(17,34,51)}") != null);
     try std.testing.expect(std.mem.indexOf(u8, out.text, "._fb {fill:rgb(68,85,102)}") != null);
     try std.testing.expect(std.mem.indexOf(u8, out.text, "._fc {fill:rgb(119,136,153)}") != null);
-    try std.testing.expect(std.mem.indexOf(u8, out.text, "stroke=\"rgb(17,34,51)\"") != null);
-    try std.testing.expect(std.mem.indexOf(u8, out.text, "fill=\"rgb(119,136,153)\"") != null);
+    try std.testing.expect(std.mem.indexOf(u8, out.text, "class=\"box _sa _fc\"") != null);
+    try std.testing.expect(std.mem.indexOf(u8, out.text, "class=\"box _fb _D") != null);
+    try std.testing.expect(std.mem.indexOf(u8, out.text, "._G") == null);
+    try std.testing.expect(std.mem.indexOf(u8, out.text, "stroke=\"rgb(17,34,51)\"") == null);
+    try std.testing.expect(std.mem.indexOf(u8, out.text, "fill=\"rgb(119,136,153)\"") == null);
 }
 
 test "Pik generated color class CSS uses existing dark color conversion" {
@@ -5993,6 +6312,36 @@ test "Pik generated color class CSS uses existing dark color conversion" {
     try std.testing.expect(out.ok());
     try std.testing.expect(std.mem.indexOf(u8, out.text, "._sa {stroke:rgb(204,221,238)}") != null);
     try std.testing.expect(std.mem.indexOf(u8, out.text, "._fb {fill:rgb(95,111,127)}") != null);
+}
+
+test "Pik generated text color classes use foreground dark conversion" {
+    const out = try render(std.testing.allocator, "box \"hi\" textcolor 0x445566\n", "pikchr", PIKCHR_DARK_MODE);
+    defer out.deinit(std.testing.allocator);
+    try std.testing.expect(out.ok());
+    try std.testing.expect(std.mem.indexOf(u8, out.text, "._fb {fill:rgb(153,170,187)}") != null);
+    try std.testing.expect(std.mem.indexOf(u8, out.text, "._G") == null);
+}
+
+test "Pik generated debug label color is registered before CSS" {
+    const out = try render(std.testing.allocator, "debug_label_color = Red\nA: box\n", "pikchr", 0);
+    defer out.deinit(std.testing.allocator);
+    try std.testing.expect(out.ok());
+    try std.testing.expect(std.mem.indexOf(u8, out.text, "._sb {stroke:rgb(255,0,0)}") != null);
+    try std.testing.expect(std.mem.indexOf(u8, out.text, "._fc {fill:rgb(255,0,0)}") != null);
+    try std.testing.expect(std.mem.indexOf(u8, out.text, "class=\"noop _sb _fc\"") != null);
+    try std.testing.expect(std.mem.indexOf(u8, out.text, "._G") == null);
+    try std.testing.expect(std.mem.indexOf(u8, out.text, "fill=\"rgb(255,0,0)\"") == null);
+}
+
+test "Pik generated arrowhead fill uses foreground color class" {
+    const out = try render(std.testing.allocator, "arrow color 0x112233\n", "pikchr", PIKCHR_DARK_MODE);
+    defer out.deinit(std.testing.allocator);
+    try std.testing.expect(out.ok());
+    try std.testing.expect(std.mem.indexOf(u8, out.text, "._sa {stroke:rgb(204,221,238)}") != null);
+    try std.testing.expect(std.mem.indexOf(u8, out.text, "._fb {fill:rgb(204,221,238)}") != null);
+    try std.testing.expect(std.mem.indexOf(u8, out.text, "<polygon class=\"arrow _sa _fb\"") != null);
+    try std.testing.expect(std.mem.indexOf(u8, out.text, "._G") == null);
+    try std.testing.expect(std.mem.indexOf(u8, out.text, "fill=\"rgb(204,221,238)\"") == null);
 }
 
 test "Pik generated render expands macros" {
