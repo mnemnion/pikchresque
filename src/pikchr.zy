@@ -3583,7 +3583,6 @@ fn pik_render(p: *Pik, list: ?*PList) void {
     if ((p.mAttr & ATTR_FILL_NO) != 0) {
         pik_append(p, "._T {fill:transparent}\n");
     }
-    pik_append_color_css(p);
     if ((p.mAttr & ATTR_T_START) != 0) {
         pik_append(p, "._tS {text-anchor:start}\n");
     }
@@ -3602,6 +3601,7 @@ fn pik_render(p: *Pik, list: ?*PList) void {
     if ((p.mAttr & ATTR_F_MONO) != 0) {
         pik_append(p, "._Fm {font-family:monospace}\n");
     }
+    pik_append_color_css(p);
     pik_append(p, "}\n</style>\n");
     if (p.zTitle.len != 0) {
         if (p.bLabel == 0) {
@@ -4245,10 +4245,60 @@ fn pik_append_color_css_for_tag(p: *Pik, prefix: []const u8, property: []const u
 }
 
 fn pik_append_color_css(p: *Pik) void {
-    pik_append_color_css_map(p, &p.hFill, "_f", "fill", true);
-    pik_append_color_css_map(p, &p.hFgFill, "_f", "fill", false);
-    pik_append_color_css_map(p, &p.hStroke, "_s", "stroke", false);
-    pik_append_color_css_map(p, &p.hBgStroke, "_s", "stroke", true);
+    const responsive = struct {
+        fn append_color(pik: *Pik, value: PNum, is_bg: bool, dark: bool) void {
+            var x = pik_round(value);
+            if (x == 0 and pik.fgcolor > 0 and !is_bg) {
+                x = pik.fgcolor;
+            } else if (is_bg and x >= 0xffffff and pik.bgcolor > 0) {
+                x = pik.bgcolor;
+            } else if (dark) {
+                x = pik_color_to_dark_mode(x, is_bg);
+            }
+            pik.zOut.writer.print("rgb({d},{d},{d})", .{ (x >> 16) & 0xff, (x >> 8) & 0xff, x & 0xff }) catch pik_error(pik, null, null);
+        }
+
+        fn append_light_dark(pik: *Pik, color: PNum, is_bg: bool) void {
+            const dark_first = (pik.mFlags & PIKCHR_DARK_MODE) != 0;
+            pik_append(pik, "light-dark(");
+            append_color(pik, color, is_bg, dark_first);
+            pik_append(pik, ",");
+            append_color(pik, color, is_bg, !dark_first);
+            pik_append(pik, ")");
+        }
+
+        fn append_rule(pik: *Pik, prefix: []const u8, property: []const u8, tag: ColorTag, color: PNum, is_bg: bool) void {
+            pik_append(pik, ".");
+            pik_append(pik, prefix);
+            pik_append_color_tag(pik, tag);
+            pik_append(pik, " {");
+            pik_append(pik, property);
+            pik_append(pik, ":");
+            append_light_dark(pik, color, is_bg);
+            pik_append(pik, "}\n");
+        }
+
+        fn append_map(pik: *Pik, map: *ColorMap, prefix: []const u8, property: []const u8, is_bg: bool) void {
+            pik_sort_color_map(map);
+            var it = map.iterator();
+            while (it.next()) |entry| {
+                append_rule(pik, prefix, property, entry.value_ptr.*, entry.key_ptr.*, is_bg);
+            }
+        }
+    };
+
+    if (true) {
+        pik_append(p, "color-scheme:light dark;\n");
+        responsive.append_map(p, &p.hFill, "_f", "fill", true);
+        responsive.append_map(p, &p.hFgFill, "_f", "fill", false);
+        responsive.append_map(p, &p.hStroke, "_s", "stroke", false);
+        responsive.append_map(p, &p.hBgStroke, "_s", "stroke", true);
+    } else {
+        pik_append_color_css_map(p, &p.hFill, "_f", "fill", true);
+        pik_append_color_css_map(p, &p.hFgFill, "_f", "fill", false);
+        pik_append_color_css_map(p, &p.hStroke, "_s", "stroke", false);
+        pik_append_color_css_map(p, &p.hBgStroke, "_s", "stroke", true);
+    }
 }
 
 // This routine runs after all attributes have been received
@@ -6326,9 +6376,10 @@ test "Pik generated render emits color class CSS" {
     const out = try render(std.testing.allocator, "box \"hi\" fill 0x778899 color 0x112233 textcolor 0x445566\n", "pikchr", 0);
     defer out.deinit(std.testing.allocator);
     try std.testing.expect(out.ok());
-    try std.testing.expect(std.mem.indexOf(u8, out.text, "._sa {stroke:rgb(17,34,51)}") != null);
-    try std.testing.expect(std.mem.indexOf(u8, out.text, "._fb {fill:rgb(68,85,102)}") != null);
-    try std.testing.expect(std.mem.indexOf(u8, out.text, "._fc {fill:rgb(119,136,153)}") != null);
+    try std.testing.expect(std.mem.indexOf(u8, out.text, "color-scheme:light dark;") != null);
+    try std.testing.expect(std.mem.indexOf(u8, out.text, "._sa {stroke:light-dark(rgb(17,34,51),rgb(204,221,238))}") != null);
+    try std.testing.expect(std.mem.indexOf(u8, out.text, "._fb {fill:light-dark(rgb(68,85,102),rgb(153,170,187))}") != null);
+    try std.testing.expect(std.mem.indexOf(u8, out.text, "._fc {fill:light-dark(rgb(119,136,153),rgb(95,111,127))}") != null);
     try std.testing.expect(std.mem.indexOf(u8, out.text, "class=\"box _sa _fc\"") != null);
     try std.testing.expect(std.mem.indexOf(u8, out.text, "class=\"box _fb _D") != null);
     try std.testing.expect(std.mem.indexOf(u8, out.text, "._G") == null);
@@ -6340,15 +6391,15 @@ test "Pik generated color class CSS uses existing dark color conversion" {
     const out = try render(std.testing.allocator, "box fill 0x778899 color 0x112233\n", "pikchr", PIKCHR_DARK_MODE);
     defer out.deinit(std.testing.allocator);
     try std.testing.expect(out.ok());
-    try std.testing.expect(std.mem.indexOf(u8, out.text, "._sa {stroke:rgb(204,221,238)}") != null);
-    try std.testing.expect(std.mem.indexOf(u8, out.text, "._fb {fill:rgb(95,111,127)}") != null);
+    try std.testing.expect(std.mem.indexOf(u8, out.text, "._sa {stroke:light-dark(rgb(204,221,238),rgb(17,34,51))}") != null);
+    try std.testing.expect(std.mem.indexOf(u8, out.text, "._fb {fill:light-dark(rgb(95,111,127),rgb(119,136,153))}") != null);
 }
 
 test "Pik generated text color classes use foreground dark conversion" {
     const out = try render(std.testing.allocator, "box \"hi\" textcolor 0x445566\n", "pikchr", PIKCHR_DARK_MODE);
     defer out.deinit(std.testing.allocator);
     try std.testing.expect(out.ok());
-    try std.testing.expect(std.mem.indexOf(u8, out.text, "._fb {fill:rgb(153,170,187)}") != null);
+    try std.testing.expect(std.mem.indexOf(u8, out.text, "._fb {fill:light-dark(rgb(153,170,187),rgb(68,85,102))}") != null);
     try std.testing.expect(std.mem.indexOf(u8, out.text, "._G") == null);
 }
 
@@ -6356,8 +6407,8 @@ test "Pik generated debug label color is registered before CSS" {
     const out = try render(std.testing.allocator, "debug_label_color = Red\nA: box\n", "pikchr", 0);
     defer out.deinit(std.testing.allocator);
     try std.testing.expect(out.ok());
-    try std.testing.expect(std.mem.indexOf(u8, out.text, "._sb {stroke:rgb(255,0,0)}") != null);
-    try std.testing.expect(std.mem.indexOf(u8, out.text, "._fc {fill:rgb(255,0,0)}") != null);
+    try std.testing.expect(std.mem.indexOf(u8, out.text, "._sb {stroke:light-dark(rgb(255,0,0),rgb(255,127,127))}") != null);
+    try std.testing.expect(std.mem.indexOf(u8, out.text, "._fc {fill:light-dark(rgb(255,0,0),rgb(255,127,127))}") != null);
     try std.testing.expect(std.mem.indexOf(u8, out.text, "class=\"noop _sb _fc\"") != null);
     try std.testing.expect(std.mem.indexOf(u8, out.text, "._G") == null);
     try std.testing.expect(std.mem.indexOf(u8, out.text, "fill=\"rgb(255,0,0)\"") == null);
@@ -6367,11 +6418,25 @@ test "Pik generated arrowhead fill uses foreground color class" {
     const out = try render(std.testing.allocator, "arrow color 0x112233\n", "pikchr", PIKCHR_DARK_MODE);
     defer out.deinit(std.testing.allocator);
     try std.testing.expect(out.ok());
-    try std.testing.expect(std.mem.indexOf(u8, out.text, "._sa {stroke:rgb(204,221,238)}") != null);
-    try std.testing.expect(std.mem.indexOf(u8, out.text, "._fb {fill:rgb(204,221,238)}") != null);
+    try std.testing.expect(std.mem.indexOf(u8, out.text, "._sa {stroke:light-dark(rgb(204,221,238),rgb(17,34,51))}") != null);
+    try std.testing.expect(std.mem.indexOf(u8, out.text, "._fb {fill:light-dark(rgb(204,221,238),rgb(17,34,51))}") != null);
     try std.testing.expect(std.mem.indexOf(u8, out.text, "<polygon class=\"arrow _sa _fb\"") != null);
     try std.testing.expect(std.mem.indexOf(u8, out.text, "._G") == null);
     try std.testing.expect(std.mem.indexOf(u8, out.text, "fill=\"rgb(204,221,238)\"") == null);
+}
+
+test "Pik generated responsive color CSS preserves fg/bg fallback" {
+    var pik = Pik.init(std.testing.allocator, "box", "pikchr", 0);
+    defer pik.deinit();
+    pik.fgcolor = 0x123456;
+    pik.bgcolor = 0xabcdef;
+    try pik.hStroke.put(std.testing.allocator, 0.0, .{ 'a', 0, 0, 0 });
+    try pik.hFill.put(std.testing.allocator, 0xffffff, .{ 'b', 0, 0, 0 });
+
+    pik_append_color_css(&pik);
+
+    try std.testing.expect(std.mem.indexOf(u8, pik.zOut.written(), "._sa {stroke:light-dark(rgb(18,52,86),rgb(18,52,86))}") != null);
+    try std.testing.expect(std.mem.indexOf(u8, pik.zOut.written(), "._fb {fill:light-dark(rgb(171,205,239),rgb(171,205,239))}") != null);
 }
 
 test "Pik generated render expands macros" {

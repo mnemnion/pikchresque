@@ -56,6 +56,20 @@ header=$(cat <<'EOF'
             overflow: auto;
             text-align: left;
         }
+        .responsive-frame {
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+            color-scheme: light dark;
+        }
+        .responsive-light {
+            color: light-dark(black, white);
+            background-color: light-dark(white, black);
+        }
+        .responsive-dark {
+            color: light-dark(white, black);
+            background-color: light-dark(black, white);
+        }
         .hidden {
             display: none;
         }
@@ -143,7 +157,9 @@ for file in ./piks/tests/*; do
 
     # Generate SVG with after version
     svg_after=$($after --svg-only "$file")
+    output_content+=("<div class=\"responsive-frame responsive-light\">")
     output_content+=("$svg_after")
+    output_content+=("</div>")
     after_bytes=$(echo -n "$svg_after" | wc -c)
     total_after_bytes=$((total_after_bytes + after_bytes))
 
@@ -183,7 +199,9 @@ for file in ./piks/tests/*; do
 
     # Generate SVG with after version in dark mode
     svg_after=$($after --dark-mode --svg-only "$file")
+    output_content+=("<div class=\"responsive-frame responsive-dark\">")
     output_content+=("$svg_after")
+    output_content+=("</div>")
     after_bytes=$(echo -n "$svg_after" | wc -c)
     total_after_bytes=$((total_after_bytes + after_bytes))
 
