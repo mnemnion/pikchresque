@@ -3572,6 +3572,9 @@ fn pik_render(p: *Pik, list: ?*PList) void {
     }
     pik_append_dis(p, " viewBox=\"0 0 ", w, "");
     pik_append_dis(p, " ", h, "\">\n");
+    if ((p.mFlags & PIKCHR_DARK_MODE) != 0) {
+        pik_append(p, "<rect class=\"_B\" width=\"100%\" height=\"100%\"/>\n");
+    }
     // CSS
     pik_append(p, "<style>\n#");
     pik_append(p, p.zClass);
@@ -4289,6 +4292,9 @@ fn pik_append_color_css(p: *Pik) void {
 
     if (true) {
         pik_append(p, "color-scheme:light dark;\n");
+        if ((p.mFlags & PIKCHR_DARK_MODE) != 0) {
+            pik_append(p, "._B {fill:light-dark(rgba(0,0,0,0.8),rgba(255,255,255,0.8))}\n");
+        }
         responsive.append_map(p, &p.hFill, "_f", "fill", true);
         responsive.append_map(p, &p.hFgFill, "_f", "fill", false);
         responsive.append_map(p, &p.hStroke, "_s", "stroke", false);
@@ -6393,6 +6399,22 @@ test "Pik generated color class CSS uses existing dark color conversion" {
     try std.testing.expect(out.ok());
     try std.testing.expect(std.mem.indexOf(u8, out.text, "._sa {stroke:light-dark(rgb(204,221,238),rgb(17,34,51))}") != null);
     try std.testing.expect(std.mem.indexOf(u8, out.text, "._fb {fill:light-dark(rgb(95,111,127),rgb(119,136,153))}") != null);
+}
+
+test "Pik generated dark mode SVG emits responsive backdrop" {
+    const out = try render(std.testing.allocator, "box fill 0x778899 color 0x112233\n", "pikchr", PIKCHR_DARK_MODE);
+    defer out.deinit(std.testing.allocator);
+    try std.testing.expect(out.ok());
+    try std.testing.expect(std.mem.indexOf(u8, out.text, "._B {fill:light-dark(rgba(0,0,0,0.8),rgba(255,255,255,0.8))}") != null);
+    try std.testing.expect(std.mem.indexOf(u8, out.text, "\">\n<rect class=\"_B\" width=\"100%\" height=\"100%\"/>\n<style>") != null);
+}
+
+test "Pik generated normal SVG omits responsive backdrop" {
+    const out = try render(std.testing.allocator, "box fill 0x778899 color 0x112233\n", "pikchr", 0);
+    defer out.deinit(std.testing.allocator);
+    try std.testing.expect(out.ok());
+    try std.testing.expect(std.mem.indexOf(u8, out.text, "._B") == null);
+    try std.testing.expect(std.mem.indexOf(u8, out.text, "<rect class=\"_B\"") == null);
 }
 
 test "Pik generated text color classes use foreground dark conversion" {
