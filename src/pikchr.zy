@@ -132,6 +132,20 @@ pub const PVar = struct {
     pub const zero: PVar = .{ .zName = &.{}, .val = 0.0, .pNext = null };
 };
 
+const ColorTag = [4]u8;
+
+const ColorContext = struct {
+    pub fn hash(_: @This(), value: PNum) u64 {
+        return std.hash.int(@as(u64, @bitCast(value)));
+    }
+
+    pub fn eql(_: @This(), a: PNum, b: PNum) bool {
+        return a == b;
+    }
+};
+
+const ColorMap = std.HashMapUnmanaged(PNum, ColorTag, ColorContext, std.hash_map.default_max_load_percentage);
+
 // A single token in the parser input stream
 pub const PToken = struct {
     z: []const u8, // Token text
@@ -341,6 +355,9 @@ pub const Pik = struct {
     fgcolor: i32,                     // foreground color value, or -1 for none
     bgcolor: i32,                     // background color value, or -1 for none
     seenColor: [150]u8,               // which built-in colors have been seen
+    hFill: ColorMap,                  // fill/text color to generated class tag
+    hStroke: ColorMap,                // stroke color to generated class tag
+    varGen: ColorTag,                 // Next generated color class tag
     // Paths for lines are constructed here first, then transferred into
     // the PObj object at the end:
     nTPath: i32,                      // Number of entries on aTPath[]
@@ -387,6 +404,9 @@ pub const Pik = struct {
         .fgcolor = -1,
         .bgcolor = -1,
         .seenColor = [_]u8{0} ** 150,
+        .hFill = .empty,
+        .hStroke = .empty,
+        .varGen = .{ 'a', 0, 0, 0 },
         .nTPath = 0,
         .mTPath = 0,
         .aTPath = [_]PPoint{.zero} ** 1000,
@@ -411,6 +431,8 @@ pub const Pik = struct {
 
     pub fn deinit(p: *Pik) void {
         p.zOut.deinit();
+        p.hFill.deinit(p.allocator);
+        p.hStroke.deinit(p.allocator);
         if (p.zID.len != 0) p.allocator.free(p.zID);
         if (p.zTitle.len != 0) p.allocator.free(p.zTitle);
         if (p.zDesc.len != 0) p.allocator.free(p.zDesc);
@@ -3316,6 +3338,7 @@ fn pik_render(p: *Pik, list: ?*PList) void {
     if ((p.mAttr & ATTR_FILL_NO) != 0) {
         pik_append(p, "._T {fill:transparent}\n");
     }
+    pik_append_color_css(p);
     if ((p.mAttr & ATTR_T_START) != 0) {
         pik_append(p, "._tS {text-anchor:start}\n");
     }
@@ -3896,15 +3919,96 @@ fn pik_autochop(p: *Pik, from: *PPoint, to: *PPoint, obj: ?*PObj) void {
     }
 }
 
+fn pik_next_color_tag(tag: []u8) void {
+    var i: usize = 3;
+    while (tag[i] == 0) i -= 1;
+    const len = i + 1;
+    while (true) {
+        if (tag[i] < 'z') {
+            tag[i] += 1;
+            return;
+        }
+        tag[i] = 'a';
+        if (i == 0) {
+            tag[len] = 'a';
+            return;
+        }
+        i -= 1;
+    }
+}
+
+fn pik_remember_color(p: *Pik, map: *ColorMap, value: PNum) void {
+    const entry = map.getOrPut(p.allocator, value) catch {
+        pik_error(p, null, null);
+        return;
+    };
+    if (!entry.found_existing) {
+        entry.value_ptr.* = p.varGen;
+        pik_next_color_tag(&p.varGen);
+    }
+}
+
+fn pik_color_tag_eq(a: ColorTag, b: ColorTag) bool {
+    return std.mem.eql(u8, a[0..], b[0..]);
+}
+
+fn pik_append_color_tag(p: *Pik, tag: ColorTag) void {
+    var i: usize = 0;
+    while (i < tag.len and tag[i] != 0) : (i += 1) {}
+    pik_append(p, tag[0..i]);
+}
+
+fn pik_color_for_tag(map: *const ColorMap, tag: ColorTag) ?PNum {
+    var it = map.iterator();
+    while (it.next()) |entry| {
+        if (pik_color_tag_eq(entry.value_ptr.*, tag)) return entry.key_ptr.*;
+    }
+    return null;
+}
+
+fn pik_append_color_css_for_tag(p: *Pik, prefix: []const u8, property: []const u8, tag: ColorTag, color: PNum, is_bg: bool) void {
+    pik_append(p, ".");
+    pik_append(p, prefix);
+    pik_append_color_tag(p, tag);
+    pik_append(p, " {");
+    pik_append(p, property);
+    pik_append(p, ":");
+    pik_append_clr(p, "", color, "", is_bg);
+    pik_append(p, "}\n");
+}
+
+fn pik_append_color_css(p: *Pik) void {
+    var tag: ColorTag = .{ 'a', 0, 0, 0 };
+    while (!pik_color_tag_eq(tag, p.varGen)) {
+        if (pik_color_for_tag(&p.hFill, tag)) |color| {
+            pik_append_color_css_for_tag(p, "_f", "fill", tag, color, true);
+        } else if (pik_color_for_tag(&p.hStroke, tag)) |color| {
+            pik_append_color_css_for_tag(p, "_s", "stroke", tag, color, false);
+        }
+        pik_next_color_tag(&tag);
+    }
+}
+
 // This routine runs after all attributes have been received
 // on an object.
 fn pik_after_adding_attributes(p: *Pik, obj: ?*PObj) void {
     const o = obj orelse return;
     if (p.nErr != 0) return;
     const class = o.type orelse return;
+    const use_fill = !(o.fill < 0.0 or (class.isLine != 0 and o.bClose == 0));
+
+    if (o.sw >= 0.0 and o.color >= 0.0) {
+        pik_remember_color(p, &p.hStroke, o.color);
+    }
+    if (o.nTxt != 0 and o.textcolor >= 0.0) {
+        pik_remember_color(p, &p.hFill, o.textcolor);
+    }
+    if (use_fill) {
+        pik_remember_color(p, &p.hFill, o.fill);
+    }
 
     // Check for transparency
-    if (o.fill < 0.0 or (class.isLine != 0 and o.bClose == 0)) {
+    if (!use_fill) {
         p.mAttr |= ATTR_FILL_NO;
     }
 
@@ -5676,6 +5780,48 @@ test "Pik parser module carries translated state" {
     try std.testing.expectEqualStrings("svg", pik.zOut.written());
 }
 
+test "Pik color tag generator advances with carry" {
+    var one = [_]u8{ 'z', 0, 0, 0 };
+    pik_next_color_tag(&one);
+    try std.testing.expectEqualSlices(u8, &.{ 'a', 'a', 0, 0 }, &one);
+
+    var two = [_]u8{ 'z', 'z', 0, 0 };
+    pik_next_color_tag(&two);
+    try std.testing.expectEqualSlices(u8, &.{ 'a', 'a', 'a', 0 }, &two);
+
+    var three = [_]u8{ 'a', 'a', 'a', 0 };
+    pik_next_color_tag(&three);
+    try std.testing.expectEqualSlices(u8, &.{ 'a', 'a', 'b', 0 }, &three);
+
+    var four = [_]u8{ 'z', 'z', 'z', 0 };
+    pik_next_color_tag(&four);
+    try std.testing.expectEqualSlices(u8, &.{ 'a', 'a', 'a', 'a' }, &four);
+}
+
+test "Pik after adding attributes records color tags" {
+    var pik = Pik.init(std.testing.allocator, "box", "pikchr", 0);
+    defer pik.deinit();
+    var tok = classToken("box");
+    const obj = pik_elem_new(&pik, &tok, null, null).?;
+    obj.color = 0x112233;
+    obj.textcolor = 0x445566;
+    obj.fill = 0x778899;
+    obj.nTxt = 1;
+    pik_after_adding_attributes(&pik, obj);
+    _ = pik_elist_append(&pik, null, obj);
+
+    try std.testing.expectEqual(@as(ColorMap.Size, 1), pik.hStroke.count());
+    try std.testing.expectEqual(@as(ColorMap.Size, 2), pik.hFill.count());
+
+    const stroke = pik.hStroke.get(obj.color).?;
+    const text = pik.hFill.get(obj.textcolor).?;
+    const fill = pik.hFill.get(obj.fill).?;
+    try std.testing.expectEqualSlices(u8, &.{ 'a', 0, 0, 0 }, &stroke);
+    try std.testing.expectEqualSlices(u8, &.{ 'b', 0, 0, 0 }, &text);
+    try std.testing.expectEqualSlices(u8, &.{ 'c', 0, 0, 0 }, &fill);
+    try std.testing.expectEqualSlices(u8, &.{ 'd', 0, 0, 0 }, &pik.varGen);
+}
+
 test "Pik object allocation initializes class defaults" {
     var pik = Pik.init(std.testing.allocator, "box", "pikchr", 0);
     defer pik.deinit();
@@ -5828,6 +5974,25 @@ test "Pik generated render entrypoint parses simple source" {
     defer out.deinit(std.testing.allocator);
     try std.testing.expect(out.ok());
     try std.testing.expect(std.mem.startsWith(u8, out.text, "<svg "));
+}
+
+test "Pik generated render emits color class CSS" {
+    const out = try render(std.testing.allocator, "box \"hi\" fill 0x778899 color 0x112233 textcolor 0x445566\n", "pikchr", 0);
+    defer out.deinit(std.testing.allocator);
+    try std.testing.expect(out.ok());
+    try std.testing.expect(std.mem.indexOf(u8, out.text, "._sa {stroke:rgb(17,34,51)}") != null);
+    try std.testing.expect(std.mem.indexOf(u8, out.text, "._fb {fill:rgb(68,85,102)}") != null);
+    try std.testing.expect(std.mem.indexOf(u8, out.text, "._fc {fill:rgb(119,136,153)}") != null);
+    try std.testing.expect(std.mem.indexOf(u8, out.text, "stroke=\"rgb(17,34,51)\"") != null);
+    try std.testing.expect(std.mem.indexOf(u8, out.text, "fill=\"rgb(119,136,153)\"") != null);
+}
+
+test "Pik generated color class CSS uses existing dark color conversion" {
+    const out = try render(std.testing.allocator, "box fill 0x778899 color 0x112233\n", "pikchr", PIKCHR_DARK_MODE);
+    defer out.deinit(std.testing.allocator);
+    try std.testing.expect(out.ok());
+    try std.testing.expect(std.mem.indexOf(u8, out.text, "._sa {stroke:rgb(204,221,238)}") != null);
+    try std.testing.expect(std.mem.indexOf(u8, out.text, "._fb {fill:rgb(95,111,127)}") != null);
 }
 
 test "Pik generated render expands macros" {
