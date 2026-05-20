@@ -1,0 +1,221 @@
+#!/usr/bin/env bash
+
+# Paths to the two versions of the pikchr.
+before="./zig-out/pik-trunk"
+after="./zig-out/bin/pikchresque"
+
+# File name to write to.
+output_file="./zig-out/side-by-side.html"
+
+# HTML header.
+header=$(cat <<'EOF'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG Comparison</title>
+    <style>
+        /* Centered Container */
+        .container {
+            display: flex;
+            flex-wrap: nowrap;
+            justify-content: center;
+            gap: 20px;
+            width: 100%;
+        }
+        .svg-set {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto; /* Center the svg-set container */
+            text-align: center; /* Center align the header and SVGs */
+        }
+        .svg-wrapper {
+            flex: 1 1 auto;
+            cursor: pointer;
+            position: relative;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 300px;
+        }
+        svg, pre {
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            max-height: 100%;
+            margin: 0;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        pre {
+            background-color: #f0f0f0;
+            white-space: pre-wrap;
+            overflow: auto;
+            text-align: left;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+    <script>
+        function toggleHidden(wrapperId) {
+            var wrapper = document.getElementById(wrapperId);
+            var svg = wrapper.querySelector('svg');
+            var pre = wrapper.querySelector('pre');
+
+            if (svg.classList.contains('hidden')) {
+                svg.classList.remove('hidden');
+                pre.classList.add('hidden');
+            } else {
+                svg.classList.add('hidden');
+                pre.classList.remove('hidden');
+            }
+        }
+    </script>
+</head>
+<body>
+<h1>SVG Comparison</h1>
+<div class="container">
+EOF
+)
+
+# Separator between SVGs.
+separator=$(cat <<'EOF'
+</div>
+<div class="container">
+EOF
+)
+
+# HTML footer.
+footer=$(cat <<'EOF'
+</div>
+</body>
+</html>
+EOF
+)
+
+# Count of bytes in each version.
+total_before_bytes=0
+total_after_bytes=0
+
+# Initialize an array to collect all output strings.
+output_content=()
+
+# Start with header.
+output_content+=("$header")
+
+# Identify the last file in the directory.
+last_file=$(find ./piks/tests/* | tail -n 1)
+
+# Counter to ensure unique IDs
+counter=1
+
+# For each file in ./piks/tests directory
+for file in ./piks/tests/*; do
+    filename=$(basename "$file")
+    wrapper_id="wrapper-$counter"
+
+    # Wrap the header and SVGs in a container
+    output_content+=("<div class=\"svg-set\">")
+
+    # Add the filename as a centered and much larger header
+    output_content+=("<h1 style=\"font-size: 48px; font-weight: bold; margin: 60px 0;\">$filename</h1>")
+
+    output_content+=("<div class=\"container\">")
+    output_content+=("<div class=\"svg-wrapper\" id=\"$wrapper_id\" onclick=\"toggleHidden('$wrapper_id')\">")
+
+    # Generate SVG with before version
+    svg_before=$($before --svg-only "$file")
+    output_content+=("$svg_before")
+    before_bytes=$(echo -n "$svg_before" | wc -c)
+    total_before_bytes=$((total_before_bytes + before_bytes))
+
+    output_content+=("<pre class='hidden'>")
+    output_content+=("$(echo "$svg_before" | sed 's/</\&lt;/g; s/>/\&gt;/g')")
+    output_content+=("</pre>")
+
+    output_content+=("</div>")
+
+    output_content+=("<div class=\"svg-wrapper\" id=\"${wrapper_id}-after\" onclick=\"toggleHidden('${wrapper_id}-after')\">")
+
+    # Generate SVG with after version
+    svg_after=$($after --svg-only "$file")
+    output_content+=("$svg_after")
+    after_bytes=$(echo -n "$svg_after" | wc -c)
+    total_after_bytes=$((total_after_bytes + after_bytes))
+
+    output_content+=("<pre class='hidden'>")
+    output_content+=("$(echo "$svg_after" | sed 's/</\&lt;/g; s/>/\&gt;/g')")
+    output_content+=("</pre>")
+
+    output_content+=("</div>")
+    output_content+=("</div>") # Close container
+    output_content+=("</div>") # Close svg-set
+
+    # Increment counter for unique IDs
+    counter=$((counter + 1))
+
+    output_content+=("$separator")
+
+    wrapper_id="wrapper-$counter"
+
+    # Dark Mode
+    output_content+=("<div class=\"svg-set\">")
+    output_content+=("<div class=\"container\">")
+    output_content+=("<div class=\"svg-wrapper\" id=\"${wrapper_id}-dark\" onclick=\"toggleHidden('${wrapper_id}-dark')\"  style=\"color:white;background-color:black;\">")
+
+    # Generate SVG with before version in dark mode
+    svg_before=$($before --dark-mode --svg-only "$file")
+    output_content+=("$svg_before")
+    before_bytes=$(echo -n "$svg_before" | wc -c)
+    total_before_bytes=$((total_before_bytes + before_bytes))
+
+    output_content+=("<pre class='hidden' style=\"color:black;background-color:white;\">")
+    output_content+=("$(echo "$svg_before" | sed 's/</\&lt;/g; s/>/\&gt;/g')")
+    output_content+=("</pre>")
+
+    output_content+=("</div>")
+
+    output_content+=("<div class=\"svg-wrapper\" id=\"${wrapper_id}-after-dark\" onclick=\"toggleHidden('${wrapper_id}-after-dark')\" style=\"color:white;background-color:black;\">")
+
+    # Generate SVG with after version in dark mode
+    svg_after=$($after --dark-mode --svg-only "$file")
+    output_content+=("$svg_after")
+    after_bytes=$(echo -n "$svg_after" | wc -c)
+    total_after_bytes=$((total_after_bytes + after_bytes))
+
+    output_content+=("<pre class='hidden' style=\"color:black;background-color:white;\">")
+    output_content+=("$(echo "$svg_after" | sed 's/</\&lt;/g; s/>/\&gt;/g')")
+    output_content+=("</pre>")
+
+    output_content+=("</div>")
+    output_content+=("</div>") # Close container
+    output_content+=("</div>") # Close svg-set
+
+    # Add separator between SVG pairs (except for last file)
+    if [ "$file" != "$last_file" ]; then
+        output_content+=("$separator")
+    fi
+done
+
+
+# Emit footer
+output_content+=("$footer")
+
+# Write
+printf "%s\n" "${output_content[@]}" > "$output_file"
+
+# Calculate the percentage change
+if [ $total_before_bytes -gt 0 ]; then
+    percentage_change=$(echo "scale=2; $total_after_bytes / $total_before_bytes * 100" | bc)
+else
+    percentage_change="N/A"
+fi
+
+# Print the byte counts and percentage change
+echo "Total bytes before: $total_before_bytes"
+echo "Total bytes after: $total_after_bytes"
+echo "Percentage: $percentage_change%"
