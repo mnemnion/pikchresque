@@ -19,7 +19,7 @@ An arrow 'Markdown source' points to
 'HTML + SVG output'.
 </desc>
 <g class="arrow" >
-<polygon class="arrow _sa _fb" points="146.16,37.44 134.64,41.76 134.64,33.12" />
+<polygon class="arrow _fb" points="146.16,37.44 134.64,41.76 134.64,33.12" />
 <path class="arrow _T _sa" d="M2.16,37.44L140.4,37.44"  stroke-width="2.16" />
 </g>
 <text class="arrow _fb _D _tM" x="74.16" y="25.74">Markdown</text>
@@ -29,14 +29,14 @@ An arrow 'Markdown source' points to
 <text class="box _fb _D _tM" x="209.75" y="37.44">Formatter</text>
 <text class="box _fb _D _tM" x="209.75" y="57.6">(markdown.c)</text>
 <g class="arrow" >
-<polygon class="arrow _sa _fb" points="417.341,37.44 405.821,41.76 405.821,33.12" />
+<polygon class="arrow _fb" points="417.341,37.44 405.821,41.76 405.821,33.12" />
 <path class="arrow _T _sa" d="M273.341,37.44L411.581,37.44"  stroke-width="2.16" />
 </g>
 <text class="arrow _fb _D _tM" x="345.341" y="25.74">HTML+SVG</text>
 <text class="arrow _fb _D _tM" x="345.341" y="49.14">Output</text>
 <g class="arrow" >
-<polygon class="arrow _sa _fb" points="209.75,72.72 214.07,84.24 205.43,84.24" />
-<polygon class="arrow _sa _fb" points="209.75,123.12 205.43,111.6 214.07,111.6" />
+<polygon class="arrow _fb" points="209.75,72.72 214.07,84.24 205.43,84.24" />
+<polygon class="arrow _fb" points="209.75,123.12 205.43,111.6 214.07,111.6" />
 <path class="arrow _T _sa" d="M209.75,78.48L209.75,117.36"  stroke-width="2.16" />
 </g>
 <path class="box _T _sa" d="M176.136,193.68L243.365,193.68A15 15 0 0 0 258.365 178.68L258.365,138.12A15 15 0 0 0 243.365 123.12L176.136,123.12A15 15 0 0 0 161.136 138.12L161.136,178.68A15 15 0 0 0 176.136 193.68Z"  stroke-width="2.16" />

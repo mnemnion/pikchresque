@@ -1,4 +1,8 @@
-box rad 10px fill lightgray color gray textcolor darkblue "Make Some" "Changes" fit
+title "A diagram in the Pikchresque manner"
+description "A set of four box items, with arrows going clockwise in a circle. \
+It shows a loop: compile, think, change, repeat."
+
+box rad 10px class flutter_one fill lightgray color gray textcolor darkblue "Make Some" "Changes" fit
 arrow right 200% "Compile" italic above textcolor red chop
 box rad 10px fill gray color rebeccapurple "Scratch" "Chin" textcolor aqua fit
 down

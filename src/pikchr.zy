@@ -5894,25 +5894,29 @@ fn pik_parse_macro_args(
     }
     if (i < z.len and z[i] == ')') {
         args[n_arg].z = z[i_start..i];
-        // Remove leading and trailing whitespace from each argument.
-        // If what remains is one of $1, $2, ... $9 then transfer the
-        // corresponding argument from the outer context
-        for (args[0 .. n_arg + 1]) |*arg| {
-            while (arg.z.len > 0 and std.ascii.isWhitespace(arg.z[0])) {
-                arg.z = arg.z[1..];
+        // Remove leading and trailing whitespace from each argument,
+        // or backslash-escaped newlines.  If what remains is one of $1, $2,
+        // ... $9 then transfer the corresponding argument from the outer context.
+        for (args[0 .. n_arg + 1]) |*t| {
+            while ((t.z.len > 0 and std.ascii.isWhitespace(t.z[0]))
+            or (t.z.len > 1 and t.z[0] == '\\' and t.z[1] == '\n')) {
+                t.z = t.z[1..];
             }
-            while (arg.z.len > 0 and std.ascii.isWhitespace(arg.z[arg.z.len - 1])) {
-                arg.z = arg.z[0 .. arg.z.len - 1];
-            }
-            if (arg.z.len == 2 and arg.z[0] == '$' and arg.z[1] >= '1' and arg.z[1] <= '9') {
-                if (outer) |out| {
-                    arg.* = out[arg.z[1] - '1'];
-                } else {
-                    arg.z = "";
+            while (t.z.len > 0 and std.ascii.isWhitespace(t.z[t.z.len - 1])) {
+                t.z = t.z[0 .. t.z.len - 1];
+                if (t.z.len > 0 and t.z[t.z.len - 1] == '\\') {
+                    t.z = t.z[0.. t.z.len - 1];
                 }
             }
-            if (arg.z.len != 0) {
-                p.shaDigest.update(arg.z);
+            if (t.z.len == 2 and t.z[0] == '$' and t.z[1] >= '1' and t.z[1] <= '9') {
+                if (outer) |out| {
+                    t.* = out[t.z[1] - '1'];
+                } else {
+                    t.z = "";
+                }
+            }
+            if (t.z.len != 0) {
+                p.shaDigest.update(t.z);
             }
         }
         return i + 1;

@@ -12,7 +12,7 @@ A diagram taken directly from the user manual.  Pic was (and is) a
 [troff] preprocessor, written in C, with aid of [lex] and [yacc].
 
 Next, there was (and is!)  [Pikchr].  This is a port and adaptation of
-Pic, by [D. Richard Hipp].  Which works like this:
+Pic, by [D. Richard Hipp][drh].  Which works like this:
 
 ![Original Pikchr](img/pikchr.svg "The workflow from the Pikchr home page.")
 
@@ -39,7 +39,7 @@ out.  It happens.
 In 2025, I wrote [Zitron], translating Lemon into Zig, and then adapting
 the result to emit Zig code rather than C. These quests were, at the
 time, only related insofar as hacking on Pikchr(esque) is how I came to
-appreciate Lemonm well enough to want to base a parser generator on it.
+appreciate Lemon well enough to want to base a parser generator on it.
 
 Later, while working on Zitron tooling, it became clear that the task
 would benefit from a non-trivial Zitron _program_.  While I have some
@@ -101,7 +101,7 @@ as much information about the diagram as text can provide."
 
 These are properly marked up with aria roles.  I'm no a11y expert,
 but my limited experiments with the results suggest that it's at least
-acceptable which, it pains me to say, is not true of stock Pikchr
+acceptable: which, it pains me to say, is not true of stock Pikchr
 diagrams.  I am open to any informed suggestions about how to improve
 the experience further.
 
