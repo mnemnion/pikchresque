@@ -214,7 +214,7 @@ pub const C_COLOR = 0x01;
 pub const C_FILL = 0x02;
 pub const C_TEXT = 0x04;
 
-// A single graphics object
+/// A single graphics object
 pub const PObj = struct {
     type: ?*const PClass,    // Object type or class
     errTok: PToken,          // Reference token for error messages
@@ -295,7 +295,7 @@ pub const PObj = struct {
     };
 };
 
-// A list of graphics objects
+/// A list of graphics objects
 pub const PList = struct {
     n: usize, // Number of statements in the list
     nAlloc: usize, // Allocated slots in a[]
@@ -304,7 +304,7 @@ pub const PList = struct {
     pub const zero: PList = .{ .n = 0, .nAlloc = 0, .a = &.{} };
 };
 
-// A macro definition
+/// A macro definition
 pub const PMacro = struct {
     pNext: ?*PMacro, // Next in the list
     macroName: PToken, // Name of the macro
@@ -317,8 +317,8 @@ pub const PMacro = struct {
 // zig fmt: off
 const sha1_options = std.crypto.hash.Sha1.Options{};
 
-// Each call to the pikchr() subroutine uses an instance of the following
-// object to pass around context to all of its subroutines.
+/// Each call to the pikchr() subroutine uses an instance of the following
+/// object to pass around context to all of its subroutines.
 pub const Pik = struct {
     allocator: Allocator,             // Allocator for all per-render memory
     nErr: u32,                        // Number of errors seen
@@ -460,48 +460,47 @@ pub const Pik = struct {
     }
 };
 
-// Include PIKCHR_PLAINTEXT_ERRORS among the bits of mFlags on the 3rd
-// argument to pikchr() in order to cause error message text to come out
-// as text/plain instead of as text/html
+/// Include PIKCHR_PLAINTEXT_ERRORS among the bits of mFlags on the 3rd
+/// argument to pikchr() in order to cause error message text to come out
+/// as text/plain instead of as text/html
 pub const PIKCHR_PLAINTEXT_ERRORS = 0x0001;
 
-// Include PIKCHR_DARK_MODE among the mFlag bits to invert colors.
+/// Include PIKCHR_DARK_MODE among the mFlag bits to invert colors.
 pub const PIKCHR_DARK_MODE = 0x0002;
 
-// Include PIKCHR_EXTRA_UNIQUE_ID among the mFlag bits to add a value
-// to each hash of a call to `char *pikchr`.  This value is taken from
-// a counter, meaning the id is based both on the tokens of the Pikchr
-// script, and the order in which the diagram is produced.  This could
-// be useful in settings like forums, where more than one copy of a
-// diagram may appear.
+/// Include PIKCHR_EXTRA_UNIQUE_ID among the mFlag bits to add a value to each
+/// hash of a call to `char *pikchr`.  This value is taken from a thread-local
+/// counter, meaning the id is based both on the tokens of the Pikchr script,
+/// and the order in which the diagram is produced.  This could be useful in
+/// settings like forums, where more than one copy of a diagram may appear.
 pub const PIKCHR_EXTRA_UNIQUE_ID = 0x0004;
 
-// The behavior of an object class is defined by an instance of
-// this structure. This is the "virtual method" table.
+/// The behavior of an object class is defined by an instance of
+/// this structure. This is the "virtual method" table.
 pub const PClass = struct {
-    zName: []const u8, // Name of class
-    isLine: u8, // True if a line class
-    eJust: u8, // Use box-style text justification
-    xInit: ?*const fn (*Pik, *PObj) void, // Initializer
-    xNumProp: ?*const fn (*Pik, *PObj, *PToken) void, // Value change notification
-    xCheck: ?*const fn (*Pik, *PObj) void, // Checks to do after parsing
-    xChop: ?*const fn (*Pik, *PObj, *PPoint) PPoint, // Chopper
-    xOffset: ?*const fn (*Pik, *PObj, i32) PPoint, // Offset from .c to edge point
-    xFit: ?*const fn (*Pik, *PObj, PNum, PNum) void, // Size to fit text
-    xRender: ?*const fn (*Pik, *PObj) void, // Render
+    zName: []const u8,                                 // Name of class
+    isLine: u8,                                        // True if a line class
+    eJust: u8,                                         // Use box-style text justification
+    xInit: ?*const fn (*Pik, *PObj) void,              // Initializer
+    xNumProp: ?*const fn (*Pik, *PObj, *PToken) void,  // Value change notification
+    xCheck: ?*const fn (*Pik, *PObj) void,             // Checks to do after parsing
+    xChop: ?*const fn (*Pik, *PObj, *PPoint) PPoint,   // Chopper
+    xOffset: ?*const fn (*Pik, *PObj, i32) PPoint,     // Offset from .c to edge point
+    xFit: ?*const fn (*Pik, *PObj, PNum, PNum) void,   // Size to fit text
+    xRender: ?*const fn (*Pik, *PObj) void,            // Render
 };
 
 // Append text (that will go inside of a <pre>...</pre>) that
 // shows the context of an error token.
 fn pik_error_context(p: *Pik, token: *const PToken, n_context: i32) void {
-    var i_err_pt: isize = 0; // Index of first byte of error from start of input
-    var i_err_col: usize = 0; // Column of the error token on its line
-    var i_start: usize = 0; // Start position of the error context
-    var i_end: usize = 0; // End position of the error context
-    var i_lineno: i32 = 1; // Line number of the error
-    var i_first_lineno: i32 = 1; // Line number of start of error context
-    var i_bump: usize = 0; // Bump the location of the error cursor
-    var z_lineno: [24]u8 = undefined; // Buffer in which to generate line numbers
+    var i_err_pt: isize = 0;           // Index of first byte of error from start of input
+    var i_err_col: usize = 0;          // Column of the error token on its line
+    var i_start: usize = 0;            // Start position of the error context
+    var i_end: usize = 0;              // End position of the error context
+    var i_lineno: i32 = 1;             // Line number of the error
+    var i_first_lineno: i32 = 1;       // Line number of start of error context
+    var i_bump: usize = 0;             // Bump the location of the error cursor
+    var z_lineno: [24]u8 = undefined;  // Buffer in which to generate line numbers
 
     if (p.sIn.z.len == 0) return;
     const in_start = @intFromPtr(p.sIn.z.ptr);
@@ -5834,7 +5833,7 @@ fn pik_token_length_default(token: *PToken) usize {
     return 1;
 }
 
-var pikchr_call_count: u32 = 0;
+threadlocal var pikchr_call_count: u32 = 0;
 
 fn pik_set_id(p: *Pik) void {
     var digest: [std.crypto.hash.Sha1.digest_length]u8 = undefined;
