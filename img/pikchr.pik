@@ -1,0 +1,11 @@
+title "The workflow from the Pikchr home page."
+description "An arrow 'Markdown source' points to \
+'Markdown Formatter', which points back and forth at \
+'Pikchr Formatter'.  Out of the formatters an arrow says \
+'HTML + SVG output'."
+
+arrow right 200% "Markdown" "Source"
+box rad 10px "Markdown" "Formatter" "(markdown.c)" fit
+arrow right 200% "HTML+SVG" "Output"
+arrow <-> down 70% from last box.s
+box same "Pikchr" "Formatter" "(pikchr.c)" fit

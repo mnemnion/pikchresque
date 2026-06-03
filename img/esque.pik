@@ -1,0 +1,11 @@
+box rad 10px fill lightgray color gray textcolor darkblue "Make Some" "Changes" fit
+arrow right 200% "Compile" italic above textcolor red chop
+box rad 10px fill gray color rebeccapurple "Scratch" "Chin" textcolor aqua fit
+down
+arrow 120% "Hmm…" italic aligned above chop
+oval fill darkcyan color darkcyan "Think" "Harder" textcolor red fit
+left
+arrow from last.w left until even with first box.e textcolor orange "Nope!" above chop
+diamond width 125% fill deepskyblue color deepskyblue textcolor deeppink "!!!" big big fit
+up
+arrow to 1st box "Hack" italic above aligned "Furiously" italic bold below aligned chop behind first box

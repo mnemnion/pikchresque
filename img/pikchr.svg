@@ -1,0 +1,47 @@
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-af5bef16f9" role="img" aria-labelledby="title-af5bef16f9 desc-af5bef16f9" viewBox="0 0 423.821 195.84">
+<style>
+#pikchr-af5bef16f9 {
+._D {dominant-baseline:central}
+._T {fill:transparent}
+._tM {text-anchor:middle}
+color-scheme:light dark;
+._fb {fill:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._sa {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
+}
+</style>
+<title id="title-af5bef16f9">
+The workflow from the Pikchr home page.
+</title>
+<desc id="desc-af5bef16f9">
+An arrow 'Markdown source' points to 
+'Markdown Formatter', which points back and forth at 
+'Pikchr Formatter'.  Out of the formatters an arrow says 
+'HTML + SVG output'.
+</desc>
+<g class="arrow" >
+<polygon class="arrow _sa _fb" points="146.16,37.44 134.64,41.76 134.64,33.12" />
+<path class="arrow _T _sa" d="M2.16,37.44L140.4,37.44"  stroke-width="2.16" />
+</g>
+<text class="arrow _fb _D _tM" x="74.16" y="25.74">Markdown</text>
+<text class="arrow _fb _D _tM" x="74.16" y="49.14">Source</text>
+<path class="box _T _sa" d="M161.16,72.72L258.341,72.72A15 15 0 0 0 273.341 57.72L273.341,17.16A15 15 0 0 0 258.341 2.16L161.16,2.16A15 15 0 0 0 146.16 17.16L146.16,57.72A15 15 0 0 0 161.16 72.72Z"  stroke-width="2.16" />
+<text class="box _fb _D _tM" x="209.75" y="17.28">Markdown</text>
+<text class="box _fb _D _tM" x="209.75" y="37.44">Formatter</text>
+<text class="box _fb _D _tM" x="209.75" y="57.6">(markdown.c)</text>
+<g class="arrow" >
+<polygon class="arrow _sa _fb" points="417.341,37.44 405.821,41.76 405.821,33.12" />
+<path class="arrow _T _sa" d="M273.341,37.44L411.581,37.44"  stroke-width="2.16" />
+</g>
+<text class="arrow _fb _D _tM" x="345.341" y="25.74">HTML+SVG</text>
+<text class="arrow _fb _D _tM" x="345.341" y="49.14">Output</text>
+<g class="arrow" >
+<polygon class="arrow _sa _fb" points="209.75,72.72 214.07,84.24 205.43,84.24" />
+<polygon class="arrow _sa _fb" points="209.75,123.12 205.43,111.6 214.07,111.6" />
+<path class="arrow _T _sa" d="M209.75,78.48L209.75,117.36"  stroke-width="2.16" />
+</g>
+<path class="box _T _sa" d="M176.136,193.68L243.365,193.68A15 15 0 0 0 258.365 178.68L258.365,138.12A15 15 0 0 0 243.365 123.12L176.136,123.12A15 15 0 0 0 161.136 138.12L161.136,178.68A15 15 0 0 0 176.136 193.68Z"  stroke-width="2.16" />
+<text class="box _fb _D _tM" x="209.75" y="138.24">Pikchr</text>
+<text class="box _fb _D _tM" x="209.75" y="158.4">Formatter</text>
+<text class="box _fb _D _tM" x="209.75" y="178.56">(pikchr.c)</text>
+</svg>
+

@@ -1,0 +1,60 @@
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-e80270ed70" role="img" viewBox="0 0 334.872 199.476">
+<style>
+#pikchr-e80270ed70 {
+._D {dominant-baseline:central}
+._T {fill:transparent}
+._tM {text-anchor:middle}
+._Fb {font-weight:bold}
+._Fi {font-style:italic}
+color-scheme:light dark;
+._fc {fill:light-dark(rgb(211,211,211),rgb(44,44,44))}
+._fi {fill:light-dark(rgb(128,128,128),rgb(127,127,127))}
+._fk {fill:light-dark(rgb(0,139,139),rgb(57,127,127))}
+._fo {fill:light-dark(rgb(0,191,255),rgb(0,95,127))}
+._fb {fill:light-dark(rgb(0,0,139),rgb(127,127,255))}
+._fe {fill:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._ff {fill:light-dark(rgb(255,0,0),rgb(255,127,127))}
+._fh {fill:light-dark(rgb(0,255,255),rgb(127,255,255))}
+._fl {fill:light-dark(rgb(255,165,0),rgb(255,209,127))}
+._fn {fill:light-dark(rgb(255,20,147),rgb(255,127,196))}
+._sa {stroke:light-dark(rgb(128,128,128),rgb(127,127,127))}
+._sd {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._sg {stroke:light-dark(rgb(102,51,153),rgb(191,127,255))}
+._sj {stroke:light-dark(rgb(0,139,139),rgb(57,127,127))}
+._sm {stroke:light-dark(rgb(0,191,255),rgb(0,95,127))}
+}
+</style>
+<g class="arrow" >
+<polygon class="arrow _fe" points="57.96,52.56 62.2006,64.1095 53.5608,64.05" />
+<path class="arrow _T _sd" d="M57.42,131.004L57.9203,58.3199"  stroke-width="2.16" />
+</g>
+<text class="arrow _fe _D _tM _Fi" x="57.69" y="80.082" transform="rotate(-89.60558829 57.69,91.782)">Hack</text>
+<text class="arrow _fe _D _tM _Fi _Fb" x="57.69" y="103.482" transform="rotate(-89.60558829 57.69,91.782)">Furiously</text>
+<path class="box _sa _fc" d="M18.24,52.56L97.68,52.56A15 15 0 0 0 112.68 37.56L112.68,17.16A15 15 0 0 0 97.68 2.16L18.24,2.16A15 15 0 0 0 3.24 17.16L3.24,37.56A15 15 0 0 0 18.24 52.56Z"  stroke-width="2.16" />
+<text class="box _fb _D _tM" x="57.96" y="17.28">Make Some</text>
+<text class="box _fb _D _tM" x="57.96" y="37.44">Changes</text>
+<g class="arrow" >
+<polygon class="arrow _fe" points="256.68,27.36 245.16,31.68 245.16,23.04" />
+<path class="arrow _T _sd" d="M112.68,27.36L250.92,27.36"  stroke-width="2.16" />
+</g>
+<text class="arrow _ff _D _tM _Fi" x="184.68" y="15.66">Compile</text>
+<path class="box _sg _fi" d="M271.68,52.56L317.712,52.56A15 15 0 0 0 332.712 37.56L332.712,17.16A15 15 0 0 0 317.712 2.16L271.68,2.16A15 15 0 0 0 256.68 17.16L256.68,37.56A15 15 0 0 0 271.68 52.56Z"  stroke-width="2.16" />
+<text class="box _fh _D _tM" x="294.696" y="17.28">Scratch</text>
+<text class="box _fh _D _tM" x="294.696" y="37.44">Chin</text>
+<g class="arrow" >
+<polygon class="arrow _fe" points="294.696,138.96 290.376,127.44 299.016,127.44" />
+<path class="arrow _T _sd" d="M294.696,52.56L294.696,133.2"  stroke-width="2.16" />
+</g>
+<text class="arrow _fe _D _tM _Fi" x="294.696" y="84.06" transform="rotate(90 294.696,95.76)">Hmm…</text>
+<path class="oval _sj _fk" d="M283.838,189.36L305.554,189.36A25.2 25.2 0 0 0 330.754 164.16A25.2 25.2 0 0 0 305.554 138.96L283.838,138.96A25.2 25.2 0 0 0 258.638 164.16A25.2 25.2 0 0 0 283.838 189.36Z"  stroke-width="2.16" />
+<text class="oval _ff _D _tM" x="294.696" y="154.08">Think</text>
+<text class="oval _ff _D _tM" x="294.696" y="174.24">Harder</text>
+<g class="arrow" >
+<polygon class="arrow _fe" points="112.68,164.16 124.2,159.84 124.2,168.48" />
+<path class="arrow _T _sd" d="M258.638,164.16L118.44,164.16"  stroke-width="2.16" />
+</g>
+<text class="arrow _fl _D _tM" x="185.659" y="152.46">Nope!</text>
+<path class="diamond _sm _fo" d="M2.16,164.16L57.42,197.316L112.68,164.16L57.42,131.004Z"  stroke-width="2.16" />
+<text class="diamond _fn _D _tM" x="57.42" y="164.16" font-size="156.25%">!!!</text>
+</svg>
+
