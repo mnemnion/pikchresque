@@ -2513,13 +2513,6 @@ fn pik_draw_arrowhead(p: *Pik, f: *PPoint, t: *PPoint, obj: *PObj) void {
     pik_append_tag_open(p, obj, "polygon");
     if (comptime pik_no_style) {
         if (obj.sw >= 0.0 and obj.color >= 0.0) {
-            if (p.hStroke.get(obj.color)) |tag| {
-                pik_append(p, " _s");
-                pik_append_color_tag(p, tag);
-            } else {
-                pik_error(p, null, "internal error: missing generated color class");
-                return;
-            }
             if (p.hFgFill.get(obj.color)) |tag| {
                 pik_append(p, " _f");
                 pik_append_color_tag(p, tag);
@@ -2561,6 +2554,13 @@ fn pik_append_group(p: *Pik, obj: *PObj) i32 {
 fn lineRender(p: *Pik, obj: *PObj) void {
     const enclosed = pik_append_group(p, obj);
     if (obj.sw > 0.0) {
+        var n: usize = @intCast(obj.nPath);
+        if (obj.larrow != 0) {
+            pik_draw_arrowhead(p, &obj.aPath[1], &obj.aPath[0], obj);
+        }
+        if (obj.rarrow != 0) {
+            pik_draw_arrowhead(p, &obj.aPath[n - 2], &obj.aPath[n - 1], obj);
+        }
         pik_append_tag_open(p, obj, "path");
         if ((obj.bClose != 0 and obj.fill < 0.0) or obj.bClose == 0) pik_append(p, " _T");
         if (obj.sw >= 0.0 and obj.color >= 0.0) {
@@ -2584,7 +2584,7 @@ fn lineRender(p: *Pik, obj: *PObj) void {
         pik_append(p, "\" ");
         pik_append(p, "d=\"M");
         if (obj.nPath > 0 and obj.aPath.len > 0) {
-            const n: usize = @min(@as(usize, @intCast(obj.nPath)), obj.aPath.len);
+            n = @min(@as(usize, @intCast(obj.nPath)), obj.aPath.len);
             var i: usize = 0;
             while (i < n) : (i += 1) {
                 pik_append_xy(p, if (i == 0) "" else "L", obj.aPath[i].x, obj.aPath[i].y);
@@ -2601,13 +2601,6 @@ fn lineRender(p: *Pik, obj: *PObj) void {
         pik_append(p, "\" ");
         pik_append_style(p, obj, if (obj.bClose != 0) 3 else 0);
         pik_append(p, " />\n");
-        const n: usize = @intCast(obj.nPath);
-        if (obj.larrow != 0 and n >= 2 and obj.aPath.len >= n) {
-            pik_draw_arrowhead(p, &obj.aPath[1], &obj.aPath[0], obj);
-        }
-        if (obj.rarrow != 0 and n >= 2 and obj.aPath.len >= n) {
-            pik_draw_arrowhead(p, &obj.aPath[n - 2], &obj.aPath[n - 1], obj);
-        }
     }
     if (enclosed != 0) {
         pik_append(p, "</g>\n");
@@ -2702,13 +2695,13 @@ fn splineRender(p: *Pik, obj: *PObj) void {
             return;
         }
         const enclosed = pik_append_group(p, obj);
-        radiusPath(p, obj, r);
         if (obj.larrow != 0) {
             pik_draw_arrowhead(p, &obj.aPath[1], &obj.aPath[0], obj);
         }
         if (obj.rarrow != 0) {
             pik_draw_arrowhead(p, &obj.aPath[n - 2], &obj.aPath[n - 1], obj);
         }
+        radiusPath(p, obj, r);
         if (enclosed != 0) {
             pik_append(p, "</g>\n");
         }
@@ -3597,7 +3590,7 @@ fn pik_render(p: *Pik, list: ?*PList) void {
     if ((p.mAttr & ATTR_F_BOLD) != 0) {
         pik_append(p, "._Fb {font-weight:bold}\n");
     }
-    if ((p.mAttr & ATTR_F_BOLD) != 0) {
+    if ((p.mAttr & ATTR_F_ITALIC) != 0) {
         pik_append(p, "._Fi {font-style:italic}\n");
     }
     if ((p.mAttr & ATTR_F_MONO) != 0) {
@@ -6400,6 +6393,15 @@ test "Pik generated color class CSS uses existing dark color conversion" {
     try std.testing.expect(std.mem.indexOf(u8, out.text, "._fb {fill:light-dark(rgb(95,111,127),rgb(119,136,153))}") != null);
 }
 
+test "Pik generated italic text emits italic CSS without bold" {
+    const out = try render(std.testing.allocator, "text \"hi\" italic\n", "pikchr", 0);
+    defer out.deinit(std.testing.allocator);
+    try std.testing.expect(out.ok());
+    try std.testing.expect(std.mem.indexOf(u8, out.text, "._Fi {font-style:italic}") != null);
+    try std.testing.expect(std.mem.indexOf(u8, out.text, "._Fb {font-weight:bold}") == null);
+    try std.testing.expect(std.mem.indexOf(u8, out.text, "class=\"text _fa _D _tM _Fi\"") != null);
+}
+
 test "Pik generated dark mode SVG emits responsive backdrop" {
     const out = try render(std.testing.allocator, "box fill 0x778899 color 0x112233\n", "pikchr", PIKCHR_DARK_MODE);
     defer out.deinit(std.testing.allocator);
@@ -6441,9 +6443,18 @@ test "Pik generated arrowhead fill uses foreground color class" {
     try std.testing.expect(out.ok());
     try std.testing.expect(std.mem.indexOf(u8, out.text, "._sa {stroke:light-dark(rgb(204,221,238),rgb(17,34,51))}") != null);
     try std.testing.expect(std.mem.indexOf(u8, out.text, "._fb {fill:light-dark(rgb(204,221,238),rgb(17,34,51))}") != null);
-    try std.testing.expect(std.mem.indexOf(u8, out.text, "<polygon class=\"arrow _sa _fb\"") != null);
+    try std.testing.expect(std.mem.indexOf(u8, out.text, "<polygon class=\"arrow _fb\"") != null);
     try std.testing.expect(std.mem.indexOf(u8, out.text, "._G") == null);
     try std.testing.expect(std.mem.indexOf(u8, out.text, "fill=\"rgb(204,221,238)\"") == null);
+}
+
+test "Pik generated arrowhead chops shaft before emitting path" {
+    const out = try render(std.testing.allocator, "arrow up\n", "pikchr", 0);
+    defer out.deinit(std.testing.allocator);
+    try std.testing.expect(out.ok());
+    try std.testing.expect(std.mem.indexOf(u8, out.text, "<polygon class=\"arrow _fb\" points=\"6.48,6.48 10.8,18 2.16,18\" />") != null);
+    try std.testing.expect(std.mem.indexOf(u8, out.text, "<path class=\"arrow _T _sa\" d=\"M6.48,78.48L6.48,12.24\"") != null);
+    try std.testing.expect(std.mem.indexOf(u8, out.text, "<path class=\"arrow _T _sa\" d=\"M6.48,78.48L6.48,6.48\"") == null);
 }
 
 test "Pik generated responsive color CSS preserves fg/bg fallback" {
