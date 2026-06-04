@@ -3364,8 +3364,15 @@ const aClass = [_]PClass{
 
 // Convert an object class name into a PClass pointer
 fn pik_find_class(id: *PToken) ?*const PClass {
-    for (&aClass) |*class| {
-        if (std.mem.eql(u8, class.zName, id.z)) return class;
+    var first: usize = 0;
+    var last: usize = aClass.len;
+    while (first < last) {
+        const mid = first + (last - first) / 2;
+        switch (std.mem.order(u8, id.z, aClass[mid].zName)) {
+            .eq => return &aClass[mid],
+            .lt => last = mid,
+            .gt => first = mid + 1,
+        }
     }
     return null;
 }
@@ -3898,10 +3905,17 @@ fn pik_value(p: *Pik, z: []const u8, miss: ?*i32) PNum {
             return vv.val;
         }
     }
-    for (aBuiltin) |bi| {
-        if (std.mem.eql(u8, bi.zName, z)) {
-            if (miss) |m| m.* = 0;
-            return bi.val;
+    var first: usize = 0;
+    var last: usize = aBuiltin.len;
+    while (first < last) {
+        const mid = first + (last - first) / 2;
+        switch (std.mem.order(u8, z, aBuiltin[mid].zName)) {
+            .eq => {
+                if (miss) |m| m.* = 0;
+                return aBuiltin[mid].val;
+            },
+            .lt => last = mid,
+            .gt => first = mid + 1,
         }
     }
     if (std.mem.eql(u8, z, "nTokens")) {
@@ -3921,9 +3935,14 @@ fn pik_value(p: *Pik, z: []const u8, miss: ?*i32) PNum {
 // Special color names "None" and "Off" return -1.0 without causing
 // an error.
 fn pik_lookup_color(p: ?*Pik, id: *PToken) PNum {
-    for (aColor) |color| {
-        if (std.ascii.eqlIgnoreCase(id.z, color.zName)) {
-            return @floatFromInt(color.val);
+    var first: usize = 0;
+    var last: usize = aColor.len;
+    while (first < last) {
+        const mid = first + (last - first) / 2;
+        switch (std.ascii.orderIgnoreCase(id.z, aColor[mid].zName)) {
+            .eq => return @floatFromInt(aColor[mid].val),
+            .lt => last = mid,
+            .gt => first = mid + 1,
         }
     }
     if (p) |pp| pik_error(pp, id, "not a known color name");
@@ -5456,13 +5475,6 @@ fn pik_add_macro(p: *Pik, id: *PToken, code: *PToken) void {
     new.?.inUse = 0;
 }
 
-fn findKeyword(text: []const u8) ?PikWord {
-    for (pik_keywords) |word| {
-        if (std.mem.eql(u8, word.zWord, text)) return word;
-    }
-    return null;
-}
-
 fn isIdentChar(c: u8) bool {
     return std.ascii.isAlphanumeric(c) or c == '_';
 }
@@ -5470,7 +5482,17 @@ fn isIdentChar(c: u8) bool {
 // Search a PikWordlist for the given keyword.  Return a pointer to the
 // keyword entry found.  Or return 0 if not found.
 fn pik_find_word(z_in: []const u8) ?PikWord {
-    return findKeyword(z_in);
+    var first: usize = 0;
+    var last: usize = pik_keywords.len;
+    while (first < last) {
+        const mid = first + (last - first) / 2;
+        switch (std.mem.order(u8, z_in, pik_keywords[mid].zWord)) {
+            .eq => return pik_keywords[mid],
+            .lt => last = mid,
+            .gt => first = mid + 1,
+        }
+    }
+    return null;
 }
 
 // Set a symbolic debugger breakpoint on this routine to receive a
@@ -6328,6 +6350,47 @@ test "Pik lookup helpers find objects and properties" {
     height.eType = .HEIGHT;
     try std.testing.expectEqual(obj.w, pik_property_of(obj, &width));
     try std.testing.expectEqual(obj.h, pik_property_of(obj, &height));
+}
+
+test "Pik sorted table lookups use sorted table edges" {
+    for (aClass[1..], 1..) |class, i| {
+        try std.testing.expectEqual(.lt, std.mem.order(u8, aClass[i - 1].zName, class.zName));
+    }
+    for (aBuiltin[1..], 1..) |bi, i| {
+        try std.testing.expectEqual(.lt, std.mem.order(u8, aBuiltin[i - 1].zName, bi.zName));
+    }
+    for (aColor[1..], 1..) |color, i| {
+        try std.testing.expectEqual(.lt, std.ascii.orderIgnoreCase(aColor[i - 1].zName, color.zName));
+    }
+    for (pik_keywords[1..], 1..) |word, i| {
+        try std.testing.expectEqual(.lt, std.mem.order(u8, pik_keywords[i - 1].zWord, word.zWord));
+    }
+
+    var pik = Pik.init(std.testing.allocator, "", "pikchr", 0);
+    defer pik.deinit();
+
+    var arc = classToken("arc");
+    var text = classToken("text");
+    var bo = classToken("bo");
+    try std.testing.expectEqualStrings("arc", pik_find_class(&arc).?.zName);
+    try std.testing.expectEqualStrings("text", pik_find_class(&text).?.zName);
+    try std.testing.expect(pik_find_class(&bo) == null);
+
+    try std.testing.expectEqual(@as(PNum, 0.25), pik_value(&pik, "arcrad", null));
+    try std.testing.expectEqual(@as(PNum, 0.015), pik_value(&pik, "thickness", null));
+    try std.testing.expectEqual(@as(PNum, 0.0), pik_value(&pik, "arrow", null));
+
+    var darkblue = classToken("darkblue");
+    var yellow = classToken("Yellow");
+    var blu = classToken("Blu");
+    try std.testing.expectEqual(@as(PNum, 0x00008b), pik_lookup_color(null, &darkblue));
+    try std.testing.expectEqual(@as(PNum, 0xffff00), pik_lookup_color(null, &yellow));
+    try std.testing.expectEqual(@as(PNum, -99.0), pik_lookup_color(null, &blu));
+
+    try std.testing.expectEqual(.ABOVE, pik_find_word("above").?.eType);
+    try std.testing.expectEqual(.Y, pik_find_word("y").?.eType);
+    try std.testing.expect(pik_find_word("abov") == null);
+    try std.testing.expect(pik_find_word("between_") == null);
 }
 
 test "Pik math and text-position helpers follow token codes" {
