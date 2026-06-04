@@ -6029,7 +6029,7 @@ fn pik_tokenize(p: *Pik, input: *PToken, parser: *PikParser, params: ?[]PToken) 
 }
 
 pub const RenderResult = struct {
-    text: []u8,
+    text: [:0]u8,
     width: i32,
     height: i32,
     n_err: u32,
@@ -6075,7 +6075,7 @@ pub fn render(
     pikchr_call_count += 1;
 
     var parser: PikParser = undefined;
-    parser.init(allocator, &pik) catch return error.OutOfMemory;
+    try parser.init(allocator, &pik);
     defer parser.deinit();
     pik_tokenize(&pik, &pik.sIn, &parser, null);
     // normalize end of diagram to hash as EOL
@@ -6091,9 +6091,8 @@ pub fn render(
     if (pik.zOut.written().len == 0 and pik.nErr == 0) {
         pik_append(&pik, "<!-- empty pikchr diagram -->\n");
     }
-    const text = allocator.dupe(u8, pik.zOut.written()) catch return error.OutOfMemory;
     return .{
-        .text = text,
+        .text = try pik.zOut.toOwnedSliceSentinel(0),
         .width = if (pik.nErr != 0) -1 else pik.wSVG,
         .height = if (pik.nErr != 0) -1 else pik.hSVG,
         .n_err = pik.nErr,

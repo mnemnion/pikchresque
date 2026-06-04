@@ -7,7 +7,7 @@ pub const extra_unique_id: u32 = pikchr.PIKCHR_EXTRA_UNIQUE_ID;
 
 pub const Rendered = struct {
     allocator: std.mem.Allocator,
-    text: []u8,
+    text: [:0]u8,
     width: i32,
     height: i32,
     n_err: u32,
