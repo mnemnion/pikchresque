@@ -732,10 +732,10 @@ rvalue(A) ::= PLACENAME(C).  { A = pik_lookup_color(p, &C); }
 print ::= PRINT.
 prlist ::= pritem.
 prlist ::= prlist prsep pritem.
-pritem ::= FILL(X).        { pik_append_num10(p, "", pik_value(p, X.z, null)); }
-pritem ::= COLOR(X).       { pik_append_num10(p, "", pik_value(p, X.z, null)); }
-pritem ::= THICKNESS(X).   { pik_append_num10(p, "", pik_value(p, X.z, null)); }
-pritem ::= rvalue(X).      { pik_append_num10(p, "", X); }
+pritem ::= FILL(X).        { pik_append_num(p, "", pik_value(p, X.z, null), 10); }
+pritem ::= COLOR(X).       { pik_append_num(p, "", pik_value(p, X.z, null), 10); }
+pritem ::= THICKNESS(X).   { pik_append_num(p, "", pik_value(p, X.z, null), 10); }
+pritem ::= rvalue(X).      { pik_append_num(p, "", X, 10); }
 pritem ::= STRING(S).      { pik_append_text(p, tokenInner(&S), 0); }
 prsep  ::= COMMA.          { pik_append(p, " "); }
 
@@ -1451,15 +1451,20 @@ fn circleNumProp(p: *Pik, obj: *PObj, id: *PToken) void {
     // For a circle, the width must equal the height and both must
     // be twice the radius.  Enforce those constraints.
     _ = p;
-    if (hasKind(id, .DIAMETER) or hasKind(id, .RADIUS)) {
-        obj.w = 2.0 * obj.rad;
-        obj.h = obj.w;
-    } else if (hasKind(id, .WIDTH)) {
-        obj.h = obj.w;
-        obj.rad = 0.5 * obj.w;
-    } else if (hasKind(id, .HEIGHT)) {
-        obj.w = obj.h;
-        obj.rad = 0.5 * obj.w;
+    switch (yyEnum(id.eType)) {
+        .DIAMETER, .RADIUS => {
+            obj.w = 2.0 * obj.rad;
+            obj.h = obj.w;
+        },
+        .WIDTH => {
+            obj.h = obj.w;
+            obj.rad = 0.5 * obj.w;
+        },
+        .HEIGHT => {
+            obj.w = obj.h;
+            obj.rad = 0.5 * obj.w;
+        },
+        else => {},
     }
 }
 
@@ -1628,35 +1633,35 @@ fn pik_append_tag_open(p: *Pik, obj: ?*PObj, tag: []const u8) void {
 // on the value.
 fn pik_append_x(p: *Pik, prefix: []const u8, v: PNum, suffix: []const u8) void {
     pik_append(p, prefix);
-    pik_append_num(p, "", p.rScale * (v - p.bbox.sw.x));
+    pik_append_num(p, "", p.rScale * (v - p.bbox.sw.x), 6);
     pik_append(p, suffix);
 }
 
 fn pik_append_y(p: *Pik, prefix: []const u8, v: PNum, suffix: []const u8) void {
     pik_append(p, prefix);
-    pik_append_num(p, "", p.rScale * (p.bbox.ne.y - v));
+    pik_append_num(p, "", p.rScale * (p.bbox.ne.y - v), 6);
     pik_append(p, suffix);
 }
 
 fn pik_append_xy(p: *Pik, prefix: []const u8, x: PNum, y: PNum) void {
     pik_append(p, prefix);
-    pik_append_num(p, "", p.rScale * (x - p.bbox.sw.x));
+    pik_append_num(p, "", p.rScale * (x - p.bbox.sw.x), 6);
     pik_append(p, ",");
-    pik_append_num(p, "", p.rScale * (p.bbox.ne.y - y));
+    pik_append_num(p, "", p.rScale * (p.bbox.ne.y - y), 6);
 }
 
 fn pik_append_dis(p: *Pik, prefix: []const u8, v: PNum, suffix: []const u8) void {
     pik_append(p, prefix);
-    pik_append_num(p, "", p.rScale * v);
+    pik_append_num(p, "", p.rScale * v, 6);
     pik_append(p, suffix);
 }
 
 // Append a PPoint value  (Used for debugging only)
 fn pik_append_point(p: *Pik, prefix: []const u8, pt: *PPoint) void {
     pik_append(p, prefix);
-    pik_append_num(p, "", pt.x);
+    pik_append_num(p, "", pt.x, 6);
     pik_append(p, ",");
-    pik_append_num(p, "", pt.y);
+    pik_append_num(p, "", pt.y, 6);
 }
 
 // Invert the RGB color so that it is appropriate for dark mode.
@@ -1714,13 +1719,13 @@ fn pik_append_clr(p: *Pik, prefix: []const u8, value: PNum, suffix: []const u8, 
 //    A r1 r2 0 0 0 x y
 fn pik_append_arc(p: *Pik, r1: PNum, r2: PNum, x: PNum, y: PNum) void {
     pik_append(p, "A");
-    pik_append_num(p, "", p.rScale * r1);
+    pik_append_num(p, "", p.rScale * r1, 6);
     pik_append(p, " ");
-    pik_append_num(p, "", p.rScale * r2);
+    pik_append_num(p, "", p.rScale * r2, 6);
     pik_append(p, " 0 0 0 ");
-    pik_append_num(p, "", p.rScale * (x - p.bbox.sw.x));
+    pik_append_num(p, "", p.rScale * (x - p.bbox.sw.x), 6);
     pik_append(p, " ");
-    pik_append_num(p, "", p.rScale * (p.bbox.ne.y - y));
+    pik_append_num(p, "", p.rScale * (p.bbox.ne.y - y), 6);
 }
 
 // Append presentation styles to text.
@@ -2243,7 +2248,7 @@ fn pik_append_txt(p: *Pik, obj: *PObj, box: ?*PBox) void {
         }
         xtra_font_scale *= p.fontScale;
         if (xtra_font_scale <= 0.99 or xtra_font_scale >= 1.01) {
-            pik_append_num(p, " font-size=\"", xtra_font_scale * 100.0);
+            pik_append_num(p, " font-size=\"", xtra_font_scale * 100.0, 6);
             pik_append(p, "%\"");
         }
         if ((t.eCode & TP_ALIGN) != 0 and obj.nPath >= 2 and obj.aPath.len >= 2) {
@@ -2252,7 +2257,7 @@ fn pik_append_txt(p: *Pik, obj: *PObj, box: ?*PBox) void {
             const dy = obj.aPath[nn - 1].y - obj.aPath[0].y;
             if (dx != 0.0 or dy != 0.0) {
                 const ang = std.math.atan2(dy, dx) * -180.0 / std.math.pi;
-                pik_append_num10(p, " transform=\"rotate(", ang);
+                pik_append_num(p, " transform=\"rotate(", ang, 10);
                 pik_append_xy(p, " ", x, orig_y);
                 pik_append(p, ")\"");
             }
@@ -3423,8 +3428,8 @@ fn pik_elem_render(p: *Pik, obj: *PObj) void {
         pik_append_text(p, tokenInner(&obj.aTxt[0]), 1);
         pik_append(p, "\"");
     }
-    pik_append_num(p, " w=", obj.w);
-    pik_append_num(p, " h=", obj.h);
+    pik_append_num(p, " w=", obj.w, 6);
+    pik_append_num(p, " h=", obj.h, 6);
     pik_append_point(p, " center=", &obj.ptAt);
     pik_append_point(p, " enter=", &obj.ptEnter);
     const z_dir = switch (obj.outDir) {
@@ -3567,8 +3572,8 @@ fn pik_render(p: *Pik, list: ?*PList) void {
     if (pik_scale >= 0.001 and pik_scale <= 1000.0 and (pik_scale < 0.99 or pik_scale > 1.01)) {
         p.wSVG = pik_round(@as(PNum, @floatFromInt(p.wSVG)) * pik_scale);
         p.hSVG = pik_round(@as(PNum, @floatFromInt(p.hSVG)) * pik_scale);
-        pik_append_num(p, " width=\"", @floatFromInt(p.wSVG));
-        pik_append_num(p, "\" height=\"", @floatFromInt(p.hSVG));
+        pik_append_num(p, " width=\"", @floatFromInt(p.wSVG), 6);
+        pik_append_num(p, "\" height=\"", @floatFromInt(p.hSVG), 6);
         pik_append(p, "\"");
     }
     pik_append_dis(p, " viewBox=\"0 0 ", w, "");
@@ -4061,7 +4066,7 @@ fn pik_append_text(p: *Pik, text: []const u8, flags: i32) void {
 }
 
 // Append a PNum value
-fn pik_append_num_sig(p: *Pik, prefix: []const u8, v: PNum, comptime sig: i32) void {
+fn pik_append_num(p: *Pik, prefix: []const u8, v: PNum, comptime sig: i32) void {
     pik_append(p, prefix);
     if (std.math.isNan(v)) {
         pik_append(p, "nan");
@@ -4111,14 +4116,6 @@ fn pik_append_num_sig(p: *Pik, prefix: []const u8, v: PNum, comptime sig: i32) v
     } else {
         pik_append(p, raw[0..end]);
     }
-}
-
-fn pik_append_num(p: *Pik, prefix: []const u8, v: PNum) void {
-    pik_append_num_sig(p, prefix, v, 6);
-}
-
-fn pik_append_num10(p: *Pik, prefix: []const u8, v: PNum) void {
-    pik_append_num_sig(p, prefix, v, 10);
 }
 
 // Search for object located at *pCenter that has an xChop method and
@@ -4538,25 +4535,30 @@ fn pik_set_numprop(p: *Pik, prop: *PToken, val: *PRel) void {
     const obj = p.cur orelse return;
     var target: *PNum = undefined;
     var mask: u32 = 0;
-    if (hasKind(prop, .WIDTH)) {
-        target = &obj.w;
-        mask = A_WIDTH;
-    } else if (hasKind(prop, .HEIGHT)) {
-        target = &obj.h;
-        mask = A_HEIGHT;
-    } else if (hasKind(prop, .RADIUS)) {
-        target = &obj.rad;
-        mask = A_RADIUS;
-    } else if (hasKind(prop, .DIAMETER)) {
-        target = &obj.rad;
-        mask = A_RADIUS;
-        val.rAbs *= 0.5;
-        val.rRel *= 0.5;
-    } else if (hasKind(prop, .THICKNESS)) {
-        target = &obj.sw;
-        mask = A_THICKNESS;
-    } else {
-        return;
+    switch (yyEnum(prop.eType)) {
+        .WIDTH => {
+            target = &obj.w;
+            mask = A_WIDTH;
+        },
+        .HEIGHT => {
+            target = &obj.h;
+            mask = A_HEIGHT;
+        },
+        .RADIUS => {
+            target = &obj.rad;
+            mask = A_RADIUS;
+        },
+        .DIAMETER => {
+            target = &obj.rad;
+            mask = A_RADIUS;
+            val.rAbs *= 0.5;
+            val.rRel *= 0.5;
+        },
+        .THICKNESS => {
+            target = &obj.sw;
+            mask = A_THICKNESS;
+        },
+        else => return,
     }
     if (pik_param_ok(p, obj, prop, mask) != 0) return;
     target.* = val.rAbs + target.* * val.rRel;
@@ -4566,22 +4568,27 @@ fn pik_set_numprop(p: *Pik, prop: *PToken, val: *PRel) void {
 // Set a color property.  The argument is an RGB value.
 fn pik_set_clrprop(p: *Pik, prop: *PToken, val: PNum) void {
     const obj = p.cur orelse return;
-    if (hasKind(prop, .FILL)) {
-        if (pik_param_ok(p, obj, prop, A_FILL) != 0) return;
-        obj.fill = val;
-    } else if (hasKind(prop, .COLOR)) {
-        if (pik_param_ok(p, obj, prop, A_COLOR) != 0) return;
-        obj.color = val;
-        // without these lines we would have a breaking change
-        if (comptime pik_pedantic) {
-            // Probably, setting fg color should not set textcolor, tho
-            if ((obj.mProp & A_TEXTCOLOR) == 0) {
-                obj.textcolor = val;
+    switch (yyEnum(prop.eType)) {
+        .FILL => {
+            if (pik_param_ok(p, obj, prop, A_FILL) != 0) return;
+            obj.fill = val;
+        },
+        .COLOR => {
+            if (pik_param_ok(p, obj, prop, A_COLOR) != 0) return;
+            obj.color = val;
+            // without these lines we would have a breaking change
+            if (comptime pik_pedantic) {
+                // Probably, setting fg color should not set textcolor, tho
+                if ((obj.mProp & A_TEXTCOLOR) == 0) {
+                    obj.textcolor = val;
+                }
             }
-        }
-    } else if (hasKind(prop, .TEXTCOLOR)) {
-        if (pik_param_ok(p, obj, prop, A_TEXTCOLOR) != 0) return;
-        obj.textcolor = val;
+        },
+        .TEXTCOLOR => {
+            if (pik_param_ok(p, obj, prop, A_TEXTCOLOR) != 0) return;
+            obj.textcolor = val;
+        },
+        else => {},
     }
     if (obj.type) |class| if (class.xNumProp) |x| x(p, obj, prop);
 }
