@@ -31,15 +31,16 @@ This: is **Pikchresque**
 ## What and Why
 
 Pikchr is more of a dialect of Pic than a language in its own right;
-Pikchresque is more of an accent than anything.  It began as a [pikchr
-fork], which I've been hacking on an on-again-off-again basis for a few
-years.  I got most of the way to where I wanted to go and kinda stalled
-out.  It happens.
+Pikchresque is more of an accent.  It began as a [pikchr fork], which
+I've been hacking on an on-again-off-again basis for a few years.  I
+got most of the way to where I wanted to go and kinda stalled out.  It
+happens.
 
-In 2025, I wrote [Zitron], translating Lemon into Zig, and then adapting
-the result to emit Zig code rather than C. These quests were, at the
-time, only related insofar as hacking on Pikchr(esque) is how I came to
-appreciate Lemon well enough to want to base a parser generator on it.
+In 2025, I wrote [Zitron], by translating Lemon into Zig, and then
+adapting the result to emit Zig code rather than C. These quests were,
+at the time, only related insofar as hacking on Pikchr(esque) is how I
+came to appreciate Lemon well enough to want to base a parser generator
+on it.
 
 Later, while working on Zitron tooling, it became clear that the task
 would benefit from a non-trivial Zitron _program_.  While I have some
@@ -51,11 +52,11 @@ So I told Codex to translate my C/Lemon fork of Pikchr to Zig/Zitron,
 and, it did.  There's always more to it than that, but not much.
 
 Where I stalled out on the Pikchr fork is, well.  The obvious way to do
-what I wanted to do, was a hash map.  Pikchr doesn't use those, it's a
-few linked lists and some array tables; and in C, one does not simply
-_use_ a hash map.  I had reckoned some halfway plausible routes to the
-summit using more linked lists, but never picked up the gumption to haul
-my carcass uphill.
+what I wanted to do is a hash map.  Pikchr doesn't use those, it's a few
+linked lists and some array tables — and in C, one does not simply _use_
+a hash map.  I had reckoned some halfway plausible routes to the summit
+using more linked lists, but never picked up the gumption to haul my
+carcass uphill.
 
 In Zig, this is just a call to `HashMap` away.  So here we are!
 
@@ -73,7 +74,7 @@ the following:
 ### Responsive SVG
 
 Pikchr is a core component of Fossil.  Not just a version control
-system, and a good one, Fossil is also a server for software projects.
+system, and a _good_ one, Fossil is also a server for software projects.
 It has documents, tickets, wikis, forums, even chat.
 
 Styling in Fossil uses skins.  Some skins are light, others are dark:
@@ -99,17 +100,22 @@ It has enough information that users of screen readers will have \
 as much information about the diagram as text can provide."
 ```
 
-These are properly marked up with aria roles.  I'm no a11y expert,
+These are properly marked up with aria roles[^1].  I'm no a11y expert,
 but my limited experiments with the results suggest that it's at least
 acceptable: which, it pains me to say, is not true of stock Pikchr
 diagrams.  I am open to any informed suggestions about how to improve
 the experience further.
 
+[^1]: Note that the browser will take no interest in these elements
+unless the SVG is inlined or an `<object>`: as an `<img>` you'll want
+that `alt` tag anyway.
+
+
 ### Extensible SVG
 
 The output of Pikchresque is extensively marked up with classes.  An
 oval gets `oval`, labeled elements receive that label, and so on.  There
-are also gnomic style classes to enable responsiveness, although those
+are also gnomic style classes to enable responsive color, although those
 are meant as an implementation detail.
 
 Further classes may be added:
@@ -118,16 +124,20 @@ Further classes may be added:
 box class 'filter_stage markdown' rad 10px "Markdown" "Formatter" "(markdown.c)" fit
 ```
 
-Will add the classes `filter-stage` and `markdown` to the box, and in
-general to all SVG elements making up the class'ed object.
+Will add the classes `filter-stage` and `markdown` to the box,
+and in general to all SVG elements making up the class'ed object.
+The underscore in the input, and the hyphen in the output, are both
+intentional.
 
 
-### `textcolor`
+### Text color
 
-In Pikchresque, text color may be set separatedly from plain old
-`color`, which canonically sets the color of a box's outline.  As a
-result, a Pikchr diagram with `color` set in a context which would
-affect text color as well, will not see the color of that text change.
+Pikchresque adds the keyword / attribute `textcolor`, which sets the
+color of the object in question's text.  In Pikchr there's just color: a
+red box will have red text, although there are ways to achieve the same
+effect.  As a result, a Pikchr diagram with `color` set in a context
+which would affect text color as well, will not see the color of that
+text change.
 
 <tk build setting once added>
 
