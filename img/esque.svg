@@ -22,13 +22,16 @@ color-scheme:light dark;
 ._sg {stroke:light-dark(rgb(102,51,153),rgb(191,127,255))}
 ._sj {stroke:light-dark(rgb(0,139,139),rgb(57,127,127))}
 ._sm {stroke:light-dark(rgb(0,191,255),rgb(0,95,127))}
+.flutter-one:not(text):hover {
+		fill: red;
+	}
 }
 </style>
 <title id="title-a7989896a1">
 A diagram in the Pikchresque manner
 </title>
 <desc id="desc-a7989896a1">
-A set of four box items, with arrows going clockwise in a circle. 
+A set of four box items, with arrows going clockwise in a circle.
 It shows a loop: compile, think, change, repeat.
 </desc>
 <g class="arrow" >
