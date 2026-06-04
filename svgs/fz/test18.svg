@@ -1,0 +1,12 @@
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-d071172da0" role="img" viewBox="0 0 465.12 33.12">
+<style>
+#pikchr-d071172da0 {
+._T {fill:transparent}
+color-scheme:light dark;
+._sa {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
+}
+</style>
+<path class="box _T _sa" d="M2.16,23.76L434.16,23.76L434.16,9.36L2.16,9.36Z"  stroke-width="2.16" />
+<circle class="circle _T _sa" cx="448.56" cy="16.56" r="14.4"  stroke-width="2.16" />
+</svg>
+

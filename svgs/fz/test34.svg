@@ -1,0 +1,18 @@
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-e904420e04" role="img" viewBox="0 0 224.64 80.64">
+<style>
+#pikchr-e904420e04 {
+._T {fill:transparent}
+color-scheme:light dark;
+._fb {fill:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._sa {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
+}
+</style>
+<path class="line _T _sa" d="M2.16,78.48L74.16,78.48"  stroke-width="2.16" />
+<path class="arc _T _sa" d="M74.16,78.48Q110.16,78.48 110.16,42.48"  stroke-width="2.16" />
+<path class="arc _T _sa" d="M110.16,42.48Q110.16,6.48 146.16,6.48"  stroke-width="2.16" />
+<g class="arrow" >
+<polygon class="arrow _fb" points="218.16,6.48 206.64,10.8 206.64,2.16" />
+<path class="arrow _T _sa" d="M146.16,6.48L212.4,6.48"  stroke-width="2.16" />
+</g>
+</svg>
+

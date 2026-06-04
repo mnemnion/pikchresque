@@ -1,0 +1,18 @@
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-33f33d017e" role="img" aria-labelledby="title-33f33d017e desc-33f33d017e" viewBox="0 0 292.32 76.32">
+<style>
+#pikchr-33f33d017e {
+._T {fill:transparent}
+color-scheme:light dark;
+._sa {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
+}
+</style>
+<title id="title-33f33d017e">
+Boxes 1 &amp; 2
+</title>
+<desc id="desc-33f33d017e">
+Two boxes lined up left to right.
+</desc>
+<path class="box _T _sa" d="M2.16,74.16L110.16,74.16L110.16,2.16L2.16,2.16Z"  stroke-width="2.16" />
+<path class="box _T _sa" d="M182.16,74.16L290.16,74.16L290.16,2.16L182.16,2.16Z"  stroke-width="2.16" />
+</svg>
+

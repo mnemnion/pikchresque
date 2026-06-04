@@ -1,0 +1,50 @@
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-8262b51721" role="img" width="366" height="306" viewBox="0 0 489.042 409.948">
+<style>
+#pikchr-8262b51721 {
+._D {dominant-baseline:central}
+._T {fill:transparent}
+._tM {text-anchor:middle}
+._tE {text-anchor:end}
+._Fb {font-weight:bold}
+._Fi {font-style:italic}
+color-scheme:light dark;
+._fb {fill:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._sa {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
+}
+</style>
+<path class="box _T _sa" d="M2.16,206.931L110.16,206.931L110.16,134.931L2.16,134.931Z"  stroke-width="2.16" />
+<text class="box _fb _D _tM" x="56.16" y="170.931">One</text>
+<g class="arrow" >
+<polygon class="arrow _fb" points="254.16,170.931 242.64,175.251 242.64,166.611" />
+<path class="arrow _T _sa" d="M110.16,170.931L248.4,170.931"  stroke-width="2.16" />
+</g>
+<text class="arrow _fb _D _tM _Fb" x="182.16" y="159.231">Bold</text>
+<text class="arrow _fb _D _tM _Fi" x="182.16" y="182.631">Italic</text>
+<circle class="circle _T _sa" cx="290.16" cy="170.931" r="36"  stroke-width="2.16" />
+<text class="circle _fb _D _tM" x="290.16" y="170.931">Two</text>
+<circle class="circle _T _sa" cx="426.635" cy="352.038" r="55.7497"  stroke-width="2.16" />
+<text class="circle _fb _D _tM _Fi _Fb" x="426.635" y="352.038">Bold-Italic</text>
+<g class="arrow" >
+<polygon class="arrow _fb" points="393.084,307.515 382.701,300.914 389.601,295.715" />
+<path class="arrow _T _sa" d="M311.825,199.681L389.617,302.915"  stroke-width="2.16" />
+</g>
+<text class="arrow _fb _D _tM" x="352.454" y="241.898" transform="rotate(53 352.454,253.598)">above</text>
+<text class="arrow _fb _D _tM" x="352.454" y="265.298" transform="rotate(53 352.454,253.598)">below</text>
+<circle class="circle _T _sa" cx="463.877" cy="25.1645" r="23.0045"  stroke-width="2.16" />
+<text class="circle _fb _D _tM" x="463.877" y="25.1645">C2</text>
+<g class="arrow" >
+<polygon class="arrow _fb" points="446.255,39.9515 440.207,50.6657 434.653,44.0471" />
+<path class="arrow _T _sa" d="M317.738,147.79L441.842,43.654"  stroke-width="2.16" />
+</g>
+<text class="arrow _fb _D _tM" x="381.996" y="82.1708" transform="rotate(-40 381.996,93.8708)">above</text>
+<text class="arrow _fb _D _tM" x="381.996" y="105.571" transform="rotate(-40 381.996,93.8708)">below </text>
+<circle class="circle _T _sa" cx="212.6" cy="384.026" r="23.0045"  stroke-width="2.16" />
+<text class="circle _fb _D _tM" x="212.6" y="384.026">C3</text>
+<g class="arrow" >
+<polygon class="arrow _fb" points="220.468,362.409 220.348,350.106 228.467,353.061" />
+<path class="arrow _T _sa" d="M222.438,356.996L277.847,204.759"  stroke-width="2.16" />
+</g>
+<text class="arrow _fb _D _tE" x="249.157" y="271.884" transform="rotate(-70 249.157,283.584)">above-rjust</text>
+<text class="arrow _fb _D _tE" x="249.157" y="295.284" transform="rotate(-70 249.157,283.584)">below-rjust</text>
+</svg>
+

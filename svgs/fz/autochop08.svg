@@ -1,0 +1,28 @@
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-53168b664a" role="img" viewBox="0 0 627.942 146.052">
+<style>
+#pikchr-53168b664a {
+._D {dominant-baseline:central}
+._T {fill:transparent}
+._tM {text-anchor:middle}
+color-scheme:light dark;
+._fb {fill:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._fd {fill:light-dark(rgb(255,0,0),rgb(255,127,127))}
+._sa {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._sc {stroke:light-dark(rgb(255,0,0),rgb(255,127,127))}
+}
+</style>
+<circle class="circle _T _sa" cx="313.971" cy="73.0261" r="36"  stroke-width="2.16" />
+<text class="circle _fb _D _tM" x="313.971" y="73.0261">C0</text>
+<circle class="circle _T _sa" cx="457.971" cy="73.0261" r="36"  stroke-width="2.16" />
+<text class="circle _fb _D _tM" x="457.971" y="73.0261">C1</text>
+<path class="box _T _sa" d="M2.16,143.892L625.782,143.892L625.782,2.16L2.16,2.16Z"  stroke-width="2.16" />
+<g class="arrow" >
+<polygon class="arrow _fd" points="421.971,73.0261 410.451,77.3461 410.451,68.7061" />
+<path class="arrow _T _sc" d="M349.971,73.0261L416.211,73.0261"  stroke-width="2.16" />
+</g>
+<text class="text _fb _D _tM" x="140.066" y="42.7861">bug report 2021-07-17</text>
+<text class="text _fb _D _tM" x="140.066" y="62.9461">forum 73eea815afda0715</text>
+<text class="text _fb _D _tM" x="140.066" y="83.1061">arrow C0 to C1 chopped</text>
+<text class="text _fb _D _tM" x="140.066" y="103.266">C0 and box have same center</text>
+</svg>
+

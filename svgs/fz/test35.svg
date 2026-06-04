@@ -1,0 +1,16 @@
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-ed88e8eead" role="img" viewBox="0 0 154.435 90.3582">
+<style>
+#pikchr-ed88e8eead {
+._T {fill:transparent}
+color-scheme:light dark;
+._sa {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
+}
+</style>
+<ellipse class="ellipse A _T _sa" cx="77.2173" cy="52.1982" rx="54" ry="36"  stroke-width="2.16" />
+<ellipse class="ellipse _T _sa" cx="23.76" cy="16.56" rx="21.6" ry="14.4"  stroke-width="2.16" />
+<ellipse class="ellipse _T _sa" cx="130.675" cy="16.56" rx="21.6" ry="14.4"  stroke-width="2.16" />
+<circle class="circle _T _sa" cx="58.1254" cy="39.4703" r="7.2"  stroke-width="2.16" />
+<circle class="circle _T _sa" cx="96.3092" cy="39.4703" r="7.2"  stroke-width="2.16" />
+<path class="arc _T _sa" d="M50.2173,52.1982Q77.2173,79.1982 104.217,52.1982"  stroke-width="2.16" />
+</svg>
+

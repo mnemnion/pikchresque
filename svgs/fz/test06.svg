@@ -1,0 +1,25 @@
+B2.n:  1 , 3.25<br>
+B2.c:  1 , 3<br>
+B2.e:  1.375 , 3<br>
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-60430a8324" role="img" viewBox="0 0 274.32 256.32">
+<style>
+#pikchr-60430a8324 {
+._D {dominant-baseline:central}
+._T {fill:transparent}
+._tS {text-anchor:start}
+._tM {text-anchor:middle}
+color-scheme:light dark;
+._fb {fill:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._sa {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
+}
+</style>
+<path class="box B1 _T _sa" d="M128.16,254.16L272.16,254.16L272.16,110.16L128.16,110.16Z"  stroke-width="2.16" />
+<text class="box B1 _fb _D _tM" x="200.16" y="182.16">one</text>
+<path class="box B2 _T _sa" d="M2.16,74.16L110.16,74.16L110.16,2.16L2.16,2.16Z"  stroke-width="6.48" stroke-dasharray="6.48 4.32" />
+<text class="box B2 _fb _D _tM" x="56.16" y="38.16">two</text>
+<path class="box _T _sa" d="M29.16,160.56L83.16,160.56L83.16,88.56L29.16,88.56Z"  stroke-width="2.16" />
+<text class="box _fb _D _tM" x="56.16" y="104.4">three</text>
+<text class="box _fb _D _tS" x="32.58" y="124.56">four</text>
+<text class="box _fb _D _tM" x="56.16" y="144.72">five</text>
+</svg>
+

@@ -1,0 +1,38 @@
+0.5 0<br>
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-235ce991e9" role="img" viewBox="0 0 237.572 83.88">
+<style>
+#pikchr-235ce991e9 {
+._T {fill:transparent}
+color-scheme:light dark;
+._fb {fill:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._fd {fill:light-dark(rgb(255,0,0),rgb(255,127,127))}
+._ff {fill:light-dark(rgb(255,165,0),rgb(255,209,127))}
+._fh {fill:light-dark(rgb(0,128,0),rgb(127,255,127))}
+._fj {fill:light-dark(rgb(0,0,255),rgb(127,127,255))}
+._sa {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._sc {stroke:light-dark(rgb(255,0,0),rgb(255,127,127))}
+._se {stroke:light-dark(rgb(255,165,0),rgb(255,209,127))}
+._sg {stroke:light-dark(rgb(0,128,0),rgb(127,255,127))}
+._si {stroke:light-dark(rgb(0,0,255),rgb(127,127,255))}
+}
+</style>
+<g class="spline" >
+<polygon class="spline _fb" points="6.48,77.4 2.16,65.88 10.8,65.88" />
+<path class="spline _T _sa" d="M6.48,77.4 L 42.48,77.4 Q 78.48,77.4 78.48,41.4 Q 78.48,5.4 42.48,5.4 Q 6.48,5.4 6.48,38.52 L 6.48,71.64"  stroke-width="2.16" />
+</g>
+<g class="spline" >
+<polygon class="spline _fb" points="119.866,77.4 115.546,65.88 124.186,65.88" />
+<path class="spline _T _sa" d="M119.866,77.4 L 155.866,77.4 Q 191.866,77.4 155.866,41.4 Q 119.866,5.4 119.866,38.52 L 119.866,71.64"  stroke-width="2.16" />
+</g>
+<circle class="dot _sa _fb" cx="233.252" cy="77.4" r="2.16"  stroke-width="2.16" />
+<circle class="dot _sa _fb" cx="233.252" cy="77.4" r="2.16"  stroke-width="2.16" />
+<circle class="dot _sa _fb" cx="233.252" cy="77.4" r="2.16"  stroke-width="2.16" />
+<circle class="dot _sc _fd" cx="6.48" cy="77.4" r="3.24"  stroke-width="2.16" />
+<circle class="dot _se _ff" cx="78.48" cy="77.4" r="3.24"  stroke-width="2.16" />
+<circle class="dot _sg _fh" cx="78.48" cy="5.4" r="3.24"  stroke-width="2.16" />
+<circle class="dot _si _fj" cx="6.48" cy="5.4" r="3.24"  stroke-width="2.16" />
+<circle class="dot _sc _fd" cx="119.866" cy="77.4" r="3.24"  stroke-width="2.16" />
+<circle class="dot _sg _fh" cx="191.866" cy="77.4" r="3.24"  stroke-width="2.16" />
+<circle class="dot _si _fj" cx="119.866" cy="5.4" r="3.24"  stroke-width="2.16" />
+</svg>
+

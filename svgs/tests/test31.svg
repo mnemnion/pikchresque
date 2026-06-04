@@ -1,0 +1,34 @@
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-9928f5cccf" role="img" viewBox="0 0 367.315 162.72">
+<style>
+#pikchr-9928f5cccf {
+._D {dominant-baseline:central}
+._T {fill:transparent}
+._tM {text-anchor:middle}
+._tE {text-anchor:end}
+color-scheme:light dark;
+._fb {fill:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._fd {fill:light-dark(rgb(255,0,0),rgb(255,127,127))}
+._ff {fill:light-dark(rgb(0,0,255),rgb(127,127,255))}
+._sa {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._sc {stroke:light-dark(rgb(255,0,0),rgb(255,127,127))}
+._se {stroke:light-dark(rgb(0,0,255),rgb(127,127,255))}
+}
+</style>
+<path class="box _T _sa" d="M167.155,74.16L275.155,74.16L275.155,2.16L167.155,2.16Z"  stroke-width="2.16" />
+<text class="box _fb _D _tM" x="221.155" y="38.16">1</text>
+<g class="group" >
+<path class="box _T _sa" d="M77.1552,160.56L185.155,160.56L185.155,88.56L77.1552,88.56Z"  stroke-width="2.16" />
+<text class="box _fb _D _tM" x="131.155" y="124.56">2</text>
+<g class="arrow" >
+<polygon class="arrow _fb" points="257.155,124.56 245.635,128.88 245.635,120.24" />
+<path class="arrow _T _sa" d="M185.155,124.56L251.395,124.56"  stroke-width="2.16" />
+</g>
+<text class="arrow _fb _D _tM" x="221.155" y="112.86">3</text>
+<path class="box _T _sa" d="M257.155,160.56L365.155,160.56L365.155,88.56L257.155,88.56Z"  stroke-width="2.16" />
+<text class="box _fb _D _tM" x="311.155" y="124.56">4</text>
+</g>
+<text class="text _fb _D _tE" x="77.1552" y="124.56">Thing 2: </text>
+<circle class="dot _sc _fd" cx="221.155" cy="74.16" r="2.16"  stroke-width="2.16" />
+<circle class="dot _se _ff" cx="221.155" cy="88.56" r="2.16"  stroke-width="2.16" />
+</svg>
+

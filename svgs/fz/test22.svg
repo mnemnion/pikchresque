@@ -1,0 +1,19 @@
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-b8bc0d55ad" role="img" viewBox="0 0 233.798 24.48">
+<style>
+#pikchr-b8bc0d55ad {
+._D {dominant-baseline:central}
+._T {fill:transparent}
+._tM {text-anchor:middle}
+color-scheme:light dark;
+._fa {fill:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._sb {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
+}
+</style>
+<text class="box _fa _D _tM" x="24.1056" y="12.24">input</text>
+<g class="arrow" >
+<polygon class="arrow _fa" points="150.106,12.24 138.586,16.56 138.586,7.92" />
+<path class="arrow _T _sb" d="M78.1056,12.24L144.346,12.24"  stroke-width="2.16" />
+</g>
+<text class="box _fa _D _tM" x="204.106" y="12.24">output</text>
+</svg>
+

@@ -1,0 +1,51 @@
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-a85b7f8f8c" role="img" viewBox="0 0 344.477 344.477">
+<style>
+#pikchr-a85b7f8f8c {
+._D {dominant-baseline:central}
+._T {fill:transparent}
+._tM {text-anchor:middle}
+color-scheme:light dark;
+._fb {fill:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._sa {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
+}
+</style>
+<path class="oval C _T _sa" d="M136.239,208.239L208.239,208.239A36 36 0 0 0 244.239 172.239A36 36 0 0 0 208.239 136.239L136.239,136.239A36 36 0 0 0 100.239 172.239A36 36 0 0 0 136.239 208.239Z"  stroke-width="2.16" />
+<text class="oval C _fb _D _tM" x="172.239" y="172.239">oval</text>
+<path class="line _T _sa" d="M172.239,136.239L172.239,2.16"  stroke-width="2.16" />
+<path class="line _T _sa" d="M172.239,136.239L201.773,4.74388"  stroke-width="2.16" />
+<path class="line _T _sa" d="M172.239,136.239L230.409,12.417"  stroke-width="2.16" />
+<path class="line _T _sa" d="M172.239,136.239L257.278,24.9462"  stroke-width="2.16" />
+<path class="line _T _sa" d="M233.695,146.783L281.563,41.9509"  stroke-width="2.16" />
+<path class="line _T _sa" d="M233.695,146.783L302.527,62.9142"  stroke-width="2.16" />
+<path class="line _T _sa" d="M233.695,146.783L319.531,87.1994"  stroke-width="2.16" />
+<path class="line _T _sa" d="M233.695,146.783L332.06,114.068"  stroke-width="2.16" />
+<path class="line _T _sa" d="M244.239,172.239L339.734,142.705"  stroke-width="2.16" />
+<path class="line _T _sa" d="M244.239,172.239L342.317,172.239"  stroke-width="2.16" />
+<path class="line _T _sa" d="M244.239,172.239L339.734,201.773"  stroke-width="2.16" />
+<path class="line _T _sa" d="M233.695,197.695L332.06,230.409"  stroke-width="2.16" />
+<path class="line _T _sa" d="M233.695,197.695L319.531,257.278"  stroke-width="2.16" />
+<path class="line _T _sa" d="M233.695,197.695L302.527,281.563"  stroke-width="2.16" />
+<path class="line _T _sa" d="M233.695,197.695L281.563,302.527"  stroke-width="2.16" />
+<path class="line _T _sa" d="M172.239,208.239L257.278,319.531"  stroke-width="2.16" />
+<path class="line _T _sa" d="M172.239,208.239L230.409,332.06"  stroke-width="2.16" />
+<path class="line _T _sa" d="M172.239,208.239L201.773,339.734"  stroke-width="2.16" />
+<path class="line _T _sa" d="M172.239,208.239L172.239,342.317"  stroke-width="2.16" />
+<path class="line _T _sa" d="M172.239,208.239L142.705,339.734"  stroke-width="2.16" />
+<path class="line _T _sa" d="M172.239,208.239L114.068,332.06"  stroke-width="2.16" />
+<path class="line _T _sa" d="M172.239,208.239L87.1994,319.531"  stroke-width="2.16" />
+<path class="line _T _sa" d="M110.783,197.695L62.9142,302.527"  stroke-width="2.16" />
+<path class="line _T _sa" d="M110.783,197.695L41.9509,281.563"  stroke-width="2.16" />
+<path class="line _T _sa" d="M110.783,197.695L24.9462,257.278"  stroke-width="2.16" />
+<path class="line _T _sa" d="M110.783,197.695L12.417,230.409"  stroke-width="2.16" />
+<path class="line _T _sa" d="M100.239,172.239L4.74388,201.773"  stroke-width="2.16" />
+<path class="line _T _sa" d="M100.239,172.239L2.16,172.239"  stroke-width="2.16" />
+<path class="line _T _sa" d="M100.239,172.239L4.74388,142.705"  stroke-width="2.16" />
+<path class="line _T _sa" d="M110.783,146.783L12.417,114.068"  stroke-width="2.16" />
+<path class="line _T _sa" d="M110.783,146.783L24.9462,87.1994"  stroke-width="2.16" />
+<path class="line _T _sa" d="M110.783,146.783L41.9509,62.9142"  stroke-width="2.16" />
+<path class="line _T _sa" d="M110.783,146.783L62.9142,41.9509"  stroke-width="2.16" />
+<path class="line _T _sa" d="M172.239,136.239L87.1994,24.9462"  stroke-width="2.16" />
+<path class="line _T _sa" d="M172.239,136.239L114.068,12.417"  stroke-width="2.16" />
+<path class="line _T _sa" d="M172.239,136.239L142.705,4.74388"  stroke-width="2.16" />
+</svg>
+

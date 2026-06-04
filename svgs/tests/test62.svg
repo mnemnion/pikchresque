@@ -1,0 +1,9 @@
+/*  231 */           then down 0.8*$h then right even with arrowht east of ISN.e \
+/*  232 */           then up even with ISN then right linerad
+/*  233 */  
+/*  234 */  # Error message deep inside a long script.
+/*  235 */  # This error is on line 236
+/*  236 */  error "hello"
+                  ^^^^^^^
+ERROR: syntax error
+

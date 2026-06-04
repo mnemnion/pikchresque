@@ -1,0 +1,13 @@
+/*    1 */  # Error messages from macro processing
+/*    2 */  #
+/*    3 */  define xyz {box $1 $2}
+/*    4 */  xyz("hello",error)
+                        ^^^^^
+ERROR: syntax error
+Called from:
+/*    3 */  define xyz {box $1 $2}
+                               ^^
+Called from:
+/*    4 */  xyz("hello",error)
+            ^^^
+

@@ -1,0 +1,34 @@
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-b893b403fa" role="img" viewBox="0 0 796.32 112.32">
+<style>
+#pikchr-b893b403fa {
+._D {dominant-baseline:central}
+._T {fill:transparent}
+._tM {text-anchor:middle}
+._Fb {font-weight:bold}
+color-scheme:light dark;
+._fe {fill:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._ff {fill:light-dark(rgb(0,0,255),rgb(127,127,255))}
+._sa {stroke:light-dark(rgb(255,0,0),rgb(255,127,127))}
+._sb {stroke:light-dark(rgb(0,0,255),rgb(127,127,255))}
+._sc {stroke:light-dark(rgb(0,128,0),rgb(127,255,127))}
+._sd {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
+}
+</style>
+<g class="group G1 b-5 b-4 b-3 b-2 b-1" >
+<circle class="circle RedCirc _T _sa" cx="38.16" cy="56.16" r="36"  stroke-width="2.16" />
+<g class="group G2 a-5 a-4 a-3 a-2 a-1" >
+<circle class="circle Bcirc blue-circle _T _sb" cx="182.16" cy="56.16" r="36"  stroke-width="2.16" />
+</g>
+<circle class="circle a-6 _T _sc" cx="326.16" cy="56.16" r="36"  stroke-width="2.16" />
+<g class="arrow" >
+<polygon class="arrow _fe" points="38.16,56.16 49.68,51.84 49.68,60.48" />
+<path class="arrow _T _sd" d="M218.16,56.16L43.92,56.16"  stroke-width="2.16" />
+</g>
+<text class="arrow _fe _D _tM" x="128.16" y="44.46">arrow</text>
+</g>
+<path class="box _T _sd" d="M362.16,92.16L470.16,92.16L470.16,20.16L362.16,20.16Z"  stroke-width="2.16" />
+<path class="diamond _T _sd" d="M542.16,56.16L614.16,110.16L686.16,56.16L614.16,2.16Z"  stroke-width="2.16" />
+<path class="box blue-box _T _sa" d="M686.16,92.16L794.16,92.16L794.16,20.16L686.16,20.16Z"  stroke-width="2.16" />
+<text class="box blue-box _ff _D _tM _Fb" x="740.16" y="56.16">box</text>
+</svg>
+

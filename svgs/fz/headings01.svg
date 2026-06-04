@@ -1,0 +1,99 @@
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-2aa36f05a6" role="img" viewBox="0 0 477.397 364.32">
+<style>
+#pikchr-2aa36f05a6 {
+._D {dominant-baseline:central}
+._T {fill:transparent}
+._tM {text-anchor:middle}
+color-scheme:light dark;
+._fc {fill:light-dark(rgb(173,216,230),rgb(25,68,82))}
+._fb {fill:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._sa {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
+}
+</style>
+<circle class="circle C _T _sa" cx="182.16" cy="182.16" r="54"  stroke-width="2.16" />
+<text class="circle C _fb _D _tM" x="182.16" y="182.16">Center</text>
+<circle class="circle _T _sa" cx="182.16" cy="38.16" r="36"  stroke-width="2.16" />
+<text class="circle _fb _D _tM" x="182.16" y="38.16">N</text>
+<g class="arrow" >
+<polygon class="arrow _fb" points="182.16,74.16 186.48,85.68 177.84,85.68" />
+<path class="arrow _T _sa" d="M182.16,128.16L182.16,79.92"  stroke-width="2.16" />
+</g>
+<circle class="circle _T _sa" cx="283.983" cy="80.3366" r="36"  stroke-width="2.16" />
+<text class="circle _fb _D _tM" x="283.983" y="80.3366">NE</text>
+<g class="arrow" >
+<polygon class="arrow _fb" points="220.344,143.976 225.435,132.776 231.544,138.885" />
+<path class="arrow _T _sa" d="M224.417,139.903L258.528,105.792"  stroke-width="2.16" />
+</g>
+<circle class="circle _T _sa" cx="326.16" cy="182.16" r="36"  stroke-width="2.16" />
+<text class="circle _fb _D _tM" x="326.16" y="182.16">E</text>
+<g class="arrow" >
+<polygon class="arrow _fb" points="236.16,182.16 247.68,177.84 247.68,186.48" />
+<polygon class="arrow _fb" points="290.16,182.16 278.64,186.48 278.64,177.84" />
+<path class="arrow _T _sa" d="M241.92,182.16L284.4,182.16"  stroke-width="2.16" />
+</g>
+<circle class="circle _T _sa" cx="283.983" cy="283.983" r="36"  stroke-width="2.16" />
+<text class="circle _fb _D _tM" x="283.983" y="283.983">SE</text>
+<g class="arrow" >
+<polygon class="arrow _fb" points="258.528,258.528 247.327,253.436 253.436,247.327" />
+<path class="arrow _T _sa" d="M220.344,220.344L254.455,254.455"  stroke-width="2.16" />
+</g>
+<circle class="circle _T _sa" cx="182.16" cy="326.16" r="36"  stroke-width="2.16" />
+<text class="circle _fb _D _tM" x="182.16" y="326.16">S</text>
+<g class="arrow" >
+<polygon class="arrow _fb" points="182.16,236.16 186.48,247.68 177.84,247.68" />
+<path class="arrow _T _sa" d="M182.16,241.92L182.16,290.16"  stroke-width="2.16" />
+</g>
+<circle class="circle _T _sa" cx="80.3366" cy="283.983" r="36"  stroke-width="2.16" />
+<text class="circle _fb _D _tM" x="80.3366" y="283.983">SW</text>
+<g class="arrow" >
+<polygon class="arrow _fb" points="143.976,220.344 138.885,231.544 132.776,225.435" />
+<polygon class="arrow _fb" points="105.792,258.528 110.884,247.327 116.993,253.436" />
+<path class="arrow _T _sa" d="M139.903,224.417L109.865,254.455"  stroke-width="2.16" />
+</g>
+<circle class="circle _T _sa" cx="38.16" cy="182.16" r="36"  stroke-width="2.16" />
+<text class="circle _fb _D _tM" x="38.16" y="182.16">W</text>
+<g class="arrow" >
+<polygon class="arrow _fb" points="74.16,182.16 85.68,177.84 85.68,186.48" />
+<path class="arrow _T _sa" d="M128.16,182.16L79.92,182.16"  stroke-width="2.16" />
+</g>
+<circle class="circle _T _sa" cx="80.3366" cy="80.3366" r="36"  stroke-width="2.16" />
+<text class="circle _fb _D _tM" x="80.3366" y="80.3366">NW</text>
+<g class="arrow" >
+<polygon class="arrow _fb" points="143.976,143.976 132.776,138.885 138.885,132.776" />
+<path class="arrow _T _sa" d="M139.903,139.903L105.792,105.792"  stroke-width="2.16" />
+</g>
+<g class="arrow" >
+<polygon class="arrow _fb" points="250.724,66.56 238.427,66.1427 241.734,58.1603" />
+<path class="arrow _T _sa" d="M215.42,51.9366L245.402,64.3558"  stroke-width="2.16" />
+</g>
+<g class="arrow" >
+<polygon class="arrow _fb" points="297.76,113.596 306.16,122.586 298.177,125.893" />
+<path class="arrow _T _sa" d="M312.383,148.9L299.964,118.918"  stroke-width="2.16" />
+</g>
+<g class="arrow" >
+<polygon class="arrow _fb" points="113.596,297.76 125.893,298.177 122.586,306.16" />
+<polygon class="arrow _fb" points="148.9,312.383 136.604,311.966 139.91,303.984" />
+<path class="arrow _T _sa" d="M118.918,299.964L143.579,310.179"  stroke-width="2.16" />
+</g>
+<circle class="circle _sa _fc" cx="448.237" cy="292.373" r="27"  stroke-width="3.24" />
+<text class="circle _fb _D _tM" x="448.237" y="292.373">ESE</text>
+<g class="arrow" >
+<polygon class="arrow _fb" points="232.049,202.825 250.494,203.451 245.534,215.424" />
+<polygon class="arrow _fb" points="423.293,282.04 404.848,281.414 409.808,269.441" />
+<path class="arrow _T _sa" d="M240.032,206.131L415.31,278.734"  stroke-width="3.24" />
+</g>
+<g class="arrow" >
+<polygon class="arrow _fb" points="319.778,84.1799 331.693,81.1145 330.771,89.7051" />
+<path class="arrow _T _sa" d="M448.237,265.373 L 448.237,105.473 Q 448.237,97.9728 440.78,97.1721 L 332.962,85.5955 L 325.505,84.7948"  stroke-width="2.16" />
+</g>
+<g class="line" >
+<polygon class="line _fb" points="362.16,182.16 373.68,177.84 373.68,186.48" />
+<path class="line _T _sa" d="M367.92,182.16L448.237,182.16"  stroke-width="2.16" stroke-dasharray="7.2 7.2" />
+</g>
+<g class="line" >
+<polygon class="line _fb" points="148.9,51.9366 144.405,56.1364 142.752,52.1453" />
+<polygon class="line _fb" points="113.596,66.56 118.091,62.3602 119.744,66.3513" />
+<path class="line _T _sa" d="M146.24,53.0387L116.257,65.4579"  stroke-width="1.08" stroke-dasharray="2.1 7.2" />
+</g>
+</svg>
+

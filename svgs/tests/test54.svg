@@ -1,0 +1,34 @@
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-81fbb21858" role="img" viewBox="0 0 634.238 336.782">
+<style>
+#pikchr-81fbb21858 {
+._D {dominant-baseline:central}
+._T {fill:transparent}
+._tM {text-anchor:middle}
+color-scheme:light dark;
+._fc {fill:light-dark(rgb(211,211,211),rgb(44,44,44))}
+._fb {fill:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._sa {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
+}
+</style>
+<g class="group All" >
+<path class="file _sa _fc" d="M24.8372,285.031L108.357,285.031L108.357,152.551L86.7572,130.951L24.8372,130.951Z"  stroke-width="4.86" />
+<path class="file _T _sa" d="M86.7572,130.951L86.7572,152.551L108.357,152.551"  stroke-width="4.86" />
+<text class="file _fb _D _tM" x="66.5972" y="167.671">wide-file</text>
+<text class="file _fb _D _tM" x="66.5972" y="187.831">test 1</text>
+<text class="file _fb _D _tM" x="66.5972" y="207.991">abcde</text>
+<text class="file _fb _D _tM" x="66.5972" y="228.151">uvwxyz</text>
+<text class="file _fb _D _tM" x="66.5972" y="248.311">bottom</text>
+<path class="cylinder _sa _fc" d="M180.357,181.711L180.357,234.271A39.9168 10.8 0 0 0 260.191 234.271L260.191,181.711A39.9168 10.8 0 0 0 180.357 181.711A39.9168 10.8 0 0 0 260.191 181.711"  stroke-width="4.86" />
+<text class="cylinder _fb _D _tM" x="220.274" y="206.011">cylinder</text>
+<text class="cylinder _fb _D _tM" x="220.274" y="226.171">test 1</text>
+<path class="diamond _sa _fc" d="M332.191,207.991L470.796,311.944L609.4,207.991L470.796,104.037Z"  stroke-width="4.86" />
+<text class="diamond _fb _D _tM" x="470.796" y="167.671">wide-diamond</text>
+<text class="diamond _fb _D _tM" x="470.796" y="187.831">test 1</text>
+<text class="diamond _fb _D _tM" x="470.796" y="207.991">abcde</text>
+<text class="diamond _fb _D _tM" x="470.796" y="228.151">uvwxyz</text>
+<text class="diamond _fb _D _tM" x="470.796" y="248.311">bottom</text>
+</g>
+<text class="text _fb _D _tM" x="317.119" y="39.9572">Fit &amp; Background for</text>
+<text class="text _fb _D _tM" x="317.119" y="60.1172">File, Cylinder, and Diamond</text>
+</svg>
+

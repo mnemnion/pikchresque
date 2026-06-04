@@ -1,0 +1,20 @@
+0.5<br>
+0.8<br>
+2<br>
+16738740<br>
+817<br>
+0.9092974268<br>
+-0.4161468365<br>
+4.123105626<br>
+5<br>
+10<br>
+/*   10 */  print sqrt(17)
+/*   11 */  print min(5,10)
+/*   12 */  print max(5,10)
+/*   13 */  
+/*   14 */  # NB: deliberate sqrt() error in order to test math logic
+/*   15 */  print sqrt(-11)
+                  ^^^^
+ERROR: sqrt of negative value
+0<br>
+

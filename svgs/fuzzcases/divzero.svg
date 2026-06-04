@@ -1,0 +1,9 @@
+/*   27 */   ""  at C;
+/*   28 */  #x
+/*   29 */  C: circle rad 0%
+/*   30 */   circle ""  at 0n  of C;; arrow from C to last chop <-
+/*   31 */   ""  at C;; arrow from C to last chop <-# d
+/*   32 */         box wid
+                          ^
+ERROR: syntax error
+

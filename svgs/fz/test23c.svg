@@ -1,0 +1,39 @@
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-1beffe2340" role="img" viewBox="0 0 652.32 182.25">
+<style>
+#pikchr-1beffe2340 {
+._D {dominant-baseline:central}
+._T {fill:transparent}
+._tM {text-anchor:middle}
+color-scheme:light dark;
+._fb {fill:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._sa {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
+}
+</style>
+<g class="arrow" >
+<polygon class="arrow _fb" points="146.16,36.09 138.442,38.9844 138.442,33.1956" />
+<path class="arrow _T _sa" d="M2.16,36.09L142.301,36.09"  stroke-width="1.4472" />
+</g>
+<text class="arrow _fb _D _tM" x="74.16" y="22.4046" font-size="125%">Big</text>
+<text class="arrow _fb _D _tM" x="74.16" y="45.2394" font-size="80%">Small</text>
+<text class="box _fb _D _tM" x="168.566" y="26.01">thin</text>
+<text class="box _fb _D _tM" x="168.566" y="46.17">line</text>
+<g class="arrow" >
+<polygon class="arrow _fb" points="406.973,36.09 389.693,42.57 389.693,29.61" />
+<path class="arrow _T _sa" d="M262.973,36.09L398.333,36.09"  stroke-width="3.24" />
+</g>
+<text class="arrow _fb _D _tM" x="334.973" y="17.91" font-size="156.25%">Big Big</text>
+<text class="arrow _fb _D _tM" x="334.973" y="44.9712" font-size="64%">Small Small</text>
+<text class="box _fb _D _tM" x="433.757" y="26.01">thick</text>
+<text class="box _fb _D _tM" x="433.757" y="46.17">line</text>
+<path class="box _T _sa" d="M2.16,180.09L110.16,180.09L110.16,108.09L2.16,108.09Z"  stroke-width="3.24" />
+<text class="box _fb _D _tM" x="56.16" y="144.09">Thick</text>
+<path class="box _T _sa" d="M182.16,180.09L290.16,180.09L290.16,108.09L182.16,108.09Z"  stroke-width="4.86" />
+<text class="box _fb _D _tM" x="236.16" y="134.01">Thick</text>
+<text class="box _fb _D _tM" x="236.16" y="154.17">Thick</text>
+<path class="box _T _sa" d="M362.16,180.09L470.16,180.09L470.16,108.09L362.16,108.09Z"  stroke-width="1.4472" />
+<text class="box _fb _D _tM" x="416.16" y="144.09">Thin</text>
+<path class="box _T _sa" d="M542.16,180.09L650.16,180.09L650.16,108.09L542.16,108.09Z"  stroke-width="0.969624" />
+<text class="box _fb _D _tM" x="596.16" y="134.01">Thin</text>
+<text class="box _fb _D _tM" x="596.16" y="154.17">Thin</text>
+</svg>
+

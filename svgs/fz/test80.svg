@@ -1,0 +1,32 @@
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-9fdfdc5c01" role="img" viewBox="0 0 717.517 445.652">
+<style>
+#pikchr-9fdfdc5c01 {
+._D {dominant-baseline:central}
+._T {fill:transparent}
+._tM {text-anchor:middle}
+color-scheme:light dark;
+._fa {fill:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._sb {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
+}
+</style>
+<text class="text TITLE _fa _D _tM" x="171.216" y="17.28">'with .start at' tests...</text>
+<text class="text TITLE _fa _D _tM" x="171.216" y="37.44">Top row should match bottom row</text>
+<text class="text TITLE _fa _D _tM" x="171.216" y="57.6">Forum post a48fbe155b on 2024-06-25</text>
+<path class="box B1 _T _sb" d="M2.16,201.413L110.16,201.413L110.16,129.413L2.16,129.413Z"  stroke-width="2.16" />
+<circle class="circle C1 _T _sb" cx="146.16" cy="165.413" r="36"  stroke-width="2.16" />
+<path class="box B2 _T _sb" d="M2.16,371.492L110.16,371.492L110.16,299.492L2.16,299.492Z"  stroke-width="2.16" />
+<circle class="circle C2 _T _sb" cx="146.16" cy="335.492" r="36"  stroke-width="2.16" />
+<path class="box B3 _T _sb" d="M238.853,201.413L346.853,201.413L346.853,129.413L238.853,129.413Z"  stroke-width="2.16" />
+<circle class="circle C3 _T _sb" cx="292.853" cy="237.413" r="36"  stroke-width="2.16" />
+<path class="box B4 _T _sb" d="M238.853,371.492L346.853,371.492L346.853,299.492L238.853,299.492Z"  stroke-width="2.16" />
+<circle class="circle C4 _T _sb" cx="292.853" cy="407.492" r="36"  stroke-width="2.16" />
+<path class="box B5 _T _sb" d="M465.625,201.413L573.625,201.413L573.625,129.413L465.625,129.413Z"  stroke-width="2.16" />
+<circle class="circle C5 _T _sb" cx="429.625" cy="165.413" r="36"  stroke-width="2.16" />
+<path class="box B6 _T _sb" d="M465.625,371.492L573.625,371.492L573.625,299.492L465.625,299.492Z"  stroke-width="2.16" />
+<circle class="circle C6 _T _sb" cx="429.625" cy="335.492" r="36"  stroke-width="2.16" />
+<path class="box B7 _T _sb" d="M607.357,273.413L715.357,273.413L715.357,201.413L607.357,201.413Z"  stroke-width="2.16" />
+<circle class="circle C7 _T _sb" cx="661.357" cy="165.413" r="36"  stroke-width="2.16" />
+<path class="box B8 _T _sb" d="M607.357,443.492L715.357,443.492L715.357,371.492L607.357,371.492Z"  stroke-width="2.16" />
+<circle class="circle C7 _T _sb" cx="661.357" cy="335.492" r="36"  stroke-width="2.16" />
+</svg>
+

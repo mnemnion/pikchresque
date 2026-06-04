@@ -1,0 +1,9 @@
+/*    1 */  # Error messages in a macro
+/*    2 */  #
+/*    3 */  define abc {box "should not see this" fit}
+                        ^^^
+ERROR: syntax error
+Called from:
+/*    4 */  define abc {box "don't see this either" fit}
+                   ^^^
+

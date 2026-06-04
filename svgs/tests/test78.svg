@@ -1,0 +1,35 @@
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-d6ce6e0626" role="img" viewBox="0 0 213.178 497.53">
+<style>
+#pikchr-d6ce6e0626 {
+._D {dominant-baseline:central}
+._T {fill:transparent}
+._tM {text-anchor:middle}
+color-scheme:light dark;
+._fc {fill:light-dark(rgb(173,216,230),rgb(25,68,82))}
+._fd {fill:light-dark(rgb(255,255,0),rgb(127,127,0))}
+._fe {fill:light-dark(rgb(144,238,144),rgb(17,111,17))}
+._ff {fill:light-dark(rgb(255,192,203),rgb(63,0,11))}
+._fg {fill:light-dark(rgb(211,211,211),rgb(44,44,44))}
+._fh {fill:light-dark(rgb(255,165,0),rgb(127,82,0))}
+._fa {fill:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._sb {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
+}
+</style>
+<text class="text _fa _D _tM" x="106.589" y="17.28">Zero Thickness Objects</text>
+<path class="box _sb _fc" d="M85.1616,62.64L128.016,62.64L128.016,32.4L85.1616,32.4Z"  stroke-width="0" />
+<text class="box _fa _D _tM" x="106.589" y="47.52">Box</text>
+<circle class="circle _sb _fd" cx="106.589" cy="97.1725" r="34.5325"  stroke-width="0" />
+<text class="circle _fa _D _tM" x="106.589" y="97.1725">Circle</text>
+<path class="file _sb _fe" d="M84.816,205.145L128.362,205.145L128.362,153.305L106.762,131.705L84.816,131.705Z"  stroke-width="0" />
+<path class="file _T _sb" d="M106.762,131.705L106.762,153.305L128.362,153.305"  stroke-width="0" />
+<text class="file _fa _D _tM" x="106.589" y="168.425">File</text>
+<path class="oval _sb _ff" d="M89.1648,235.385L124.013,235.385A15.12 15.12 0 0 0 139.133 220.265A15.12 15.12 0 0 0 124.013 205.145L89.1648,205.145A15.12 15.12 0 0 0 74.0448 220.265A15.12 15.12 0 0 0 89.1648 235.385Z"  stroke-width="0" />
+<text class="oval _fa _D _tM" x="106.589" y="220.265">Oval 1</text>
+<path class="oval _sb _fg" d="M106.589,348.771A31.1811 31.1811 0 0 0 137.77 317.59L137.77,266.566A31.1811 31.1811 0 0 0 106.589 235.385A31.1811 31.1811 0 0 0 75.4077 266.566L75.4077,317.59A31.1811 31.1811 0 0 0 106.589 348.771Z"  stroke-width="0" />
+<text class="oval _fa _D _tM" x="106.589" y="292.078">Oval 2</text>
+<path class="cylinder _sb _fh" d="M64.944,359.571L64.944,389.271A41.6448 10.8 0 0 0 148.234 389.271L148.234,359.571A41.6448 10.8 0 0 0 64.944 359.571A41.6448 10.8 0 0 0 148.234 359.571"  stroke-width="0" />
+<text class="cylinder _fa _D _tM" x="106.589" y="382.521">Cylinder</text>
+<path class="diamond _sb _fc" d="M43.056,447.72L106.589,495.37L170.122,447.72L106.589,400.071Z"  stroke-width="0" />
+<text class="diamond _fa _D _tM" x="106.589" y="447.72">Diamond</text>
+</svg>
+

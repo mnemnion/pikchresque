@@ -1,0 +1,55 @@
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-c305aa544c" role="img" viewBox="0 0 706.234 121.493">
+<style>
+#pikchr-c305aa544c {
+._D {dominant-baseline:central}
+._T {fill:transparent}
+._tM {text-anchor:middle}
+color-scheme:light dark;
+._fc {fill:light-dark(rgb(255,0,0),rgb(127,0,0))}
+._fd {fill:light-dark(rgb(255,165,0),rgb(127,82,0))}
+._fe {fill:light-dark(rgb(255,255,0),rgb(127,127,0))}
+._ff {fill:light-dark(rgb(0,128,0),rgb(63,127,63))}
+._fg {fill:light-dark(rgb(0,0,255),rgb(0,0,127))}
+._fh {fill:light-dark(rgb(238,130,238),rgb(125,17,125))}
+._fb {fill:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._fj {fill:light-dark(rgb(255,0,0),rgb(255,127,127))}
+._fl {fill:light-dark(rgb(255,165,0),rgb(255,209,127))}
+._fn {fill:light-dark(rgb(255,255,0),rgb(255,255,127))}
+._fp {fill:light-dark(rgb(0,128,0),rgb(127,255,127))}
+._fr {fill:light-dark(rgb(0,0,255),rgb(127,127,255))}
+._ft {fill:light-dark(rgb(238,130,238),rgb(255,127,255))}
+._sa {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._si {stroke:light-dark(rgb(255,0,0),rgb(255,127,127))}
+._sk {stroke:light-dark(rgb(255,165,0),rgb(255,209,127))}
+._sm {stroke:light-dark(rgb(255,255,0),rgb(255,255,127))}
+._so {stroke:light-dark(rgb(0,128,0),rgb(127,255,127))}
+._sq {stroke:light-dark(rgb(0,0,255),rgb(127,127,255))}
+._ss {stroke:light-dark(rgb(238,130,238),rgb(255,127,255))}
+}
+</style>
+<path class="box _sa _fc" d="M2.16,32.4L42.0192,32.4L42.0192,2.16L2.16,2.16Z"  stroke-width="2.16" />
+<text class="box _fb _D _tM" x="22.0896" y="17.28">red</text>
+<path class="box _sa _fd" d="M114.019,32.4L184.291,32.4L184.291,2.16L114.019,2.16Z"  stroke-width="2.16" />
+<text class="box _fb _D _tM" x="149.155" y="17.28">orange</text>
+<path class="box _sa _fe" d="M256.291,32.4L321.725,32.4L321.725,2.16L256.291,2.16Z"  stroke-width="2.16" />
+<text class="box _fb _D _tM" x="289.008" y="17.28">yellow</text>
+<path class="box _sa _ff" d="M393.725,32.4L453.974,32.4L453.974,2.16L393.725,2.16Z"  stroke-width="2.16" />
+<text class="box _fb _D _tM" x="423.85" y="17.28">green</text>
+<path class="box _sa _fg" d="M525.974,32.4L574.013,32.4L574.013,2.16L525.974,2.16Z"  stroke-width="2.16" />
+<text class="box _fb _D _tM" x="549.994" y="17.28">blue</text>
+<path class="box _sa _fh" d="M646.013,32.4L704.074,32.4L704.074,2.16L646.013,2.16Z"  stroke-width="2.16" />
+<text class="box _fb _D _tM" x="675.043" y="17.28">violet</text>
+<path class="box _T _si" d="M2.16,119.333L42.0192,119.333L42.0192,89.0929L2.16,89.0929Z"  stroke-width="2.16" />
+<text class="box _fj _D _tM" x="22.0896" y="104.213">red</text>
+<path class="box _T _sk" d="M114.019,119.333L184.291,119.333L184.291,89.0929L114.019,89.0929Z"  stroke-width="2.16" />
+<text class="box _fl _D _tM" x="149.155" y="104.213">orange</text>
+<path class="box _T _sm" d="M256.291,119.333L321.725,119.333L321.725,89.0929L256.291,89.0929Z"  stroke-width="2.16" />
+<text class="box _fn _D _tM" x="289.008" y="104.213">yellow</text>
+<path class="box _T _so" d="M393.725,119.333L453.974,119.333L453.974,89.0929L393.725,89.0929Z"  stroke-width="2.16" />
+<text class="box _fp _D _tM" x="423.85" y="104.213">green</text>
+<path class="box _T _sq" d="M525.974,119.333L574.013,119.333L574.013,89.0929L525.974,89.0929Z"  stroke-width="2.16" />
+<text class="box _fr _D _tM" x="549.994" y="104.213">blue</text>
+<path class="box _T _ss" d="M646.013,119.333L704.074,119.333L704.074,89.0929L646.013,89.0929Z"  stroke-width="2.16" />
+<text class="box _ft _D _tM" x="675.043" y="104.213">violet</text>
+</svg>
+

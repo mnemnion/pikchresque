@@ -1,0 +1,167 @@
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-5134375da8" role="img" viewBox="0 0 259.92 517.68">
+<style>
+#pikchr-5134375da8 {
+._D {dominant-baseline:central}
+._T {fill:transparent}
+._tM {text-anchor:middle}
+._Fb {font-weight:bold}
+color-scheme:light dark;
+._fd {fill:light-dark(rgb(0,0,0),rgb(127,127,127))}
+._fb {fill:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._sa {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._sc {stroke:light-dark(rgb(0,0,0),rgb(127,127,127))}
+}
+</style>
+<path class="box _T _sa" d="M7.56,32.4L178.367,32.4L178.367,2.16L7.56,2.16Z"  stroke-width="2.16" />
+<text class="box _fb _D _tM _Fb" x="92.9635" y="17.28">object-type-name</text>
+<path class="line _T _sa" d="M7.56,32.4L7.56,68.4"  stroke-width="2.16" />
+<circle class="dot START _sa _fb" cx="7.56" cy="68.4" r="5.4"  stroke-width="2.16" />
+<path class="box END _sc _fd" d="M252.36,77.4L257.76,77.4L257.76,59.4L252.36,59.4Z"  stroke-width="2.16" />
+<g class="arrow" >
+<polygon class="arrow _fb" points="62.28,68.4 50.76,72.72 50.76,64.08" />
+<path class="arrow _T _sa" d="M7.56,68.4L56.52,68.4"  stroke-width="2.16" />
+</g>
+<path class="oval _T _sa" d="M77.4,83.52L100.037,83.52A15.12 15.12 0 0 0 115.157 68.4A15.12 15.12 0 0 0 100.037 53.28L77.4,53.28A15.12 15.12 0 0 0 62.28 68.4A15.12 15.12 0 0 0 77.4 83.52Z"  stroke-width="2.16" />
+<text class="oval _fb _D _tM" x="88.7184" y="68.4">"arc"</text>
+<g class="arrow" >
+<polygon class="arrow _fb" points="197.64,68.4 186.12,72.72 186.12,64.08" />
+<path class="arrow _T _sa" d="M115.157,68.4L191.88,68.4"  stroke-width="2.16" />
+</g>
+<g class="arrow" >
+<polygon class="arrow _fb" points="252.36,68.4 240.84,72.72 240.84,64.08" />
+<path class="arrow _T _sa" d="M197.64,68.4L246.6,68.4"  stroke-width="2.16" />
+</g>
+<path class="oval _T _sa" d="M77.4,119.52L122.616,119.52A15.12 15.12 0 0 0 137.736 104.4A15.12 15.12 0 0 0 122.616 89.28L77.4,89.28A15.12 15.12 0 0 0 62.28 104.4A15.12 15.12 0 0 0 77.4 119.52Z"  stroke-width="2.16" />
+<text class="oval _fb _D _tM" x="100.008" y="104.4">"arrow"</text>
+<g class="arrow" >
+<polygon class="arrow _fb" points="197.64,104.4 186.12,108.72 186.12,100.08" />
+<path class="arrow _T _sa" d="M137.736,104.4L191.88,104.4"  stroke-width="2.16" />
+</g>
+<path class="line _T _sa" d="M197.64,104.4 L 208.44,104.4 Q 219.24,104.4 219.24,93.6 L 219.24,82.8"  stroke-width="2.16" />
+<g class="arrow" >
+<polygon class="arrow _fb" points="62.28,104.4 50.76,108.72 50.76,100.08" />
+<path class="arrow _T _sa" d="M29.16,89.28 L 29.16,96.84 Q 29.16,104.4 42.84,104.4 L 56.52,104.4"  stroke-width="2.16" />
+</g>
+<path class="oval _T _sa" d="M77.4,155.52L102.802,155.52A15.12 15.12 0 0 0 117.922 140.4A15.12 15.12 0 0 0 102.802 125.28L77.4,125.28A15.12 15.12 0 0 0 62.28 140.4A15.12 15.12 0 0 0 77.4 155.52Z"  stroke-width="2.16" />
+<text class="oval _fb _D _tM" x="90.1008" y="140.4">"box"</text>
+<g class="arrow" >
+<polygon class="arrow _fb" points="197.64,140.4 186.12,144.72 186.12,136.08" />
+<path class="arrow _T _sa" d="M117.922,140.4L191.88,140.4"  stroke-width="2.16" />
+</g>
+<path class="line _T _sa" d="M197.64,140.4 L 208.44,140.4 Q 219.24,140.4 219.24,129.6 L 219.24,118.8"  stroke-width="2.16" />
+<g class="arrow" >
+<polygon class="arrow _fb" points="62.28,140.4 50.76,144.72 50.76,136.08" />
+<path class="arrow _T _sa" d="M29.16,125.28 L 29.16,132.84 Q 29.16,140.4 42.84,140.4 L 56.52,140.4"  stroke-width="2.16" />
+</g>
+<path class="oval _T _sa" d="M77.4,191.52L120.082,191.52A15.12 15.12 0 0 0 135.202 176.4A15.12 15.12 0 0 0 120.082 161.28L77.4,161.28A15.12 15.12 0 0 0 62.28 176.4A15.12 15.12 0 0 0 77.4 191.52Z"  stroke-width="2.16" />
+<text class="oval _fb _D _tM" x="98.7408" y="176.4">"circle"</text>
+<g class="arrow" >
+<polygon class="arrow _fb" points="197.64,176.4 186.12,180.72 186.12,172.08" />
+<path class="arrow _T _sa" d="M135.202,176.4L191.88,176.4"  stroke-width="2.16" />
+</g>
+<path class="line _T _sa" d="M197.64,176.4 L 208.44,176.4 Q 219.24,176.4 219.24,165.6 L 219.24,154.8"  stroke-width="2.16" />
+<g class="arrow" >
+<polygon class="arrow _fb" points="62.28,176.4 50.76,180.72 50.76,172.08" />
+<path class="arrow _T _sa" d="M29.16,161.28 L 29.16,168.84 Q 29.16,176.4 42.84,176.4 L 56.52,176.4"  stroke-width="2.16" />
+</g>
+<path class="oval _T _sa" d="M77.4,227.52L141.278,227.52A15.12 15.12 0 0 0 156.398 212.4A15.12 15.12 0 0 0 141.278 197.28L77.4,197.28A15.12 15.12 0 0 0 62.28 212.4A15.12 15.12 0 0 0 77.4 227.52Z"  stroke-width="2.16" />
+<text class="oval _fb _D _tM" x="109.339" y="212.4">"cylinder"</text>
+<g class="arrow" >
+<polygon class="arrow _fb" points="197.64,212.4 186.12,216.72 186.12,208.08" />
+<path class="arrow _T _sa" d="M156.398,212.4L191.88,212.4"  stroke-width="2.16" />
+</g>
+<path class="line _T _sa" d="M197.64,212.4 L 208.44,212.4 Q 219.24,212.4 219.24,201.6 L 219.24,190.8"  stroke-width="2.16" />
+<g class="arrow" >
+<polygon class="arrow _fb" points="62.28,212.4 50.76,216.72 50.76,208.08" />
+<path class="arrow _T _sa" d="M29.16,197.28 L 29.16,204.84 Q 29.16,212.4 42.84,212.4 L 56.52,212.4"  stroke-width="2.16" />
+</g>
+<path class="oval _T _sa" d="M77.4,263.52L100.152,263.52A15.12 15.12 0 0 0 115.272 248.4A15.12 15.12 0 0 0 100.152 233.28L77.4,233.28A15.12 15.12 0 0 0 62.28 248.4A15.12 15.12 0 0 0 77.4 263.52Z"  stroke-width="2.16" />
+<text class="oval _fb _D _tM" x="88.776" y="248.4">"dot"</text>
+<g class="arrow" >
+<polygon class="arrow _fb" points="197.64,248.4 186.12,252.72 186.12,244.08" />
+<path class="arrow _T _sa" d="M115.272,248.4L191.88,248.4"  stroke-width="2.16" />
+</g>
+<path class="line _T _sa" d="M197.64,248.4 L 208.44,248.4 Q 219.24,248.4 219.24,237.6 L 219.24,226.8"  stroke-width="2.16" />
+<g class="arrow" >
+<polygon class="arrow _fb" points="62.28,248.4 50.76,252.72 50.76,244.08" />
+<path class="arrow _T _sa" d="M29.16,233.28 L 29.16,240.84 Q 29.16,248.4 42.84,248.4 L 56.52,248.4"  stroke-width="2.16" />
+</g>
+<path class="oval _T _sa" d="M77.4,299.52L128.261,299.52A15.12 15.12 0 0 0 143.381 284.4A15.12 15.12 0 0 0 128.261 269.28L77.4,269.28A15.12 15.12 0 0 0 62.28 284.4A15.12 15.12 0 0 0 77.4 299.52Z"  stroke-width="2.16" />
+<text class="oval _fb _D _tM" x="102.83" y="284.4">"ellipse"</text>
+<g class="arrow" >
+<polygon class="arrow _fb" points="197.64,284.4 186.12,288.72 186.12,280.08" />
+<path class="arrow _T _sa" d="M143.381,284.4L191.88,284.4"  stroke-width="2.16" />
+</g>
+<path class="line _T _sa" d="M197.64,284.4 L 208.44,284.4 Q 219.24,284.4 219.24,273.6 L 219.24,262.8"  stroke-width="2.16" />
+<g class="arrow" >
+<polygon class="arrow _fb" points="62.28,284.4 50.76,288.72 50.76,280.08" />
+<path class="arrow _T _sa" d="M29.16,269.28 L 29.16,276.84 Q 29.16,284.4 42.84,284.4 L 56.52,284.4"  stroke-width="2.16" />
+</g>
+<path class="oval _T _sa" d="M77.4,335.52L99.6912,335.52A15.12 15.12 0 0 0 114.811 320.4A15.12 15.12 0 0 0 99.6912 305.28L77.4,305.28A15.12 15.12 0 0 0 62.28 320.4A15.12 15.12 0 0 0 77.4 335.52Z"  stroke-width="2.16" />
+<text class="oval _fb _D _tM" x="88.5456" y="320.4">"file"</text>
+<g class="arrow" >
+<polygon class="arrow _fb" points="197.64,320.4 186.12,324.72 186.12,316.08" />
+<path class="arrow _T _sa" d="M114.811,320.4L191.88,320.4"  stroke-width="2.16" />
+</g>
+<path class="line _T _sa" d="M197.64,320.4 L 208.44,320.4 Q 219.24,320.4 219.24,309.6 L 219.24,298.8"  stroke-width="2.16" />
+<g class="arrow" >
+<polygon class="arrow _fb" points="62.28,320.4 50.76,324.72 50.76,316.08" />
+<path class="arrow _T _sa" d="M29.16,305.28 L 29.16,312.84 Q 29.16,320.4 42.84,320.4 L 56.52,320.4"  stroke-width="2.16" />
+</g>
+<path class="oval _T _sa" d="M77.4,371.52L104.299,371.52A15.12 15.12 0 0 0 119.419 356.4A15.12 15.12 0 0 0 104.299 341.28L77.4,341.28A15.12 15.12 0 0 0 62.28 356.4A15.12 15.12 0 0 0 77.4 371.52Z"  stroke-width="2.16" />
+<text class="oval _fb _D _tM" x="90.8496" y="356.4">"line"</text>
+<g class="arrow" >
+<polygon class="arrow _fb" points="197.64,356.4 186.12,360.72 186.12,352.08" />
+<path class="arrow _T _sa" d="M119.419,356.4L191.88,356.4"  stroke-width="2.16" />
+</g>
+<path class="line _T _sa" d="M197.64,356.4 L 208.44,356.4 Q 219.24,356.4 219.24,345.6 L 219.24,334.8"  stroke-width="2.16" />
+<g class="arrow" >
+<polygon class="arrow _fb" points="62.28,356.4 50.76,360.72 50.76,352.08" />
+<path class="arrow _T _sa" d="M29.16,341.28 L 29.16,348.84 Q 29.16,356.4 42.84,356.4 L 56.52,356.4"  stroke-width="2.16" />
+</g>
+<path class="oval _T _sa" d="M77.4,407.52L117.432,407.52A15.12 15.12 0 0 0 132.552 392.4A15.12 15.12 0 0 0 117.432 377.28L77.4,377.28A15.12 15.12 0 0 0 62.28 392.4A15.12 15.12 0 0 0 77.4 407.52Z"  stroke-width="2.16" />
+<text class="oval _fb _D _tM" x="97.416" y="392.4">"move"</text>
+<g class="arrow" >
+<polygon class="arrow _fb" points="197.64,392.4 186.12,396.72 186.12,388.08" />
+<path class="arrow _T _sa" d="M132.552,392.4L191.88,392.4"  stroke-width="2.16" />
+</g>
+<path class="line _T _sa" d="M197.64,392.4 L 208.44,392.4 Q 219.24,392.4 219.24,381.6 L 219.24,370.8"  stroke-width="2.16" />
+<g class="arrow" >
+<polygon class="arrow _fb" points="62.28,392.4 50.76,396.72 50.76,388.08" />
+<path class="arrow _T _sa" d="M29.16,377.28 L 29.16,384.84 Q 29.16,392.4 42.84,392.4 L 56.52,392.4"  stroke-width="2.16" />
+</g>
+<path class="oval _T _sa" d="M77.4,443.52L107.525,443.52A15.12 15.12 0 0 0 122.645 428.4A15.12 15.12 0 0 0 107.525 413.28L77.4,413.28A15.12 15.12 0 0 0 62.28 428.4A15.12 15.12 0 0 0 77.4 443.52Z"  stroke-width="2.16" />
+<text class="oval _fb _D _tM" x="92.4624" y="428.4">"oval"</text>
+<g class="arrow" >
+<polygon class="arrow _fb" points="197.64,428.4 186.12,432.72 186.12,424.08" />
+<path class="arrow _T _sa" d="M122.645,428.4L191.88,428.4"  stroke-width="2.16" />
+</g>
+<path class="line _T _sa" d="M197.64,428.4 L 208.44,428.4 Q 219.24,428.4 219.24,417.6 L 219.24,406.8"  stroke-width="2.16" />
+<g class="arrow" >
+<polygon class="arrow _fb" points="62.28,428.4 50.76,432.72 50.76,424.08" />
+<path class="arrow _T _sa" d="M29.16,413.28 L 29.16,420.84 Q 29.16,428.4 42.84,428.4 L 56.52,428.4"  stroke-width="2.16" />
+</g>
+<path class="oval _T _sa" d="M77.4,479.52L123.538,479.52A15.12 15.12 0 0 0 138.658 464.4A15.12 15.12 0 0 0 123.538 449.28L77.4,449.28A15.12 15.12 0 0 0 62.28 464.4A15.12 15.12 0 0 0 77.4 479.52Z"  stroke-width="2.16" />
+<text class="oval _fb _D _tM" x="100.469" y="464.4">"spline"</text>
+<g class="arrow" >
+<polygon class="arrow _fb" points="197.64,464.4 186.12,468.72 186.12,460.08" />
+<path class="arrow _T _sa" d="M138.658,464.4L191.88,464.4"  stroke-width="2.16" />
+</g>
+<path class="line _T _sa" d="M197.64,464.4 L 208.44,464.4 Q 219.24,464.4 219.24,453.6 L 219.24,442.8"  stroke-width="2.16" />
+<g class="arrow" >
+<polygon class="arrow _fb" points="62.28,464.4 50.76,468.72 50.76,460.08" />
+<path class="arrow _T _sa" d="M29.16,449.28 L 29.16,456.84 Q 29.16,464.4 42.84,464.4 L 56.52,464.4"  stroke-width="2.16" />
+</g>
+<path class="oval _T _sa" d="M77.4,515.52L105.451,515.52A15.12 15.12 0 0 0 120.571 500.4A15.12 15.12 0 0 0 105.451 485.28L77.4,485.28A15.12 15.12 0 0 0 62.28 500.4A15.12 15.12 0 0 0 77.4 515.52Z"  stroke-width="2.16" />
+<text class="oval _fb _D _tM" x="91.4256" y="500.4">"text"</text>
+<g class="arrow" >
+<polygon class="arrow _fb" points="197.64,500.4 186.12,504.72 186.12,496.08" />
+<path class="arrow _T _sa" d="M120.571,500.4L191.88,500.4"  stroke-width="2.16" />
+</g>
+<path class="line _T _sa" d="M197.64,500.4 L 208.44,500.4 Q 219.24,500.4 219.24,478.8 L 219.24,90 Q 219.24,68.4 230.04,68.4 L 240.84,68.4"  stroke-width="2.16" />
+<g class="arrow" >
+<polygon class="arrow _fb" points="62.28,500.4 50.76,504.72 50.76,496.08" />
+<path class="arrow _T _sa" d="M7.56,68.4 L 18.36,68.4 Q 29.16,68.4 29.16,90 L 29.16,478.8 Q 29.16,500.4 42.84,500.4 L 56.52,500.4"  stroke-width="2.16" />
+</g>
+</svg>
+

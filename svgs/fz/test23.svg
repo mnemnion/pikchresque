@@ -1,0 +1,89 @@
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-eec6d1c8bd" role="img" viewBox="0 0 1022.64 618">
+<style>
+#pikchr-eec6d1c8bd {
+._D {dominant-baseline:central}
+._T {fill:transparent}
+._tM {text-anchor:middle}
+color-scheme:light dark;
+._fb {fill:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._fd {fill:light-dark(rgb(255,0,0),rgb(255,127,127))}
+._sa {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._sc {stroke:light-dark(rgb(255,0,0),rgb(255,127,127))}
+}
+</style>
+<g class="arrow" >
+<polygon class="arrow _fb" points="176.16,80.4 164.64,84.72 164.64,76.08" />
+<path class="arrow _T _sa" d="M50.16,80.4L170.4,80.4"  stroke-width="2.16" />
+</g>
+<text class="arrow _fb _D _tM" x="113.16" y="80.4">on top of</text>
+<g class="arrow" >
+<polygon class="arrow _fb" points="374.16,80.4 362.64,84.72 362.64,76.08" />
+<path class="arrow _T _sa" d="M248.16,80.4L368.4,80.4"  stroke-width="2.16" />
+</g>
+<text class="arrow _fb _D _tM" x="311.16" y="68.7">above</text>
+<text class="arrow _fb _D _tM" x="311.16" y="92.1">below</text>
+<g class="arrow" >
+<polygon class="arrow _fb" points="572.16,80.4 560.64,84.72 560.64,76.08" />
+<path class="arrow _T _sa" d="M446.16,80.4L566.4,80.4"  stroke-width="2.16" />
+</g>
+<text class="arrow _fb _D _tM" x="509.16" y="68.7">above</text>
+<g class="arrow" >
+<polygon class="arrow _fb" points="770.16,80.4 758.64,84.72 758.64,76.08" />
+<path class="arrow _T _sa" d="M644.16,80.4L764.4,80.4"  stroke-width="2.16" />
+</g>
+<text class="arrow _fb _D _tM" x="707.16" y="92.1">below</text>
+<g class="arrow" >
+<polygon class="arrow _fb" points="968.16,80.4 956.64,84.72 956.64,76.08" />
+<path class="arrow _T _sa" d="M842.16,80.4L962.4,80.4"  stroke-width="2.16" />
+</g>
+<text class="arrow _fb _D _tM" x="905.16" y="60.24">above</text>
+<text class="arrow _fb _D _tM" x="905.16" y="80.4">on top of</text>
+<text class="arrow _fb _D _tM" x="905.16" y="100.56">below</text>
+<g class="arrow" >
+<polygon class="arrow _fb" points="176.16,224.4 164.64,228.72 164.64,220.08" />
+<path class="arrow _T _sa" d="M50.16,224.4L170.4,224.4"  stroke-width="2.16" />
+</g>
+<text class="arrow _fb _D _tM" x="113.16" y="184.08">way above</text>
+<text class="arrow _fb _D _tM" x="113.16" y="204.24">above</text>
+<text class="arrow _fb _D _tM" x="113.16" y="224.4">on the line</text>
+<text class="arrow _fb _D _tM" x="113.16" y="244.56">below</text>
+<text class="arrow _fb _D _tM" x="113.16" y="264.72">way below</text>
+<g class="arrow" >
+<polygon class="arrow _fb" points="374.16,224.4 362.64,228.72 362.64,220.08" />
+<path class="arrow _T _sa" d="M248.16,224.4L368.4,224.4"  stroke-width="2.16" />
+</g>
+<text class="arrow _fb _D _tM" x="311.16" y="192.54">way above</text>
+<text class="arrow _fb _D _tM" x="311.16" y="212.7">above</text>
+<text class="arrow _fb _D _tM" x="311.16" y="236.1">below</text>
+<text class="arrow _fb _D _tM" x="311.16" y="256.26">way below</text>
+<path class="box _T _sa" d="M50.16,423.84L156.95,423.84L156.95,312.96L50.16,312.96Z"  stroke-width="2.16" />
+<text class="box _fb _D _tM" x="103.555" y="328.08">first line</text>
+<text class="box _fb _D _tM" x="103.555" y="348.24">second line</text>
+<text class="box _fb _D _tM" x="103.555" y="368.4">third line</text>
+<text class="box _fb _D _tM" x="103.555" y="388.56">fourth  line</text>
+<text class="box _fb _D _tM" x="103.555" y="408.72">fifth line</text>
+<path class="box _T _sa" d="M228.95,413.76L335.741,413.76L335.741,323.04L228.95,323.04Z"  stroke-width="2.16" />
+<text class="box _fb _D _tM" x="282.346" y="338.16">first line</text>
+<text class="box _fb _D _tM" x="282.346" y="358.32">second line</text>
+<text class="box _fb _D _tM" x="282.346" y="378.48">third line</text>
+<text class="box _fb _D _tM" x="282.346" y="398.64">fourth  line</text>
+<path class="box _T _sa" d="M407.741,403.68L514.531,403.68L514.531,333.12L407.741,333.12Z"  stroke-width="2.16" />
+<text class="box _fb _D _tM" x="461.136" y="348.24">first line</text>
+<text class="box _fb _D _tM" x="461.136" y="368.4">second line</text>
+<text class="box _fb _D _tM" x="461.136" y="388.56">third line</text>
+<path class="box _T _sa" d="M586.531,393.6L693.322,393.6L693.322,343.2L586.531,343.2Z"  stroke-width="2.16" />
+<text class="box _fb _D _tM" x="639.926" y="358.32">first line</text>
+<text class="box _fb _D _tM" x="639.926" y="378.48">second line</text>
+<path class="box _T _sa" d="M765.322,383.52L848.035,383.52L848.035,353.28L765.322,353.28Z"  stroke-width="2.16" />
+<text class="box _fb _D _tM" x="806.678" y="368.4">first line</text>
+<path class="box _T _sa" d="M50.16,567.84L175.037,567.84L175.037,456.96L50.16,456.96Z"  stroke-width="2.16" />
+<text class="box _fb _D _tM" x="112.598" y="472.08">first above</text>
+<text class="box _fb _D _tM" x="112.598" y="492.24">second above</text>
+<text class="box _fb _D _tM" x="112.598" y="512.4">third</text>
+<circle class="dot _sc _fd" cx="112.598" cy="512.4" r="2.16"  stroke-width="2.16" />
+<path class="box _T _sa" d="M225.984,547.68L398.323,547.68L398.323,477.12L225.984,477.12Z"  stroke-width="2.16" />
+<text class="box _fb _D _tM" x="312.154" y="492.24">    3 leading spaces</text>
+<text class="box _fb _D _tM" x="312.154" y="512.4">&amp;</text>
+<text class="box _fb _D _tM" x="312.154" y="532.56">3 trailing spaces   </text>
+</svg>
+

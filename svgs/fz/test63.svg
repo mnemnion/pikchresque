@@ -1,0 +1,36 @@
+/*    1 */  # Nesting macros too deep
+/*    2 */  define m00 {box "Hello, world!" fit}
+/*    3 */  define m01 {m00}
+                        ^^^
+ERROR: macros nested too deep
+Called from:
+/*    4 */  define m02 {m01}
+                        ^^^
+Called from:
+/*    5 */  define m03 {m02}
+                        ^^^
+Called from:
+/*    6 */  define m04 {m03}
+                        ^^^
+Called from:
+/*    7 */  define m05 {m04}
+                        ^^^
+Called from:
+/*    8 */  define m06 {m05}
+                        ^^^
+Called from:
+/*    9 */  define m07 {m06}
+                        ^^^
+Called from:
+/*   10 */  define m08 {m07}
+                        ^^^
+Called from:
+/*   11 */  define m09 {m08}
+                        ^^^
+Called from:
+/*   12 */  define m10 {m09}
+                        ^^^
+Called from:
+/*   15 */  m10
+            ^^^
+

@@ -1,0 +1,20 @@
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-fc5b04bc88" role="img" viewBox="0 0 376.954 304.324">
+<style>
+#pikchr-fc5b04bc88 {
+._D {dominant-baseline:central}
+._tM {text-anchor:middle}
+color-scheme:light dark;
+._fb {fill:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._sa {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
+}
+</style>
+<circle class="dot _sa _fb" cx="23.0112" cy="22.32" r="2.16"  stroke-width="2.16" />
+<text class="dot _fb _D _tM" x="23.0112" y="12.24">A</text>
+<circle class="dot _sa _fb" cx="353.942" cy="300.004" r="2.16"  stroke-width="2.16" />
+<text class="dot _fb _D _tM" x="353.942" y="289.924">B</text>
+<circle class="dot _sa _fb" cx="23.0112" cy="300.004" r="2.16"  stroke-width="2.16" />
+<text class="dot _fb _D _tM" x="23.0112" y="289.924">(A,B)</text>
+<circle class="dot _sa _fb" cx="353.942" cy="22.32" r="2.16"  stroke-width="2.16" />
+<text class="dot _fb _D _tM" x="353.942" y="12.24">(B,A)</text>
+</svg>
+

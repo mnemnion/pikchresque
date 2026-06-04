@@ -1,0 +1,22 @@
+abs(-10): 10<br>
+cos(pi/3): 0.5000000155<br>
+int(18.5): 18<br>
+max(5,-18.23): 5<br>
+min(5,-18.23): -18.23<br>
+sin(pi/6): 0.4999999923<br>
+sqrt(16): 4<br>
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-2f5a627fc4" role="img" viewBox="0 0 287.785 76.32">
+<style>
+#pikchr-2f5a627fc4 {
+._D {dominant-baseline:central}
+._T {fill:transparent}
+._tM {text-anchor:middle}
+color-scheme:light dark;
+._fb {fill:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._sa {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
+}
+</style>
+<path class="box _T _sa" d="M2.16,74.16L285.625,74.16L285.625,2.16L2.16,2.16Z"  stroke-width="2.16" />
+<text class="box _fb _D _tM" x="143.892" y="38.16">Function test</text>
+</svg>
+

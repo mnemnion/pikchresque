@@ -1,0 +1,175 @@
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-4cd31e18df" role="img" viewBox="0 0 718.33 315.792">
+<style>
+#pikchr-4cd31e18df {
+._D {dominant-baseline:central}
+._T {fill:transparent}
+._tM {text-anchor:middle}
+._Fb {font-weight:bold}
+color-scheme:light dark;
+._fb {fill:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._sa {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
+}
+</style>
+<circle class="circle _T _sa" cx="5.76" cy="17.28" r="3.6"  stroke-width="2.16" />
+<polygon class="arrow A0 _fb" points="32.4,17.28 20.88,21.6 20.88,12.96" />
+<path class="arrow A0 _T _sa" d="M9.36,17.28L26.64,17.28"  stroke-width="2.16" />
+<path class="oval CR _T _sa" d="M47.52,32.4L100.915,32.4A15.12 15.12 0 0 0 116.035 17.28A15.12 15.12 0 0 0 100.915 2.16L47.52,2.16A15.12 15.12 0 0 0 32.4 17.28A15.12 15.12 0 0 0 47.52 32.4Z"  stroke-width="2.16" />
+<text class="oval CR _fb _D _tM" x="74.2176" y="17.28">CREATE</text>
+<path class="oval T1 _T _sa" d="M167.155,56.592L199.354,56.592A15.12 15.12 0 0 0 214.474 41.472A15.12 15.12 0 0 0 199.354 26.352L167.155,26.352A15.12 15.12 0 0 0 152.035 41.472A15.12 15.12 0 0 0 167.155 56.592Z"  stroke-width="2.16" />
+<text class="oval T1 _fb _D _tM" x="183.254" y="41.472">TEMP</text>
+<path class="oval T2 _T _sa" d="M167.155,94.392L259.718,94.392A15.12 15.12 0 0 0 274.838 79.272A15.12 15.12 0 0 0 259.718 64.152L167.155,64.152A15.12 15.12 0 0 0 152.035 79.272A15.12 15.12 0 0 0 167.155 94.392Z"  stroke-width="2.16" />
+<text class="oval T2 _fb _D _tM" x="213.437" y="79.272">TEMPORARY</text>
+<path class="oval TBL _T _sa" d="M325.958,32.4L365.299,32.4A15.12 15.12 0 0 0 380.419 17.28A15.12 15.12 0 0 0 365.299 2.16L325.958,2.16A15.12 15.12 0 0 0 310.838 17.28A15.12 15.12 0 0 0 325.958 32.4Z"  stroke-width="2.16" />
+<text class="oval TBL _fb _D _tM" x="345.629" y="17.28">TABLE</text>
+<g class="arrow" >
+<polygon class="arrow _fb" points="213.437,17.28 201.917,21.6 201.917,12.96" />
+<path class="arrow _T _sa" d="M116.035,17.28L207.677,17.28"  stroke-width="2.16" />
+</g>
+<g class="arrow" >
+<polygon class="arrow _fb" points="310.838,17.28 299.318,21.6 299.318,12.96" />
+<path class="arrow _T _sa" d="M213.437,17.28L305.078,17.28"  stroke-width="2.16" />
+</g>
+<g class="arrow" >
+<polygon class="arrow _fb" points="152.035,41.472 140.515,45.792 140.515,37.152" />
+<path class="arrow _T _sa" d="M116.035,17.28 L 123.535,17.28 Q 131.035,17.28 131.035,29.376 Q 131.035,41.472 138.655,41.472 L 146.275,41.472"  stroke-width="2.16" />
+</g>
+<g class="arrow" >
+<polygon class="arrow _fb" points="152.035,79.272 140.515,83.592 140.515,74.952" />
+<path class="arrow _T _sa" d="M116.035,17.28 L 123.535,17.28 Q 131.035,17.28 131.035,32.28 L 131.035,64.272 Q 131.035,79.272 138.655,79.272 L 146.275,79.272"  stroke-width="2.16" />
+</g>
+<path class="line _T _sa" d="M274.838,79.272 L 282.338,79.272 Q 289.838,79.272 289.838,64.272 L 289.838,32.28 Q 289.838,17.28 294.578,17.28 L 299.318,17.28"  stroke-width="2.16" />
+<path class="line _T _sa" d="M214.474,41.472 L 274.838,41.472 Q 289.838,41.472 289.838,33.972 L 289.838,26.472"  stroke-width="2.16" />
+<g class="arrow" >
+<polygon class="arrow _fb" points="416.419,17.28 404.899,21.6 404.899,12.96" />
+<path class="arrow _T _sa" d="M380.419,17.28L410.659,17.28"  stroke-width="2.16" />
+</g>
+<path class="oval _T _sa" d="M431.539,32.4A15.12 15.12 0 0 0 446.659 17.28A15.12 15.12 0 0 0 431.539 2.16A15.12 15.12 0 0 0 416.419 17.28A15.12 15.12 0 0 0 431.539 32.4Z"  stroke-width="2.16" />
+<text class="oval _fb _D _tM" x="431.539" y="17.28">IF</text>
+<g class="arrow" >
+<polygon class="arrow _fb" points="469.699,17.28 458.179,21.6 458.179,12.96" />
+<path class="arrow _T _sa" d="M446.659,17.28L463.939,17.28"  stroke-width="2.16" />
+</g>
+<path class="oval _T _sa" d="M484.819,32.4L504.922,32.4A15.12 15.12 0 0 0 520.042 17.28A15.12 15.12 0 0 0 504.922 2.16L484.819,2.16A15.12 15.12 0 0 0 469.699 17.28A15.12 15.12 0 0 0 484.819 32.4Z"  stroke-width="2.16" />
+<text class="oval _fb _D _tM" x="494.87" y="17.28">NOT</text>
+<g class="arrow" >
+<polygon class="arrow _fb" points="543.082,17.28 531.562,21.6 531.562,12.96" />
+<path class="arrow _T _sa" d="M520.042,17.28L537.322,17.28"  stroke-width="2.16" />
+</g>
+<path class="oval ETS _T _sa" d="M558.202,32.4L602.842,32.4A15.12 15.12 0 0 0 617.962 17.28A15.12 15.12 0 0 0 602.842 2.16L558.202,2.16A15.12 15.12 0 0 0 543.082 17.28A15.12 15.12 0 0 0 558.202 32.4Z"  stroke-width="2.16" />
+<text class="oval ETS _fb _D _tM" x="580.522" y="17.28">EXISTS</text>
+<g class="arrow" >
+<polygon class="arrow _fb" points="213.437,109.512 224.957,105.192 224.957,113.832" />
+<path class="arrow _T _sa" d="M380.419,17.28 L 387.919,17.28 Q 395.419,17.28 395.419,32.28 L 395.419,94.512 Q 395.419,109.512 380.419,109.512 L 234.197,109.512 L 219.197,109.512"  stroke-width="2.16" />
+</g>
+<g class="arrow" >
+<polygon class="arrow _fb" points="543.082,109.512 554.602,105.192 554.602,113.832" />
+<path class="arrow _T _sa" d="M617.962,17.28 L 625.462,17.28 Q 632.962,17.28 632.962,32.28 L 632.962,94.512 Q 632.962,109.512 617.962,109.512 L 563.842,109.512 L 548.842,109.512"  stroke-width="2.16" />
+</g>
+<path class="line _T _sa" d="M543.082,109.512L310.838,109.512"  stroke-width="2.16" />
+<g class="arrow" >
+<polygon class="arrow _fb" points="28.8,147.312 17.28,151.632 17.28,142.992" />
+<path class="arrow _T _sa" d="M310.838,109.512 L 20.76,109.512 Q 5.76,109.512 5.76,124.512 L 5.76,132.312 Q 5.76,147.312 14.4,147.312 L 23.04,147.312"  stroke-width="2.16" />
+</g>
+<path class="oval SN _T _sa" d="M43.92,162.432L140.285,162.432A15.12 15.12 0 0 0 155.405 147.312A15.12 15.12 0 0 0 140.285 132.192L43.92,132.192A15.12 15.12 0 0 0 28.8 147.312A15.12 15.12 0 0 0 43.92 162.432Z"  stroke-width="2.16" />
+<text class="oval SN _fb _D _tM" x="92.1024" y="147.312">schema-name</text>
+<g class="arrow" >
+<polygon class="arrow _fb" points="178.445,147.312 166.925,151.632 166.925,142.992" />
+<path class="arrow _T _sa" d="M155.405,147.312L172.685,147.312"  stroke-width="2.16" />
+</g>
+<path class="oval DOT _T _sa" d="M193.565,162.432A15.12 15.12 0 0 0 208.685 147.312A15.12 15.12 0 0 0 193.565 132.192A15.12 15.12 0 0 0 178.445 147.312A15.12 15.12 0 0 0 193.565 162.432Z"  stroke-width="2.16" />
+<text class="oval DOT _fb _D _tM _Fb" x="193.565" y="147.312">.</text>
+<g class="arrow" >
+<polygon class="arrow _fb" points="244.685,147.312 233.165,151.632 233.165,142.992" />
+<path class="arrow _T _sa" d="M208.685,147.312L238.925,147.312"  stroke-width="2.16" />
+</g>
+<path class="oval TN _T _sa" d="M259.805,162.432L334.973,162.432A15.12 15.12 0 0 0 350.093 147.312A15.12 15.12 0 0 0 334.973 132.192L259.805,132.192A15.12 15.12 0 0 0 244.685 147.312A15.12 15.12 0 0 0 259.805 162.432Z"  stroke-width="2.16" />
+<text class="oval TN _fb _D _tM" x="297.389" y="147.312">table-name</text>
+<g class="arrow" >
+<polygon class="arrow _fb" points="92.1024,177.552 80.5824,181.872 80.5824,173.232" />
+<path class="arrow _T _sa" d="M5.76,132.192 L 5.76,162.552 Q 5.76,177.552 20.76,177.552 L 71.3424,177.552 L 86.3424,177.552"  stroke-width="2.16" />
+</g>
+<path class="line _T _sa" d="M92.1024,177.552 L 205.205,177.552 Q 220.205,177.552 220.205,162.552 L 220.205,162.312 Q 220.205,147.312 227.705,147.312 L 235.205,147.312"  stroke-width="2.16" />
+<g class="arrow" >
+<polygon class="arrow _fb" points="193.565,222.912 205.085,218.592 205.085,227.232" />
+<path class="arrow _T _sa" d="M350.093,147.312 L 357.593,147.312 Q 365.093,147.312 365.093,162.312 L 365.093,207.912 Q 365.093,222.912 350.093,222.912 L 214.325,222.912 L 199.325,222.912"  stroke-width="2.16" />
+</g>
+<g class="arrow" >
+<polygon class="arrow _fb" points="28.8,260.712 17.28,265.032 17.28,256.392" />
+<path class="arrow _T _sa" d="M193.565,222.912 L 20.76,222.912 Q 5.76,222.912 5.76,237.912 L 5.76,245.712 Q 5.76,260.712 14.4,260.712 L 23.04,260.712"  stroke-width="2.16" />
+</g>
+<path class="oval LP _T _sa" d="M43.92,275.832A15.12 15.12 0 0 0 59.04 260.712A15.12 15.12 0 0 0 43.92 245.592A15.12 15.12 0 0 0 28.8 260.712A15.12 15.12 0 0 0 43.92 275.832Z"  stroke-width="2.16" />
+<text class="oval LP _fb _D _tM _Fb" x="43.92" y="260.712">(</text>
+<g class="arrow" >
+<polygon class="arrow _fb" points="95.04,260.712 83.52,265.032 83.52,256.392" />
+<path class="arrow _T _sa" d="M59.04,260.712L89.28,260.712"  stroke-width="2.16" />
+</g>
+<path class="box CD _T _sa" d="M95.04,275.832L199.872,275.832L199.872,245.592L95.04,245.592Z"  stroke-width="2.16" />
+<text class="box CD _fb _D _tM" x="147.456" y="260.712">column-def</text>
+<path class="box TC _T _sa" d="M253.872,313.632L399.024,313.632L399.024,283.392L253.872,283.392Z"  stroke-width="2.16" />
+<text class="box TC _fb _D _tM" x="326.448" y="298.512">table-constraint</text>
+<g class="arrow" >
+<polygon class="arrow _fb" points="399.024,298.512 410.544,294.192 410.544,302.832" />
+<path class="arrow _T _sa" d="M404.784,298.512L416.304,298.512"  stroke-width="2.16" />
+</g>
+<path class="oval C2 _T _sa" d="M431.424,313.632A15.12 15.12 0 0 0 446.544 298.512A15.12 15.12 0 0 0 431.424 283.392A15.12 15.12 0 0 0 416.304 298.512A15.12 15.12 0 0 0 431.424 313.632Z"  stroke-width="2.16" />
+<text class="oval C2 _fb _D _tM _Fb" x="431.424" y="298.512">,</text>
+<path class="oval RP _T _sa" d="M503.424,275.832A15.12 15.12 0 0 0 518.544 260.712A15.12 15.12 0 0 0 503.424 245.592A15.12 15.12 0 0 0 488.304 260.712A15.12 15.12 0 0 0 503.424 275.832Z"  stroke-width="2.16" />
+<text class="oval RP _fb _D _tM _Fb" x="503.424" y="260.712">)</text>
+<g class="arrow" >
+<polygon class="arrow _fb" points="553.104,260.712 541.584,265.032 541.584,256.392" />
+<path class="arrow _T _sa" d="M518.544,260.712L547.344,260.712"  stroke-width="2.16" />
+</g>
+<path class="box TO _T _sa" d="M553.104,275.832L674.41,275.832L674.41,245.592L553.104,245.592Z"  stroke-width="2.16" />
+<text class="box TO _fb _D _tM" x="613.757" y="260.712">table-options</text>
+<path class="oval C1 _T _sa" d="M147.456,313.632A15.12 15.12 0 0 0 162.576 298.512A15.12 15.12 0 0 0 147.456 283.392A15.12 15.12 0 0 0 132.336 298.512A15.12 15.12 0 0 0 147.456 313.632Z"  stroke-width="2.16" />
+<text class="oval C1 _fb _D _tM _Fb" x="147.456" y="298.512">,</text>
+<g class="arrow" >
+<polygon class="arrow _fb" points="162.576,298.512 174.096,294.192 174.096,302.832" />
+<path class="arrow _T _sa" d="M199.872,260.712 L 207.372,260.712 Q 214.872,260.712 214.872,275.712 L 214.872,283.512 Q 214.872,298.512 199.872,298.512 L 183.336,298.512 L 168.336,298.512"  stroke-width="2.16" />
+</g>
+<path class="line _T _sa" d="M132.336,298.512 L 87,298.512 Q 72,298.512 72,283.512 L 72,275.712 Q 72,260.712 77.76,260.712 L 83.52,260.712"  stroke-width="2.16" />
+<g class="arrow" >
+<polygon class="arrow _fb" points="235.872,260.712 224.352,265.032 224.352,256.392" />
+<path class="arrow _T _sa" d="M199.872,260.712L230.112,260.712"  stroke-width="2.16" />
+</g>
+<g class="arrow" >
+<polygon class="arrow _fb" points="488.304,260.712 476.784,265.032 476.784,256.392" />
+<path class="arrow _T _sa" d="M235.872,260.712L482.544,260.712"  stroke-width="2.16" />
+</g>
+<g class="arrow" >
+<polygon class="arrow _fb" points="446.544,298.512 458.064,294.192 458.064,302.832" />
+<path class="arrow _T _sa" d="M446.544,260.712 L 458.064,260.712 Q 469.584,260.712 469.584,275.712 L 469.584,283.512 Q 469.584,298.512 460.944,298.512 L 452.304,298.512"  stroke-width="2.16" />
+</g>
+<path class="line _T _sa" d="M253.872,298.512 L 246.372,298.512 Q 238.872,298.512 238.872,283.512 L 238.872,275.712 Q 238.872,260.712 250.392,260.712 L 261.912,260.712"  stroke-width="2.16" />
+<g class="arrow" >
+<polygon class="arrow _fb" points="613.757,215.352 602.237,219.672 602.237,211.032" />
+<path class="arrow _T _sa" d="M518.544,260.712 L 526.044,260.712 Q 533.544,260.712 533.544,245.712 L 533.544,230.352 Q 533.544,215.352 548.544,215.352 L 592.997,215.352 L 607.997,215.352"  stroke-width="2.16" />
+</g>
+<g class="arrow" >
+<polygon class="arrow _fb" points="708.97,215.352 697.45,219.672 697.45,211.032" />
+<path class="arrow _T _sa" d="M613.757,215.352 L 659.41,215.352 Q 674.41,215.352 688.81,215.352 L 703.21,215.352"  stroke-width="2.16" />
+</g>
+<circle class="circle EC _T _sa" cx="712.57" cy="215.352" r="3.6"  stroke-width="2.16" />
+<g class="arrow" >
+<polygon class="arrow _fb" points="708.97,215.352 697.45,219.672 697.45,211.032" />
+<path class="arrow _T _sa" d="M674.41,260.712 L 681.91,260.712 Q 689.41,260.712 689.41,245.712 L 689.41,230.352 Q 689.41,215.352 696.31,215.352 L 703.21,215.352"  stroke-width="2.16" />
+</g>
+<g class="arrow" >
+<polygon class="arrow _fb" points="440.093,147.312 428.573,151.632 428.573,142.992" />
+<path class="arrow _T _sa" d="M350.093,147.312L434.333,147.312"  stroke-width="2.16" />
+</g>
+<path class="oval _T _sa" d="M455.213,162.432L459.187,162.432A15.12 15.12 0 0 0 474.307 147.312A15.12 15.12 0 0 0 459.187 132.192L455.213,132.192A15.12 15.12 0 0 0 440.093 147.312A15.12 15.12 0 0 0 455.213 162.432Z"  stroke-width="2.16" />
+<text class="oval _fb _D _tM" x="457.2" y="147.312">AS</text>
+<g class="arrow" >
+<polygon class="arrow _fb" points="497.347,147.312 485.827,151.632 485.827,142.992" />
+<path class="arrow _T _sa" d="M474.307,147.312L491.587,147.312"  stroke-width="2.16" />
+</g>
+<path class="box _T _sa" d="M497.347,162.432L601.603,162.432L601.603,132.192L497.347,132.192Z"  stroke-width="2.16" />
+<text class="box _fb _D _tM" x="549.475" y="147.312">select-stmt</text>
+<g class="arrow" >
+<polygon class="arrow _fb" points="637.603,147.312 626.083,151.632 626.083,142.992" />
+<path class="arrow _T _sa" d="M601.603,147.312L631.843,147.312"  stroke-width="2.16" />
+</g>
+<path class="line _T _sa" d="M637.603,147.312 L 674.41,147.312 Q 689.41,147.312 689.41,162.312 L 689.41,200.352 Q 689.41,215.352 696.91,215.352 L 704.41,215.352"  stroke-width="2.16" />
+</svg>
+

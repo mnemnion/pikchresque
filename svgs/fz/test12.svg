@@ -1,0 +1,29 @@
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-d4919f978e" role="img" viewBox="0 0 220.32 321.12">
+<style>
+#pikchr-d4919f978e {
+._D {dominant-baseline:central}
+._T {fill:transparent}
+._tM {text-anchor:middle}
+color-scheme:light dark;
+._fb {fill:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._sa {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
+}
+</style>
+<circle class="circle _T _sa" cx="38.16" cy="38.16" r="36"  stroke-width="2.16" />
+<text class="circle _fb _D _tM" x="38.16" y="38.16">One</text>
+<g class="arrow" >
+<polygon class="arrow _fb" points="146.16,38.16 134.64,42.48 134.64,33.84" />
+<path class="arrow _T _sa" d="M74.16,38.16L140.4,38.16"  stroke-width="2.16" />
+</g>
+<circle class="circle _T _sa" cx="182.16" cy="38.16" r="36"  stroke-width="2.16" />
+<text class="circle _fb _D _tM" x="182.16" y="38.16">Two</text>
+<g class="arrow" >
+<polygon class="arrow _fb" points="182.16,102.96 177.84,91.44 186.48,91.44" />
+<path class="arrow _T _sa" d="M182.16,74.16L182.16,97.2"  stroke-width="2.16" />
+</g>
+<circle class="circle _T _sa" cx="182.16" cy="138.96" r="36"  stroke-width="2.16" />
+<text class="circle _fb _D _tM" x="182.16" y="138.96">Three</text>
+<circle class="circle _T _sa" cx="182.16" cy="282.96" r="36"  stroke-width="2.16" />
+<text class="circle _fb _D _tM" x="182.16" y="282.96">Four</text>
+</svg>
+

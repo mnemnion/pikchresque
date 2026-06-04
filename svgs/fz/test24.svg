@@ -1,0 +1,25 @@
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-ad0dd137e6" role="img" viewBox="0 0 404.64 76.32">
+<style>
+#pikchr-ad0dd137e6 {
+._T {fill:transparent}
+color-scheme:light dark;
+._fb {fill:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._sa {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
+}
+</style>
+<g class="arrow" >
+<polygon class="arrow _fb" points="330.48,38.16 342,33.84 342,42.48" />
+<path class="arrow _T _sa" d="M402.48,38.16L336.24,38.16"  stroke-width="2.16" />
+</g>
+<path class="box _T _sa" d="M222.48,74.16L330.48,74.16L330.48,2.16L222.48,2.16Z"  stroke-width="2.16" />
+<g class="arrow" >
+<polygon class="arrow _fb" points="150.48,38.16 162,33.84 162,42.48" />
+<path class="arrow _T _sa" d="M222.48,38.16L156.24,38.16"  stroke-width="2.16" />
+</g>
+<circle class="circle _T _sa" cx="114.48" cy="38.16" r="36"  stroke-width="2.16" />
+<g class="arrow" >
+<polygon class="arrow _fb" points="6.48,38.16 18,33.84 18,42.48" />
+<path class="arrow _T _sa" d="M78.48,38.16L12.24,38.16"  stroke-width="2.16" />
+</g>
+</svg>
+

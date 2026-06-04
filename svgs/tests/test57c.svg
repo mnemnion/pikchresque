@@ -1,0 +1,15 @@
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-4a7a905552" role="img" viewBox="0 0 26.1 175.176">
+<style>
+#pikchr-4a7a905552 {
+._D {dominant-baseline:central}
+._T {fill:transparent}
+._tE {text-anchor:end}
+color-scheme:light dark;
+._fb {fill:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._sa {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
+}
+</style>
+<path class="line _T _sa" d="M2.16,20.16L2.16,2.16"  stroke-width="2.16" />
+<text class="line _fb _D _tE" x="2.16" y="22.86" transform="rotate(-90 2.16,11.16)">aligned rjust below</text>
+</svg>
+

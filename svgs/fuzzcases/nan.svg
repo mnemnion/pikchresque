@@ -1,0 +1,11 @@
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-01b244479f" role="img" viewBox="0 0 inf inf">
+<style>
+#pikchr-01b244479f {
+._T {fill:transparent}
+color-scheme:light dark;
+._sa {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
+}
+</style>
+<path class="arc _T _sa" d="Minf,infQnan,nan nan,inf"  stroke-width="2.16" />
+</svg>
+

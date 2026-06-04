@@ -1,0 +1,15 @@
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-1046a1d8d5" role="img" viewBox="0 0 472.32 904.32">
+<style>
+#pikchr-1046a1d8d5 {
+._T {fill:transparent}
+color-scheme:light dark;
+._fb {fill:light-dark(rgb(0,128,0),rgb(63,127,63))}
+._sa {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
+}
+</style>
+<circle class="circle red-light _T _sa" cx="38.16" cy="578.16" r="36"  stroke-width="2.16" />
+<circle class="circle yellow-light _T _sa" cx="38.16" cy="722.16" r="36"  stroke-width="2.16" />
+<circle class="circle green-light _T _sa" cx="38.16" cy="866.16" r="36"  stroke-width="2.16" />
+<path class="line _sa _fb" d="M326.16,146.16L470.16,146.16L470.16,2.16Z"  stroke-width="2.16" stroke-linejoin="round" />
+</svg>
+

@@ -1,0 +1,16 @@
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-2dc0e7575c" role="img" viewBox="0 0 112.32 76.32">
+<style>
+#pikchr-2dc0e7575c {
+._D {dominant-baseline:central}
+._T {fill:transparent}
+._tM {text-anchor:middle}
+color-scheme:light dark;
+._fb {fill:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._sa {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
+}
+</style>
+<path class="box _T _sa" d="M2.16,74.16L110.16,74.16L110.16,2.16L2.16,2.16Z"  stroke-width="2.16" />
+<text class="box _fb _D _tM" x="56.16" y="28.08">this is</text>
+<text class="box _fb _D _tM" x="56.16" y="48.24">a box</text>
+</svg>
+

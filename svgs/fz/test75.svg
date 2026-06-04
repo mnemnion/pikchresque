@@ -1,0 +1,56 @@
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-49aab5dadb" role="img" viewBox="0 0 457.056 373.997">
+<style>
+#pikchr-49aab5dadb {
+._D {dominant-baseline:central}
+._T {fill:transparent}
+._tM {text-anchor:middle}
+color-scheme:light dark;
+._fa {fill:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._sb {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
+}
+</style>
+<text class="box _fa _D _tM" x="228.528" y="12.24">Alternative spellings for arrow tokens &lt;-, -&gt;, and &lt;-&gt;</text>
+<g class="line" >
+<polygon class="line _fa" points="313.567,69.8797 302.047,74.1997 302.047,65.5597" />
+<path class="line _T _sb" d="M143.489,69.8797L307.807,69.8797"  stroke-width="2.16" />
+</g>
+<text class="line _fa _D _tM" x="228.528" y="58.1797">&amp;rarr;</text>
+<g class="line" >
+<polygon class="line _fa" points="313.567,112.399 302.047,116.719 302.047,108.079" />
+<path class="line _T _sb" d="M143.489,112.399L307.807,112.399"  stroke-width="2.16" />
+</g>
+<text class="line _fa _D _tM" x="228.528" y="100.699">&amp;rightarrow;</text>
+<g class="line" >
+<polygon class="line _fa" points="313.567,154.919 302.047,159.239 302.047,150.599" />
+<path class="line _T _sb" d="M143.489,154.919L307.807,154.919"  stroke-width="2.16" />
+</g>
+<text class="line _fa _D _tM" x="228.528" y="143.219">→</text>
+<g class="line" >
+<polygon class="line _fa" points="143.489,197.439 155.009,193.119 155.009,201.759" />
+<path class="line _T _sb" d="M149.249,197.439L313.567,197.439"  stroke-width="2.16" />
+</g>
+<text class="line _fa _D _tM" x="228.528" y="185.739">&amp;larr;</text>
+<g class="line" >
+<polygon class="line _fa" points="143.489,239.958 155.009,235.638 155.009,244.278" />
+<path class="line _T _sb" d="M149.249,239.958L313.567,239.958"  stroke-width="2.16" />
+</g>
+<text class="line _fa _D _tM" x="228.528" y="228.258">&amp;leftarrow;</text>
+<g class="line" >
+<polygon class="line _fa" points="143.489,282.478 155.009,278.158 155.009,286.798" />
+<path class="line _T _sb" d="M149.249,282.478L313.567,282.478"  stroke-width="2.16" />
+</g>
+<text class="line _fa _D _tM" x="228.528" y="270.778">←</text>
+<g class="line" >
+<polygon class="line _fa" points="143.489,324.998 155.009,320.678 155.009,329.318" />
+<polygon class="line _fa" points="313.567,324.998 302.047,329.318 302.047,320.678" />
+<path class="line _T _sb" d="M149.249,324.998L307.807,324.998"  stroke-width="2.16" />
+</g>
+<text class="line _fa _D _tM" x="228.528" y="313.298">&amp;leftrightarrow;</text>
+<g class="line" >
+<polygon class="line _fa" points="143.489,367.517 155.009,363.197 155.009,371.837" />
+<polygon class="line _fa" points="313.567,367.517 302.047,371.837 302.047,363.197" />
+<path class="line _T _sb" d="M149.249,367.517L307.807,367.517"  stroke-width="2.16" />
+</g>
+<text class="line _fa _D _tM" x="228.528" y="355.817">↔</text>
+</svg>
+

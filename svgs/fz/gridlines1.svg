@@ -1,0 +1,32 @@
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-609e62be45" role="img" viewBox="0 0 419.731 429.12">
+<style>
+#pikchr-609e62be45 {
+._D {dominant-baseline:central}
+._T {fill:transparent}
+._tM {text-anchor:middle}
+color-scheme:light dark;
+._fc {fill:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._sa {stroke:light-dark(rgb(128,128,128),rgb(127,127,127))}
+._sb {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
+}
+</style>
+<path class="line _T _sa" d="M19.44,85.68L379.44,85.68"  stroke-width="1.08" />
+<path class="line _T _sa" d="M19.44,157.68L379.44,157.68"  stroke-width="1.08" />
+<path class="line _T _sa" d="M19.44,301.68L379.44,301.68"  stroke-width="1.08" />
+<path class="line _T _sa" d="M19.44,373.68L379.44,373.68"  stroke-width="1.08" />
+<path class="line _T _sa" d="M55.44,409.68L55.44,49.68"  stroke-width="1.08" />
+<path class="line _T _sa" d="M127.44,409.68L127.44,49.68"  stroke-width="1.08" />
+<path class="line _T _sa" d="M271.44,409.68L271.44,49.68"  stroke-width="1.08" />
+<path class="line _T _sa" d="M343.44,409.68L343.44,49.68"  stroke-width="1.08" />
+<g class="arrow" >
+<polygon class="arrow _fc" points="397.44,229.68 384.48,234.54 384.48,224.82" />
+<path class="arrow _T _sb" d="M1.44,229.68L390.96,229.68"  stroke-width="1.62" />
+</g>
+<text class="text _fc _D _tM" x="407.866" y="229.68">x</text>
+<g class="arrow" >
+<polygon class="arrow _fc" points="199.44,31.68 204.3,44.64 194.58,44.64" />
+<path class="arrow _T _sb" d="M199.44,427.68L199.44,38.16"  stroke-width="1.62" />
+</g>
+<text class="text _fc _D _tM" x="199.44" y="16.56">y</text>
+</svg>
+

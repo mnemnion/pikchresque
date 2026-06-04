@@ -1,0 +1,35 @@
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-b295efcb2a" role="img" viewBox="0 0 354.154 148.32">
+<style>
+#pikchr-b295efcb2a {
+._D {dominant-baseline:central}
+._T {fill:transparent}
+._tS {text-anchor:start}
+color-scheme:light dark;
+._fb {fill:light-dark(rgb(200,157,199),rgb(98,55,97))}
+._fc {fill:light-dark(rgb(159,170,210),rgb(45,56,96))}
+._fd {fill:light-dark(rgb(114,182,192),rgb(56,117,127))}
+._fe {fill:light-dark(rgb(119,184,157),rgb(66,127,101))}
+._ff {fill:light-dark(rgb(160,178,128),rgb(109,127,77))}
+._fg {fill:light-dark(rgb(197,166,133),rgb(122,91,58))}
+._fh {fill:light-dark(rgb(213,156,167),rgb(99,42,53))}
+._fi {fill:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._sa {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
+}
+</style>
+<path class="box _sa _fb" d="M2.16,146.16L8.64,146.16L8.64,2.16L2.16,2.16Z"  stroke-width="2.16" />
+<path class="box _sa _fc" d="M15.12,146.16L21.6,146.16L21.6,2.16L15.12,2.16Z"  stroke-width="2.16" />
+<path class="box _sa _fd" d="M28.08,146.16L34.56,146.16L34.56,2.16L28.08,2.16Z"  stroke-width="2.16" />
+<path class="box _sa _fe" d="M41.04,146.16L47.52,146.16L47.52,2.16L41.04,2.16Z"  stroke-width="2.16" />
+<path class="box _sa _ff" d="M54,146.16L60.48,146.16L60.48,2.16L54,2.16Z"  stroke-width="2.16" />
+<path class="box _sa _fg" d="M66.96,146.16L73.44,146.16L73.44,2.16L66.96,2.16Z"  stroke-width="2.16" />
+<path class="box _sa _fh" d="M79.92,146.16L86.4,146.16L86.4,2.16L79.92,2.16Z"  stroke-width="2.16" />
+<g class="line" >
+<polygon class="line _fi" points="92.88,74.16 104.4,69.84 104.4,78.48" />
+<path class="line _T _sa" d="M98.64,74.16L164.88,74.16"  stroke-width="2.16" />
+</g>
+<path class="box _T _sa" d="M171.36,109.44L351.994,109.44L351.994,38.88L171.36,38.88Z"  stroke-width="0" />
+<text class="box _fi _D _tS" x="174.24" y="54">Lines should all be</text>
+<text class="box _fi _D _tS" x="174.24" y="74.16">the same width.</text>
+<text class="box _fi _D _tS" x="174.24" y="94.32">No round-off errors.</text>
+</svg>
+

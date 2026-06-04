@@ -92,6 +92,11 @@ pub fn build(b: *std.Build) void {
     const run_pikchresque = b.step("run", "run the pikchresque binary");
     run_pikchresque.dependOn(&run_cmd.step);
 
+    const render_step = b.step("render", "Render piks/ fixtures into SVG files");
+    const render_outputs = b.addUpdateSourceFiles();
+    addRenderFixtures(b, exe, render_outputs);
+    render_step.dependOn(&render_outputs.step);
+
     const test_filters = b.option(
         []const []const u8,
         "test-filter",
@@ -159,4 +164,54 @@ pub fn build(b: *std.Build) void {
 
     const coverage_step = b.step("coverage", "Generate coverage (kcov must be installed)");
     coverage_step.dependOn(&install_coverage.step);
+}
+
+fn addRenderFixtures(b: *std.Build, exe: *std.Build.Step.Compile, render_outputs: *std.Build.Step.UpdateSourceFiles) void {
+    var paths: std.ArrayList([]const u8) = .empty;
+    collectPikFiles(b, &paths, "piks") catch |err| {
+        std.debug.panic("failed to collect piks/: {s}", .{@errorName(err)});
+    };
+
+    for (paths.items) |source_path| {
+        const rel_path = source_path["piks/".len..];
+        const dest_path = svgPathFor(b, rel_path);
+
+        const render_fixture = b.addRunArtifact(exe);
+        render_fixture.stdio = .{ .check = .empty };
+        render_fixture.addArg("--svg-only");
+        render_fixture.addFileArg(b.path(source_path));
+        const svg = render_fixture.captureStdOut(.{ .basename = std.fs.path.basename(dest_path) });
+
+        render_outputs.addCopyFileToSource(svg, dest_path);
+    }
+}
+
+fn collectPikFiles(
+    b: *std.Build,
+    paths: *std.ArrayList([]const u8),
+    dir_path: []const u8,
+) !void {
+    const io = b.graph.io;
+    const dir = try std.Io.Dir.cwd().openDir(io, dir_path, .{ .iterate = true });
+    defer dir.close(io);
+
+    var iter = dir.iterate();
+    while (try iter.next(io)) |entry| {
+        const path = try std.fs.path.join(b.allocator, &.{ dir_path, entry.name });
+        switch (entry.kind) {
+            .directory => try collectPikFiles(b, paths, path),
+            .file => if (isPikFile(path)) try paths.append(b.allocator, path),
+            else => {},
+        }
+    }
+}
+
+fn isPikFile(path: []const u8) bool {
+    return std.mem.endsWith(u8, path, ".pik") or std.mem.endsWith(u8, path, ".pikchr");
+}
+
+fn svgPathFor(b: *std.Build, rel_path: []const u8) []const u8 {
+    const ext = std.fs.path.extension(rel_path);
+    const stem = rel_path[0 .. rel_path.len - ext.len];
+    return b.fmt("svgs/{s}.svg", .{stem});
 }

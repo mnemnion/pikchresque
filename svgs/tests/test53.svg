@@ -1,0 +1,20 @@
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-f41979c26d" role="img" viewBox="0 0 265.018 82.0743">
+<style>
+#pikchr-f41979c26d {
+._D {dominant-baseline:central}
+._T {fill:transparent}
+._tM {text-anchor:middle}
+color-scheme:light dark;
+._fc {fill:light-dark(rgb(255,0,0),rgb(255,127,127))}
+._fe {fill:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._sa {stroke:light-dark(rgb(0,128,0),rgb(127,255,127))}
+._sb {stroke:light-dark(rgb(255,0,0),rgb(255,127,127))}
+._sd {stroke:light-dark(rgb(0,0,255),rgb(127,127,255))}
+}
+</style>
+<path class="line _T _sa" d="M60.5088,77.7543L132.509,77.7543"  stroke-width="2.16" />
+<circle class="dot _sb _fc" cx="132.509" cy="77.7543" r="2.16"  stroke-width="2.16" />
+<path class="line _T _sd" d="M132.509,77.7543L204.509,77.7543"  stroke-width="2.16" />
+<text class="text _fe _D _tM" x="132.509" y="17.28">"dot" object causes no motion</text>
+</svg>
+

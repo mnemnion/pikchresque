@@ -1,0 +1,9 @@
+13<br>
+/*    1 */  print 5+8;
+/*    2 */  
+/*    3 */  # NB: Deliberate division-by-zero error in order to test math logic
+/*    4 */  print (17.4-5)/(2-2);
+                          ^
+ERROR: division by zero
+0<br>
+

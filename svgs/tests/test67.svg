@@ -1,0 +1,22 @@
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-8f948846ff" role="img" viewBox="0 0 617.962 76.32">
+<style>
+#pikchr-8f948846ff {
+._D {dominant-baseline:central}
+._T {fill:transparent}
+._tM {text-anchor:middle}
+color-scheme:light dark;
+._fa {fill:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._sb {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
+}
+</style>
+<text class="box _fa _D _tM" x="21.8016" y="38.16">invis</text>
+<path class="box _T _sb" d="M147.802,74.16L255.802,74.16L255.802,2.16L147.802,2.16Z"  stroke-width="2.16" />
+<text class="box _fa _D _tM" x="201.802" y="28.08">same</text>
+<text class="box _fa _D _tM" x="201.802" y="48.24">solid</text>
+<path class="box _T _sb" d="M327.802,74.16L435.802,74.16L435.802,2.16L327.802,2.16Z"  stroke-width="1.4472" />
+<text class="box _fa _D _tM" x="381.802" y="38.16">thin</text>
+<path class="box _T _sb" d="M507.802,74.16L615.802,74.16L615.802,2.16L507.802,2.16Z"  stroke-width="2.16" />
+<text class="box _fa _D _tM" x="561.802" y="28.08">same</text>
+<text class="box _fa _D _tM" x="561.802" y="48.24">solid</text>
+</svg>
+
