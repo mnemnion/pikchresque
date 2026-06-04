@@ -12,17 +12,20 @@ pub const pik_no_style = true;
 pub const PNum = f64; // Numeric value
 
 // Compass points
-pub const CP_N = 1;
-pub const CP_NE = 2;
-pub const CP_E = 3;
-pub const CP_SE = 4;
-pub const CP_S = 5;
-pub const CP_SW = 6;
-pub const CP_W = 7;
-pub const CP_NW = 8;
-pub const CP_C = 9; // .center or .c
-pub const CP_END = 10; // .end
-pub const CP_START = 11; // .start
+const CompassPoint = enum(u8) {
+    none,
+    n,
+    ne,
+    e,
+    se,
+    s,
+    sw,
+    w,
+    nw,
+    c, // .center or .c
+    end, // .end
+    start, // .start
+};
 
 // Heading angles corresponding to compass points
 pub const pik_hdg_angle = [_]PNum{
@@ -152,9 +155,9 @@ pub const PToken = struct {
     z: []const u8, // Token text
     eCode: u16, // Auxiliary code
     eType: TokenKind, // The parser token code
-    eEdge: u8, // Corner value for corner keywords
+    eEdge: CompassPoint, // Corner value for corner keywords
 
-    pub const zero: PToken = .{ .z = "", .eCode = 0, .eType = .end_of_input, .eEdge = 0 };
+    pub const zero: PToken = .{ .z = "", .eCode = 0, .eType = .end_of_input, .eEdge = .none };
 };
 
 // Return negative, zero, or positive if pToken is less than, equal to
@@ -228,7 +231,7 @@ pub const PObj = struct {
     color: PNum,             // "color" property
     textcolor: PNum,         // "textcolor" property
     with: PPoint,            // Position constraint from WITH clause
-    eWith: u8,               // Type of heading point on WITH clause
+    eWith: CompassPoint,     // Type of heading point on WITH clause
     cw: u8,                  // True for clockwise arc
     larrow: u8,              // Arrow at beginning (<- or <->)
     rarrow: u8,              // Arrow at end  (-> or <->)
@@ -267,7 +270,7 @@ pub const PObj = struct {
         .color = 0.0,
         .textcolor = 0.0,
         .with = .zero,
-        .eWith = 0,
+        .eWith = .none,
         .cw = 0,
         .larrow = 0,
         .rarrow = 0,
@@ -479,7 +482,7 @@ pub const PClass = struct {
     xNumProp: ?*const fn (*Pik, *PObj, *PToken) void,  // Value change notification
     xCheck: ?*const fn (*Pik, *PObj) void,             // Checks to do after parsing
     xChop: ?*const fn (*Pik, *PObj, *PPoint) PPoint,   // Chopper
-    xOffset: ?*const fn (*Pik, *PObj, i32) PPoint,     // Offset from .c to edge point
+    xOffset: ?*const fn (*Pik, *PObj, CompassPoint) PPoint, // Offset from .c to edge point
     xFit: ?*const fn (*Pik, *PObj, PNum, PNum) void,   // Size to fit text
     xRender: ?*const fn (*Pik, *PObj) void,            // Render
 };
@@ -1153,113 +1156,113 @@ const PikWord = struct {
     zWord: []const u8, // Text of the keyword
     eType: TokenKind, // Token code
     eCode: u16, // Extra code for the token
-    eEdge: u8, // CP_* code for corner/edge keywords
+    eEdge: CompassPoint, // Compass point for corner/edge keywords
 
-    fn word(zWord: []const u8, eType: TokenKind, eCode: u16, eEdge: u8) PikWord {
+    fn word(zWord: []const u8, eType: TokenKind, eCode: u16, eEdge: CompassPoint) PikWord {
         return .{ .zWord = zWord, .eType = eType, .eCode = eCode, .eEdge = eEdge };
     }
 };
 
 // Keywords
 const pik_keywords = [_]PikWord{
-    .word("above", .ABOVE, 0, 0),
-    .word("abs", .FUNC1, FN_ABS, 0),
-    .word("aligned", .ALIGNED, 0, 0),
-    .word("and", .AND, 0, 0),
-    .word("as", .AS, 0, 0),
-    .word("assert", .ASSERT, 0, 0),
-    .word("at", .AT, 0, 0),
-    .word("behind", .BEHIND, 0, 0),
-    .word("below", .BELOW, 0, 0),
-    .word("between", .BETWEEN, 0, 0),
-    .word("big", .BIG, 0, 0),
-    .word("bold", .BOLD, 0, 0),
-    .word("bot", .EDGEPT, 0, CP_S),
-    .word("bottom", .BOTTOM, 0, CP_S),
-    .word("c", .EDGEPT, 0, CP_C),
-    .word("ccw", .CCW, 0, 0),
-    .word("center", .CENTER, 0, CP_C),
-    .word("chop", .CHOP, 0, 0),
-    .word("class", .CLASS, 0, 0),
-    .word("close", .CLOSE, 0, 0),
-    .word("color", .COLOR, 0, 0),
-    .word("cos", .FUNC1, FN_COS, 0),
-    .word("cw", .CW, 0, 0),
-    .word("dashed", .DASHED, 0, 0),
-    .word("define", .DEFINE, 0, 0),
-    .word("description", .DESCRIBE, 0, 0),
-    .word("diameter", .DIAMETER, 0, 0),
-    .word("dist", .DIST, 0, 0),
-    .word("dotted", .DOTTED, 0, 0),
-    .word("down", .DOWN, DIR_DOWN, 0),
-    .word("e", .EDGEPT, 0, CP_E),
-    .word("east", .EDGEPT, 0, CP_E),
-    .word("end", .END, 0, CP_END),
-    .word("even", .EVEN, 0, 0),
-    .word("fill", .FILL, 0, 0),
-    .word("first", .NTH, 0, 0),
-    .word("fit", .FIT, 0, 0),
-    .word("from", .FROM, 0, 0),
-    .word("go", .GO, 0, 0),
-    .word("heading", .HEADING, 0, 0),
-    .word("height", .HEIGHT, 0, 0),
-    .word("ht", .HEIGHT, 0, 0),
-    .word("in", .IN, 0, 0),
-    .word("int", .FUNC1, FN_INT, 0),
-    .word("invis", .INVIS, 0, 0),
-    .word("invisible", .INVIS, 0, 0),
-    .word("italic", .ITALIC, 0, 0),
-    .word("label", .LABEL, 0, 0),
-    .word("last", .LAST, 0, 0),
-    .word("left", .LEFT, DIR_LEFT, CP_W),
-    .word("ljust", .LJUST, 0, 0),
-    .word("max", .FUNC2, FN_MAX, 0),
-    .word("min", .FUNC2, FN_MIN, 0),
-    .word("mono", .MONO, 0, 0),
-    .word("monospace", .MONO, 0, 0),
-    .word("n", .EDGEPT, 0, CP_N),
-    .word("ne", .EDGEPT, 0, CP_NE),
-    .word("north", .EDGEPT, 0, CP_N),
-    .word("nw", .EDGEPT, 0, CP_NW),
-    .word("of", .OF, 0, 0),
-    .word("previous", .LAST, 0, 0),
-    .word("print", .PRINT, 0, 0),
-    .word("rad", .RADIUS, 0, 0),
-    .word("radius", .RADIUS, 0, 0),
-    .word("right", .RIGHT, DIR_RIGHT, CP_E),
-    .word("rjust", .RJUST, 0, 0),
-    .word("s", .EDGEPT, 0, CP_S),
-    .word("same", .SAME, 0, 0),
-    .word("se", .EDGEPT, 0, CP_SE),
-    .word("sin", .FUNC1, FN_SIN, 0),
-    .word("small", .SMALL, 0, 0),
-    .word("solid", .SOLID, 0, 0),
-    .word("south", .EDGEPT, 0, CP_S),
-    .word("sqrt", .FUNC1, FN_SQRT, 0),
-    .word("start", .START, 0, CP_START),
-    .word("sw", .EDGEPT, 0, CP_SW),
-    .word("t", .TOP, 0, CP_N),
-    .word("textcolor", .TEXTCOLOR, 0, 0),
-    .word("the", .THE, 0, 0),
-    .word("then", .THEN, 0, 0),
-    .word("thick", .THICK, 0, 0),
-    .word("thickness", .THICKNESS, 0, 0),
-    .word("thin", .THIN, 0, 0),
-    .word("this", .THIS, 0, 0),
-    .word("title", .TITLE, 0, 0),
-    .word("to", .TO, 0, 0),
-    .word("top", .TOP, 0, CP_N),
-    .word("until", .UNTIL, 0, 0),
-    .word("up", .UP, DIR_UP, 0),
-    .word("vertex", .VERTEX, 0, 0),
-    .word("w", .EDGEPT, 0, CP_W),
-    .word("way", .WAY, 0, 0),
-    .word("west", .EDGEPT, 0, CP_W),
-    .word("wid", .WIDTH, 0, 0),
-    .word("width", .WIDTH, 0, 0),
-    .word("with", .WITH, 0, 0),
-    .word("x", .X, 0, 0),
-    .word("y", .Y, 0, 0),
+    .word("above", .ABOVE, 0, .none),
+    .word("abs", .FUNC1, FN_ABS, .none),
+    .word("aligned", .ALIGNED, 0, .none),
+    .word("and", .AND, 0, .none),
+    .word("as", .AS, 0, .none),
+    .word("assert", .ASSERT, 0, .none),
+    .word("at", .AT, 0, .none),
+    .word("behind", .BEHIND, 0, .none),
+    .word("below", .BELOW, 0, .none),
+    .word("between", .BETWEEN, 0, .none),
+    .word("big", .BIG, 0, .none),
+    .word("bold", .BOLD, 0, .none),
+    .word("bot", .EDGEPT, 0, .s),
+    .word("bottom", .BOTTOM, 0, .s),
+    .word("c", .EDGEPT, 0, .c),
+    .word("ccw", .CCW, 0, .none),
+    .word("center", .CENTER, 0, .c),
+    .word("chop", .CHOP, 0, .none),
+    .word("class", .CLASS, 0, .none),
+    .word("close", .CLOSE, 0, .none),
+    .word("color", .COLOR, 0, .none),
+    .word("cos", .FUNC1, FN_COS, .none),
+    .word("cw", .CW, 0, .none),
+    .word("dashed", .DASHED, 0, .none),
+    .word("define", .DEFINE, 0, .none),
+    .word("description", .DESCRIBE, 0, .none),
+    .word("diameter", .DIAMETER, 0, .none),
+    .word("dist", .DIST, 0, .none),
+    .word("dotted", .DOTTED, 0, .none),
+    .word("down", .DOWN, DIR_DOWN, .none),
+    .word("e", .EDGEPT, 0, .e),
+    .word("east", .EDGEPT, 0, .e),
+    .word("end", .END, 0, .end),
+    .word("even", .EVEN, 0, .none),
+    .word("fill", .FILL, 0, .none),
+    .word("first", .NTH, 0, .none),
+    .word("fit", .FIT, 0, .none),
+    .word("from", .FROM, 0, .none),
+    .word("go", .GO, 0, .none),
+    .word("heading", .HEADING, 0, .none),
+    .word("height", .HEIGHT, 0, .none),
+    .word("ht", .HEIGHT, 0, .none),
+    .word("in", .IN, 0, .none),
+    .word("int", .FUNC1, FN_INT, .none),
+    .word("invis", .INVIS, 0, .none),
+    .word("invisible", .INVIS, 0, .none),
+    .word("italic", .ITALIC, 0, .none),
+    .word("label", .LABEL, 0, .none),
+    .word("last", .LAST, 0, .none),
+    .word("left", .LEFT, DIR_LEFT, .w),
+    .word("ljust", .LJUST, 0, .none),
+    .word("max", .FUNC2, FN_MAX, .none),
+    .word("min", .FUNC2, FN_MIN, .none),
+    .word("mono", .MONO, 0, .none),
+    .word("monospace", .MONO, 0, .none),
+    .word("n", .EDGEPT, 0, .n),
+    .word("ne", .EDGEPT, 0, .ne),
+    .word("north", .EDGEPT, 0, .n),
+    .word("nw", .EDGEPT, 0, .nw),
+    .word("of", .OF, 0, .none),
+    .word("previous", .LAST, 0, .none),
+    .word("print", .PRINT, 0, .none),
+    .word("rad", .RADIUS, 0, .none),
+    .word("radius", .RADIUS, 0, .none),
+    .word("right", .RIGHT, DIR_RIGHT, .e),
+    .word("rjust", .RJUST, 0, .none),
+    .word("s", .EDGEPT, 0, .s),
+    .word("same", .SAME, 0, .none),
+    .word("se", .EDGEPT, 0, .se),
+    .word("sin", .FUNC1, FN_SIN, .none),
+    .word("small", .SMALL, 0, .none),
+    .word("solid", .SOLID, 0, .none),
+    .word("south", .EDGEPT, 0, .s),
+    .word("sqrt", .FUNC1, FN_SQRT, .none),
+    .word("start", .START, 0, .start),
+    .word("sw", .EDGEPT, 0, .sw),
+    .word("t", .TOP, 0, .n),
+    .word("textcolor", .TEXTCOLOR, 0, .none),
+    .word("the", .THE, 0, .none),
+    .word("then", .THEN, 0, .none),
+    .word("thick", .THICK, 0, .none),
+    .word("thickness", .THICKNESS, 0, .none),
+    .word("thin", .THIN, 0, .none),
+    .word("this", .THIS, 0, .none),
+    .word("title", .TITLE, 0, .none),
+    .word("to", .TO, 0, .none),
+    .word("top", .TOP, 0, .n),
+    .word("until", .UNTIL, 0, .none),
+    .word("up", .UP, DIR_UP, .none),
+    .word("vertex", .VERTEX, 0, .none),
+    .word("w", .EDGEPT, 0, .w),
+    .word("way", .WAY, 0, .none),
+    .word("west", .EDGEPT, 0, .w),
+    .word("wid", .WIDTH, 0, .none),
+    .word("width", .WIDTH, 0, .none),
+    .word("with", .WITH, 0, .none),
+    .word("x", .X, 0, .none),
+    .word("y", .Y, 0, .none),
 };
 
 fn classToken(name: []const u8) PToken {
@@ -1375,7 +1378,7 @@ fn boxInit(p: *Pik, obj: *PObj) void {
 
 // Return offset from the center of the box to the compass point
 // given by parameter cp
-fn boxOffset(p: *Pik, obj: *PObj, cp: i32) PPoint {
+fn boxOffset(p: *Pik, obj: *PObj, cp: CompassPoint) PPoint {
     _ = p;
     var pt = cZeroPoint;
     const w2 = 0.5 * obj.w;
@@ -1388,15 +1391,15 @@ fn boxOffset(p: *Pik, obj: *PObj, cp: i32) PPoint {
         break :blk 0.29289321881345252392 * rad;
     };
     switch (cp) {
-        CP_C => {},
-        CP_N => pt = .{ .x = 0.0, .y = h2 },
-        CP_NE => pt = .{ .x = w2 - rx, .y = h2 - rx },
-        CP_E => pt = .{ .x = w2, .y = 0.0 },
-        CP_SE => pt = .{ .x = w2 - rx, .y = rx - h2 },
-        CP_S => pt = .{ .x = 0.0, .y = -h2 },
-        CP_SW => pt = .{ .x = rx - w2, .y = rx - h2 },
-        CP_W => pt = .{ .x = -w2, .y = 0.0 },
-        CP_NW => pt = .{ .x = rx - w2, .y = h2 - rx },
+        .c => {},
+        .n => pt = .{ .x = 0.0, .y = h2 },
+        .ne => pt = .{ .x = w2 - rx, .y = h2 - rx },
+        .e => pt = .{ .x = w2, .y = 0.0 },
+        .se => pt = .{ .x = w2 - rx, .y = rx - h2 },
+        .s => pt = .{ .x = 0.0, .y = -h2 },
+        .sw => pt = .{ .x = rx - w2, .y = rx - h2 },
+        .w => pt = .{ .x = -w2, .y = 0.0 },
+        .nw => pt = .{ .x = rx - w2, .y = h2 - rx },
         else => std.debug.assert(false),
     }
     return pt;
@@ -1406,23 +1409,23 @@ fn boxOffset(p: *Pik, obj: *PObj, cp: i32) PPoint {
 // box at which a line from the center of the box to the outside point
 // intersects the box.
 fn boxChop(p: *Pik, obj: *PObj, pt: *PPoint) PPoint {
-    var cp: i32 = CP_C;
+    var cp: CompassPoint = .c;
     var chop = obj.ptAt;
     if (obj.w <= 0.0 or obj.h <= 0.0) return chop;
     const dx = (pt.x - obj.ptAt.x) * obj.h / obj.w;
     const dy = pt.y - obj.ptAt.y;
     if (dx > 0.0) {
-        if (dy >= 2.414 * dx) cp = CP_N
-        else if (dy >= 0.414 * dx) cp = CP_NE
-        else if (dy >= -0.414 * dx) cp = CP_E
-        else if (dy > -2.414 * dx) cp = CP_SE
-        else cp = CP_S;
+        if (dy >= 2.414 * dx) cp = .n
+        else if (dy >= 0.414 * dx) cp = .ne
+        else if (dy >= -0.414 * dx) cp = .e
+        else if (dy > -2.414 * dx) cp = .se
+        else cp = .s;
     } else {
-        if (dy >= -2.414 * dx) cp = CP_N
-        else if (dy >= -0.414 * dx) cp = CP_NW
-        else if (dy >= 0.414 * dx) cp = CP_W
-        else if (dy > 2.414 * dx) cp = CP_SW
-        else cp = CP_S;
+        if (dy >= -2.414 * dx) cp = .n
+        else if (dy >= -0.414 * dx) cp = .nw
+        else if (dy >= 0.414 * dx) cp = .w
+        else if (dy > 2.414 * dx) cp = .sw
+        else cp = .s;
     }
     chop = obj.type.?.xOffset.?(p, obj, cp);
     chop.x += obj.ptAt.x;
@@ -1546,22 +1549,22 @@ fn cylinderRender(p: *Pik, obj: *PObj) void {
     pik_append_txt(p, obj, null);
 }
 
-fn cylinderOffset(p: *Pik, obj: *PObj, cp: i32) PPoint {
+fn cylinderOffset(p: *Pik, obj: *PObj, cp: CompassPoint) PPoint {
     _ = p;
     var pt = cZeroPoint;
     const w2 = obj.w * 0.5;
     const h1 = obj.h * 0.5;
     const h2 = h1 - obj.rad;
     switch (cp) {
-        CP_C => {},
-        CP_N => pt = .{ .x = 0.0, .y = h1 },
-        CP_NE => pt = .{ .x = w2, .y = h2 },
-        CP_E => pt = .{ .x = w2, .y = 0.0 },
-        CP_SE => pt = .{ .x = w2, .y = -h2 },
-        CP_S => pt = .{ .x = 0.0, .y = -h1 },
-        CP_SW => pt = .{ .x = -w2, .y = -h2 },
-        CP_W => pt = .{ .x = -w2, .y = 0.0 },
-        CP_NW => pt = .{ .x = -w2, .y = h2 },
+        .c => {},
+        .n => pt = .{ .x = 0.0, .y = h1 },
+        .ne => pt = .{ .x = w2, .y = h2 },
+        .e => pt = .{ .x = w2, .y = 0.0 },
+        .se => pt = .{ .x = w2, .y = -h2 },
+        .s => pt = .{ .x = 0.0, .y = -h1 },
+        .sw => pt = .{ .x = -w2, .y = -h2 },
+        .w => pt = .{ .x = -w2, .y = 0.0 },
+        .nw => pt = .{ .x = -w2, .y = h2 },
         else => std.debug.assert(false),
     }
     return pt;
@@ -1589,7 +1592,7 @@ fn dotCheck(p: *Pik, obj: *PObj) void {
     pik_bbox_addellipse(&obj.bbox, obj.ptAt.x, obj.ptAt.y, obj.rad, obj.rad);
 }
 
-fn dotOffset(p: *Pik, obj: *PObj, cp: i32) PPoint {
+fn dotOffset(p: *Pik, obj: *PObj, cp: CompassPoint) PPoint {
     _ = p;
     _ = obj;
     _ = cp;
@@ -2731,7 +2734,7 @@ fn diamondInit(p: *Pik, obj: *PObj) void {
 
 // Return offset from the center of the box to the compass point
 // given by parameter cp
-fn diamondOffset(p: *Pik, obj: *PObj, cp: i32) PPoint {
+fn diamondOffset(p: *Pik, obj: *PObj, cp: CompassPoint) PPoint {
     _ = p;
     var pt = cZeroPoint;
     const w2 = 0.5 * obj.w;
@@ -2739,15 +2742,15 @@ fn diamondOffset(p: *Pik, obj: *PObj, cp: i32) PPoint {
     const h2 = 0.5 * obj.h;
     const h4 = 0.25 * obj.h;
     switch (cp) {
-        CP_C => {},
-        CP_N => pt = .{ .x = 0.0, .y = h2 },
-        CP_NE => pt = .{ .x = w4, .y = h4 },
-        CP_E => pt = .{ .x = w2, .y = 0.0 },
-        CP_SE => pt = .{ .x = w4, .y = -h4 },
-        CP_S => pt = .{ .x = 0.0, .y = -h2 },
-        CP_SW => pt = .{ .x = -w4, .y = -h4 },
-        CP_W => pt = .{ .x = -w2, .y = 0.0 },
-        CP_NW => pt = .{ .x = -w4, .y = h4 },
+        .c => {},
+        .n => pt = .{ .x = 0.0, .y = h2 },
+        .ne => pt = .{ .x = w4, .y = h4 },
+        .e => pt = .{ .x = w2, .y = 0.0 },
+        .se => pt = .{ .x = w4, .y = -h4 },
+        .s => pt = .{ .x = 0.0, .y = -h2 },
+        .sw => pt = .{ .x = -w4, .y = -h4 },
+        .w => pt = .{ .x = -w2, .y = 0.0 },
+        .nw => pt = .{ .x = -w4, .y = h4 },
         else => std.debug.assert(false),
     }
     return pt;
@@ -2780,7 +2783,7 @@ fn fileInit(p: *Pik, obj: *PObj) void {
 
 // Return offset from the center of the file to the compass point
 // given by parameter cp
-fn fileOffset(p: *Pik, obj: *PObj, cp: i32) PPoint {
+fn fileOffset(p: *Pik, obj: *PObj, cp: CompassPoint) PPoint {
     _ = p;
     var pt = cZeroPoint;
     const w2 = 0.5 * obj.w;
@@ -2791,15 +2794,15 @@ fn fileOffset(p: *Pik, obj: *PObj, cp: i32) PPoint {
     if (rx < mn * 0.25) rx = mn * 0.25;
     rx *= 0.5;
     switch (cp) {
-        CP_C => {},
-        CP_N => pt = .{ .x = 0.0, .y = h2 },
-        CP_NE => pt = .{ .x = w2 - rx, .y = h2 - rx },
-        CP_E => pt = .{ .x = w2, .y = 0.0 },
-        CP_SE => pt = .{ .x = w2, .y = -h2 },
-        CP_S => pt = .{ .x = 0.0, .y = -h2 },
-        CP_SW => pt = .{ .x = -w2, .y = -h2 },
-        CP_W => pt = .{ .x = -w2, .y = 0.0 },
-        CP_NW => pt = .{ .x = -w2, .y = h2 },
+        .c => {},
+        .n => pt = .{ .x = 0.0, .y = h2 },
+        .ne => pt = .{ .x = w2 - rx, .y = h2 - rx },
+        .e => pt = .{ .x = w2, .y = 0.0 },
+        .se => pt = .{ .x = w2, .y = -h2 },
+        .s => pt = .{ .x = 0.0, .y = -h2 },
+        .sw => pt = .{ .x = -w2, .y = -h2 },
+        .w => pt = .{ .x = -w2, .y = 0.0 },
+        .nw => pt = .{ .x = -w2, .y = h2 },
         else => std.debug.assert(false),
     }
     return pt;
@@ -2880,11 +2883,11 @@ fn lineInit(p: *Pik, obj: *PObj) void {
     obj.rad = pik_value(p, "linerad", null);
 }
 
-fn lineOffset(p: *Pik, obj: *PObj, cp: i32) PPoint {
+fn lineOffset(p: *Pik, obj: *PObj, cp: CompassPoint) PPoint {
     if (false) {
         // In legacy PIC, the .center of an unclosed line is half way between
         // its .start and .end.
-        if (cp == CP_C and !obj.bClose) {
+        if (cp == .c and !obj.bClose) {
             return .{
                 .x = 0.5 * (obj.ptEnter.x + obj.ptExit.x) - obj.ptAt.x,
                 .y = 0.5 * (obj.ptEnter.x + obj.ptExit.y) - obj.ptAt.y,
@@ -2910,7 +2913,7 @@ fn ellipseChop(p: *Pik, obj: *PObj, pt: *PPoint) PPoint {
     return chop;
 }
 
-fn ellipseOffset(p: *Pik, obj: *PObj, cp: i32) PPoint {
+fn ellipseOffset(p: *Pik, obj: *PObj, cp: CompassPoint) PPoint {
     _ = p;
     var pt = cZeroPoint;
     const w = obj.w * 0.5;
@@ -2918,15 +2921,15 @@ fn ellipseOffset(p: *Pik, obj: *PObj, cp: i32) PPoint {
     const h = obj.h * 0.5;
     const h2 = h * 0.70710678118654747608;
     switch (cp) {
-        CP_C => {},
-        CP_N => pt = .{ .x = 0.0, .y = h },
-        CP_NE => pt = .{ .x = w2, .y = h2 },
-        CP_E => pt = .{ .x = w, .y = 0.0 },
-        CP_SE => pt = .{ .x = w2, .y = -h2 },
-        CP_S => pt = .{ .x = 0.0, .y = -h },
-        CP_SW => pt = .{ .x = -w2, .y = -h2 },
-        CP_W => pt = .{ .x = -w, .y = 0.0 },
-        CP_NW => pt = .{ .x = -w2, .y = h2 },
+        .c => {},
+        .n => pt = .{ .x = 0.0, .y = h },
+        .ne => pt = .{ .x = w2, .y = h2 },
+        .e => pt = .{ .x = w, .y = 0.0 },
+        .se => pt = .{ .x = w2, .y = -h2 },
+        .s => pt = .{ .x = 0.0, .y = -h },
+        .sw => pt = .{ .x = -w2, .y = -h2 },
+        .w => pt = .{ .x = -w, .y = 0.0 },
+        .nw => pt = .{ .x = -w2, .y = h2 },
         else => std.debug.assert(false),
     }
     return pt;
@@ -2978,7 +2981,7 @@ fn textInit(p: *Pik, obj: *PObj) void {
     obj.sw = 0.0;
 }
 
-fn textOffset(p: *Pik, obj: *PObj, cp: i32) PPoint {
+fn textOffset(p: *Pik, obj: *PObj, cp: CompassPoint) PPoint {
     // Automatically slim-down the width and height of text
     // statements so that the bounding box tightly encloses the text,
     // then get boxOffset() to do the offset computation.
@@ -3679,15 +3682,15 @@ fn pik_elem_new(p: *Pik, id: ?*PToken, str: ?*PToken, sublist: ?*PList) ?*PObj {
     p.thenFlag = 0;
     if (p.list == null or p.list.?.n == 0) {
         obj.ptAt = cZeroPoint;
-        obj.eWith = CP_C;
+        obj.eWith = .c;
     } else {
         const prior = p.list.?.a[p.list.?.n - 1];
         obj.ptAt = prior.ptExit;
         obj.eWith = switch (p.eDir) {
-            DIR_LEFT => CP_E,
-            DIR_UP => CP_S,
-            DIR_DOWN => CP_N,
-            else => CP_W,
+            DIR_LEFT => .e,
+            DIR_UP => .s,
+            DIR_DOWN => .n,
+            else => .w,
         };
     }
     p.aTPath[0] = obj.ptAt;
@@ -4478,7 +4481,7 @@ fn pik_after_adding_attributes(p: *Pik, obj: ?*PObj) void {
 }
 
 // Return the offset from an object's center to a named edge/compass point.
-fn pik_elem_offset(p: *Pik, obj: *PObj, cp: i32) PPoint {
+fn pik_elem_offset(p: *Pik, obj: *PObj, cp: CompassPoint) PPoint {
     if (obj.type) |class| {
         if (class.xOffset) |x| return x(p, obj, cp);
     }
@@ -4913,11 +4916,11 @@ fn pik_move_hdg(
     }
     if (hdg != null) {
         r_hdg = @mod(r_hdg, 360.0);
-    } else if (edge.?.eEdge == CP_C) {
+    } else if (edge.?.eEdge == .c) {
         pik_error(p, edge.?, "syntax error");
         return;
     } else {
-        r_hdg = pik_hdg_angle[edge.?.eEdge];
+        r_hdg = pik_hdg_angle[@intFromEnum(edge.?.eEdge)];
     }
     if (r_hdg <= 45.0) {
         obj.outDir = DIR_UP;
@@ -4938,7 +4941,7 @@ fn pik_move_hdg(
 
 // Set the "at" of an object
 fn pik_set_at(p: *Pik, edge: ?*PToken, at: *PPoint, err: *PToken) void {
-    const e_dir_to_cp = [_]u8{ CP_E, CP_S, CP_W, CP_N };
+    const e_dir_to_cp = [_]CompassPoint{ .e, .s, .w, .n };
     if (p.nErr != 0) return;
     const obj = p.cur orelse return;
 
@@ -4951,10 +4954,11 @@ fn pik_set_at(p: *Pik, edge: ?*PToken, at: *PPoint, err: *PToken) void {
         return;
     }
     obj.mProp |= A_AT;
-    obj.eWith = if (edge) |e| e.eEdge else CP_C;
-    if (obj.eWith >= CP_END) {
-        const dir = if (obj.eWith == CP_END) obj.outDir else @mod(obj.inDir + 2, 4);
-        obj.eWith = e_dir_to_cp[@intCast(dir)];
+    obj.eWith = if (edge) |e| e.eEdge else .c;
+    switch (obj.eWith) {
+        .end => obj.eWith = e_dir_to_cp[@intCast(obj.outDir)],
+        .start => obj.eWith = e_dir_to_cp[@intCast(@mod(obj.inDir + 2, 4))],
+        else => {},
     }
     obj.with = at.*;
 }
@@ -5137,7 +5141,7 @@ fn pik_position_at_angle(dist: PNum, r: PNum, pt: PPoint) PPoint {
 
 // Compute the position that is dist away at a compass point
 fn pik_position_at_hdg(dist: PNum, d: *PToken, pt: PPoint) PPoint {
-    return pik_position_at_angle(dist, pik_hdg_angle[d.eEdge], pt);
+    return pik_position_at_angle(dist, pik_hdg_angle[@intFromEnum(d.eEdge)], pt);
 }
 
 fn pik_rint(x: PNum) PNum {
@@ -5730,7 +5734,7 @@ fn pik_token_length_default(token: *PToken) usize {
             i = 2;
             while (i < z.len and std.ascii.isLower(z[i])) : (i += 1) {}
             if (pik_find_word(z[1..i])) |found| {
-                if (found.eEdge > 0 or found.eType == .EDGEPT or found.eType == .START or found.eType == .END) {
+                if (found.eEdge != .none or found.eType == .EDGEPT or found.eType == .START or found.eType == .END) {
                     // Dot followed by something that is a 2-D place value
                     token.eType = .DOT_E;
                 } else if (found.eType == .X or found.eType == .Y) {
@@ -6295,12 +6299,12 @@ test "Pik set at records edge placement" {
     var tok = classToken("box");
     const obj = pik_elem_new(&pik, &tok, null, null).?;
     var edge: PToken = .zero;
-    edge.eEdge = CP_E;
+    edge.eEdge = .e;
     var err = classToken("at");
     var at = PPoint{ .x = 2.0, .y = 3.0 };
     pik_set_at(&pik, &edge, &at, &err);
     try std.testing.expect((obj.mProp & A_AT) != 0);
-    try std.testing.expectEqual(@as(u8, CP_E), obj.eWith);
+    try std.testing.expectEqual(@as(CompassPoint, .e), obj.eWith);
     try std.testing.expectEqual(@as(PNum, 2.0), obj.with.x);
     try std.testing.expectEqual(@as(PNum, 3.0), obj.with.y);
     pik_after_adding_attributes(&pik, obj);
