@@ -5782,11 +5782,18 @@ fn pik_token_length_default(token: *PToken) usize {
             c = if (i < z.len) z[i] else 0;
         }
         const c2 = if (i + 1 < z.len) z[i + 1] else 0;
-        if (is_int and ((c == 't' and c2 == 'h') or (c == 'r' and c2 == 'd') or (c == 'n' and c2 == 'd') or (c == 's' and c2 == 't'))) {
+        if (is_int and
+            ((c == 't' and c2 == 'h') or
+            (c == 'r' and c2 == 'd') or
+            (c == 'n' and c2 == 'd') or
+            (c == 's' and c2 == 't'))) {
             token.eType = .NTH;
             return i + 2;
         }
-        if ((c == 'i' and c2 == 'n') or (c == 'c' and c2 == 'm') or (c == 'm' and c2 == 'm') or (c == 'p' and (c2 == 't' or c2 == 'x' or c2 == 'c'))) {
+        if ((c == 'i' and c2 == 'n') or
+            (c == 'c' and c2 == 'm') or
+            (c == 'm' and c2 == 'm') or
+            (c == 'p' and (c2 == 't' or c2 == 'x' or c2 == 'c'))) {
             i += 2;
         }
         token.eType = .NUMBER;
