@@ -1305,13 +1305,25 @@ fn arcControlPoint(cw: i32, f: PPoint, t: PPoint, r_scale: PNum) PPoint {
 }
 
 fn arcCheck(p: *Pik, obj: *PObj) void {
-    var m: PPoint = undefined;
     if (p.nTPath > 2) {
         pik_error(p, &obj.errTok, "arc geometry error");
         return;
     }
-    m = arcControlPoint(obj.cw, p.aTPath[0], p.aTPath[1], 0.5);
-    pik_bbox_add_xy(&obj.bbox, m.x, m.y);
+    const f = p.aTPath[0];
+    const t = p.aTPath[1];
+    const m = arcControlPoint(obj.cw, f, t, 1.0);
+    const sw = obj.sw;
+    var i: usize = 1;
+    while (i < 16) : (i += 1) {
+        const t1 = 0.0625 * @as(PNum, @floatFromInt(i));
+        const t2 = 1.0 - t1;
+        const a = t2 * t2;
+        const b = 2.0 * t1 * t2;
+        const c = t1 * t1;
+        const x = a * f.x + b * m.x + c * t.x;
+        const y = a * f.y + b * m.y + c * t.y;
+        pik_bbox_addellipse(&obj.bbox, x, y, sw, sw);
+    }
 }
 
 fn arcRender(p: *Pik, obj: *PObj) void {
