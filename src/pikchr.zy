@@ -792,7 +792,7 @@ attribute ::= WITH withclause.
 attribute ::= SAME(E).                          { pik_same(p, null, &E); }
 attribute ::= SAME(E) AS object(X).             { pik_same(p, X, &E); }
 attribute ::= STRING(T) textposition(P).        { pik_add_txt(p, &T, P); }
-attribute ::= FIT(E).                           { pik_size_to_fit(p, &E, 3); }
+attribute ::= FIT(E).                           { pik_size_to_fit(p, null, &E, 3); }
 attribute ::= BEHIND object(X).                 { pik_behind(p, X); }
 
 go ::= GO.
@@ -2981,10 +2981,7 @@ fn textOffset(p: *Pik, obj: *PObj, cp: i32) PPoint {
     // Automatically slim-down the width and height of text
     // statements so that the bounding box tightly encloses the text,
     // then get boxOffset() to do the offset computation.
-    const saved = p.cur;
-    p.cur = obj;
-    pik_size_to_fit(p, &obj.errTok, 3);
-    p.cur = saved;
+    pik_size_to_fit(p, obj, &obj.errTok, 3);
     return boxOffset(p, obj, cp);
 }
 
@@ -4347,16 +4344,16 @@ fn pik_after_adding_attributes(p: *Pik, obj: ?*PObj) void {
             if (o.nTxt == 0) {
                 o.h = 0.0;
             } else if (o.w <= 0.0) {
-                pik_size_to_fit(p, &o.errTok, 3);
+                pik_size_to_fit(p, o, &o.errTok, 3);
             } else {
-                pik_size_to_fit(p, &o.errTok, 2);
+                pik_size_to_fit(p, o, &o.errTok, 2);
             }
         }
         if (o.w <= 0.0) {
             if (o.nTxt == 0) {
                 o.w = 0.0;
             } else {
-                pik_size_to_fit(p, &o.errTok, 1);
+                pik_size_to_fit(p, o, &o.errTok, 1);
             }
         }
         const ofst = pik_elem_offset(p, o, o.eWith);
@@ -5043,8 +5040,8 @@ fn pik_add_txt(p: *Pik, txt: *PToken, pos: u16) void {
 //    1:   Fit horizontally only
 //    2:   Fit vertically only
 //    3:   Fit both ways
-fn pik_size_to_fit(p: *Pik, fit: *PToken, which: i32) void {
-    const obj = p.cur orelse return;
+fn pik_size_to_fit(p: *Pik, maybe_obj: ?*PObj, fit: *PToken, which: i32) void {
+    const obj = maybe_obj orelse p.cur orelse return;
     if (p.nErr != 0) return;
     if (obj.nTxt == 0) {
         pik_error(p, fit, "no text to fit to");

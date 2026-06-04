@@ -1,0 +1,35 @@
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-4164c5e429" role="img" viewBox="0 0 447.149 293.839">
+<style>
+#pikchr-4164c5e429 {
+._D {dominant-baseline:central}
+._T {fill:transparent}
+._tM {text-anchor:middle}
+color-scheme:light dark;
+._fb {fill:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._sa {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
+}
+</style>
+<circle class="circle _T _sa" cx="79.5744" cy="174.506" r="28.3465"  stroke-width="2.16" />
+<text class="circle _fb _D _tM" x="79.5744" y="174.506">A</text>
+<circle class="circle _T _sa" cx="223.574" cy="174.506" r="28.3465"  stroke-width="2.16" />
+<text class="circle _fb _D _tM" x="223.574" y="174.506">B</text>
+<circle class="circle _T _sa" cx="223.574" cy="30.5065" r="28.3465"  stroke-width="2.16" />
+<text class="circle _fb _D _tM" x="223.574" y="30.5065">C</text>
+<circle class="circle _T _sa" cx="367.574" cy="30.5065" r="28.3465"  stroke-width="2.16" />
+<text class="circle _fb _D _tM" x="367.574" y="30.5065">D</text>
+<g class="arrow" >
+<polygon class="arrow _fb" points="195.228,174.506 183.708,178.826 183.708,170.186" />
+<path class="arrow _T _sa" d="M107.921,174.506L189.468,174.506"  stroke-width="2.16" />
+</g>
+<g class="arrow" >
+<polygon class="arrow _fb" points="223.574,58.8529 227.894,70.3729 219.254,70.3729" />
+<path class="arrow _T _sa" d="M223.574,146.16L223.574,64.6129"  stroke-width="2.16" />
+</g>
+<g class="arrow" >
+<polygon class="arrow _fb" points="339.228,30.5065 327.708,34.8265 327.708,26.1865" />
+<path class="arrow _T _sa" d="M251.921,30.5065L333.468,30.5065"  stroke-width="2.16" />
+</g>
+<text class="text _fb _D _tM" x="223.574" y="246.319">Macros with backslash-escapes around parameters</text>
+<text class="text _fb _D _tM" x="223.574" y="276.559">/forumpost/2026-04-02T16:50:17z</text>
+</svg>
+
