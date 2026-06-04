@@ -238,9 +238,9 @@ pub const PObj = struct {
     cw: u8,                  // True for clockwise arc
     larrow: u8,              // Arrow at beginning (<- or <->)
     rarrow: u8,              // Arrow at end  (-> or <->)
-    bClose: u8,              // True if "close" is seen
-    bChop: u8,               // True if "chop" is seen
-    bAltAutoFit: u8,         // Always send both h and w into xFit()
+    bClose: bool,            // True if "close" is seen
+    bChop: bool,             // True if "chop" is seen
+    bAltAutoFit: bool,       // Always send both h and w into xFit()
     nTxt: usize,             // Number of text values
     mProp: u32,              // Masks of properties set so far
     mCalc: u32,              // Values computed from other constraints
@@ -277,9 +277,9 @@ pub const PObj = struct {
         .cw = 0,
         .larrow = 0,
         .rarrow = 0,
-        .bClose = 0,
-        .bChop = 0,
-        .bAltAutoFit = 0,
+        .bClose = false,
+        .bChop = false,
+        .bAltAutoFit = false,
         .nTxt = 0,
         .mProp = 0,
         .mCalc = 0,
@@ -341,11 +341,11 @@ pub const Pik = struct {
     charHeight: PNum,                 // Character height
     wArrow: PNum,                     // Width of arrowhead at the fat end
     hArrow: PNum,                     // Ht of arrowhead - dist from tip to fat end
-    bLayoutVars: u8,                  // True if cache is valid
+    bLayoutVars: bool,                // True if cache is valid
     thenFlag: u8,                     // True if "then" seen
-    bLabel: u8,                       // True if zTitle should be rendered as a label
+    bLabel: bool,                     // True if zTitle should be rendered as a label
     samePath: u8,                     // aTPath copied by "same"
-    bEOL: u8,                         // Flag for if we're in a run of T_EOL (hashing)
+    bEOL: bool,                       // Flag for if we're in a run of T_EOL (hashing)
     mAttr: u8,                        // Flags for when to include certain styles
     zClass: []const u8,               // Class name for the <svg>
     zID: []const u8,                  // Suffix for id fields
@@ -392,11 +392,11 @@ pub const Pik = struct {
         .charHeight = 0.0,
         .wArrow = 0.0,
         .hArrow = 0.0,
-        .bLayoutVars = 0,
+        .bLayoutVars = false,
         .thenFlag = 0,
-        .bLabel = 0,
+        .bLabel = false,
         .samePath = 0,
-        .bEOL = 0,
+        .bEOL = false,
         .mAttr = 0,
         .zClass = "",
         .zID = "",
@@ -703,8 +703,8 @@ statement(A) ::= PLACENAME(N) COLON unnamed_statement(X).
 statement(A) ::= PLACENAME(N) COLON position(P).
                { A = pik_elem_new(p, null, null, null);
                  if (A) |a| { a.ptAt = P; pik_elem_setname(p, a, &N); } }
-statement(A) ::= TITLE STRING(S).{ pik_set_title(p, &S, 0); A = null; }
-statement(A) ::= LABEL STRING(S). { pik_set_title(p, &S, 1); A = null; }
+statement(A) ::= TITLE STRING(S).{ pik_set_title(p, &S, false); A = null; }
+statement(A) ::= LABEL STRING(S). { pik_set_title(p, &S, true); A = null; }
 statement(A) ::= DESCRIBE STRING(S). { pik_set_description(p, &S); A = null; }
 statement(A) ::= unnamed_statement(X).  { A = X; }
 statement(A) ::= print prlist.  { pik_append(p, "<br>\n"); A = null; }
@@ -776,7 +776,7 @@ attribute ::= go direction(D) even position(P). { pik_evenwith(p, &D, &P); }
 attribute ::= CLASS ID(C). {pik_set_xml_class(p, &C);}
 attribute ::= CLASS XML_CLASSES(C). {pik_set_xml_classes(p, &C);}
 attribute ::= CLOSE(E).             { pik_close_path(p, &E); }
-attribute ::= CHOP.                 { p.cur.?.bChop = 1; }
+attribute ::= CHOP.                 { p.cur.?.bChop = true; }
 attribute ::= FROM(T) position(X).  { pik_set_from(p, p.cur, &T, &X); }
 attribute ::= TO(T) position(X).    { pik_add_to(p, p.cur, &T, &X); }
 attribute ::= THEN(T).              { pik_then(p, &T, p.cur); }
@@ -1757,7 +1757,7 @@ fn pik_style_e_fill(obj: *const PObj) i32 {
     if (class.xRender == null or class.xRender == nullRender or class.xRender == textRender) return 0;
     if (class.xInit == dotInit) return 2;
     if (class.xInit == fileInit) return 1;
-    if (class.isLine != 0) return if (obj.bClose != 0) 3 else 0;
+    if (class.isLine != 0) return if (obj.bClose) 3 else 0;
     return 3;
 }
 
@@ -2562,9 +2562,9 @@ fn lineRender(p: *Pik, obj: *PObj) void {
             pik_draw_arrowhead(p, &obj.aPath[n - 2], &obj.aPath[n - 1], obj);
         }
         pik_append_tag_open(p, obj, "path");
-        if ((obj.bClose != 0 and obj.fill < 0.0) or obj.bClose == 0) pik_append(p, " _T");
+        if ((obj.bClose and obj.fill < 0.0) or !obj.bClose) pik_append(p, " _T");
         if (obj.sw >= 0.0 and obj.color >= 0.0) {
-            if (pik_style_stroke_map(p, obj, if (obj.bClose != 0) 3 else 0).get(obj.color)) |tag| {
+            if (pik_style_stroke_map(p, obj, if (obj.bClose) 3 else 0).get(obj.color)) |tag| {
                 pik_append(p, " _s");
                 pik_append_color_tag(p, tag);
             } else {
@@ -2572,8 +2572,8 @@ fn lineRender(p: *Pik, obj: *PObj) void {
                 return;
             }
         }
-        if (obj.bClose != 0 and obj.fill >= 0.0) {
-            if (pik_style_fill_map(p, obj, if (obj.bClose != 0) 3 else 0).get(obj.fill)) |tag| {
+        if (obj.bClose and obj.fill >= 0.0) {
+            if (pik_style_fill_map(p, obj, if (obj.bClose) 3 else 0).get(obj.fill)) |tag| {
                 pik_append(p, " _f");
                 pik_append_color_tag(p, tag);
             } else {
@@ -2593,13 +2593,13 @@ fn lineRender(p: *Pik, obj: *PObj) void {
             pik_append_xy(p, "", obj.ptEnter.x, obj.ptEnter.y);
             pik_append_xy(p, "L", obj.ptExit.x, obj.ptExit.y);
         }
-        if (obj.bClose != 0) {
+        if (obj.bClose) {
             pik_append(p, "Z");
         } else {
             obj.fill = -1.0;
         }
         pik_append(p, "\" ");
-        pik_append_style(p, obj, if (obj.bClose != 0) 3 else 0);
+        pik_append_style(p, obj, if (obj.bClose) 3 else 0);
         pik_append(p, " />\n");
     }
     if (enclosed != 0) {
@@ -2637,13 +2637,13 @@ fn radiusPath(p: *Pik, obj: *PObj, r: PNum) void {
     var m: PPoint = undefined;
     var an = a[n - 1];
     var is_mid: i32 = 0;
-    const i_last: usize = if (obj.bClose != 0) n else n - 1;
+    const i_last: usize = if (obj.bClose) n else n - 1;
     pik_append_tag_open(p, obj, "path");
-    if (obj.bClose == 0) {
+    if (!obj.bClose) {
         pik_append(p, " _T");
     }
     if (obj.sw >= 0.0 and obj.color >= 0.0) {
-        if (pik_style_stroke_map(p, obj, if (obj.bClose != 0) 3 else 0).get(obj.color)) |tag| {
+        if (pik_style_stroke_map(p, obj, if (obj.bClose) 3 else 0).get(obj.color)) |tag| {
             pik_append(p, " _s");
             pik_append_color_tag(p, tag);
         } else {
@@ -2651,8 +2651,8 @@ fn radiusPath(p: *Pik, obj: *PObj, r: PNum) void {
             return;
         }
     }
-    if (obj.bClose != 0 and obj.fill >= 0.0) {
-        if (pik_style_fill_map(p, obj, if (obj.bClose != 0) 3 else 0).get(obj.fill)) |tag| {
+    if (obj.bClose and obj.fill >= 0.0) {
+        if (pik_style_fill_map(p, obj, if (obj.bClose) 3 else 0).get(obj.fill)) |tag| {
             pik_append(p, " _f");
             pik_append_color_tag(p, tag);
         } else {
@@ -2676,13 +2676,13 @@ fn radiusPath(p: *Pik, obj: *PObj, r: PNum) void {
         }
     }
     pik_append_xy(p, " L ", an.x, an.y);
-    if (obj.bClose != 0) {
+    if (obj.bClose) {
         pik_append(p, "Z");
     } else {
         obj.fill = -1.0;
     }
     pik_append(p, "\" ");
-    pik_append_style(p, obj, if (obj.bClose != 0) 3 else 0);
+    pik_append_style(p, obj, if (obj.bClose) 3 else 0);
     pik_append(p, " />\n");
 }
 
@@ -2713,7 +2713,7 @@ fn splineRender(p: *Pik, obj: *PObj) void {
 fn diamondInit(p: *Pik, obj: *PObj) void {
     obj.w = pik_value(p, "diamondwid", null);
     obj.h = pik_value(p, "diamondht", null);
-    obj.bAltAutoFit = 1;
+    obj.bAltAutoFit = true;
 }
 
 // Return offset from the center of the box to the compass point
@@ -2871,7 +2871,7 @@ fn lineOffset(p: *Pik, obj: *PObj, cp: i32) PPoint {
     if (false) {
         // In legacy PIC, the .center of an unclosed line is half way between
         // its .start and .end.
-        if (cp == CP_C and obj.bClose == 0) {
+        if (cp == CP_C and !obj.bClose) {
             return .{
                 .x = 0.5 * (obj.ptEnter.x + obj.ptExit.x) - obj.ptAt.x,
                 .y = 0.5 * (obj.ptEnter.x + obj.ptExit.y) - obj.ptAt.y,
@@ -3362,7 +3362,7 @@ fn pik_find_class(id: *PToken) ?*const PClass {
 
 // Recompute key layout parameters from variables.
 fn pik_compute_layout_settings(p: *Pik) void {
-    if (p.bLayoutVars != 0) return;
+    if (p.bLayoutVars) return;
     var thickness = pik_value(p, "thickness", null);
     if (thickness <= 0.01) thickness = 0.01;
     const w_arrow = 0.5 * pik_value(p, "arrowwid", null);
@@ -3373,7 +3373,7 @@ fn pik_compute_layout_settings(p: *Pik) void {
     p.rScale = 144.0;
     p.charWidth = pik_value(p, "charwid", null) * p.fontScale;
     p.charHeight = pik_value(p, "charht", null) * p.fontScale;
-    p.bLayoutVars = 1;
+    p.bLayoutVars = true;
 }
 
 // Add all objects of the list pList to the bounding box
@@ -3531,7 +3531,7 @@ fn pik_render(p: *Pik, list: ?*PList) void {
     pik_append(p, " role=\"img\"");
     var aria_start = false;
     if (p.zTitle.len != 0) {
-        if (p.bLabel != 0) {
+        if (p.bLabel) {
             pik_append(p, " aria-label=\"");
             pik_append_str(p, p.zTitle, 0x6);
             pik_append(p, "\"");
@@ -3599,7 +3599,7 @@ fn pik_render(p: *Pik, list: ?*PList) void {
     pik_append_color_css(p);
     pik_append(p, "}\n</style>\n");
     if (p.zTitle.len != 0) {
-        if (p.bLabel == 0) {
+        if (!p.bLabel) {
             pik_append(p, "<title id=\"title");
             pik_append(p, p.zID);
             pik_append(p, "\">\n");
@@ -3722,9 +3722,9 @@ fn pik_elem_new(p: *Pik, id: ?*PToken, str: ?*PToken, sublist: ?*PList) ?*PObj {
 }
 
 // Set a title or label for the Pikchr diagram.
-fn pik_set_title(p: *Pik, title: *PToken, label: i32) void {
+fn pik_set_title(p: *Pik, title: *PToken, label: bool) void {
     if (p.zTitle.len != 0) {
-        if (p.bLabel != 0) {
+        if (p.bLabel) {
             pik_error(p, title, "diagram already has a label");
         } else {
             pik_error(p, title, "diagram already has a title");
@@ -3735,7 +3735,7 @@ fn pik_set_title(p: *Pik, title: *PToken, label: i32) void {
         pik_error(p, title, null);
         return;
     };
-    p.bLabel = if (label != 0) 1 else 0;
+    p.bLabel = label;
 }
 
 // Set a description for the Pikchr diagram.
@@ -3754,7 +3754,7 @@ fn pik_set_description(p: *Pik, desc: *PToken) void {
 fn pik_elem_set_exit(obj: *PObj, dir: i32) void {
     std.debug.assert(ValidDir(dir));
     obj.outDir = dir;
-    if (obj.type == null or obj.type.?.isLine == 0 or obj.bClose != 0) {
+    if (obj.type == null or obj.type.?.isLine == 0 or obj.bClose) {
         obj.ptExit = obj.ptAt;
         switch (obj.outDir) {
             DIR_LEFT => obj.ptExit.x -= obj.w * 0.5,
@@ -3812,7 +3812,7 @@ fn pik_set_var(p: *Pik, id: *PToken, val: PNum, op: *PToken) void {
             const old_val = v.val;
             pik_apply_var_op(p, v, val, op);
             if (std.mem.eql(u8, v.zName, "color")) pik_sync_textcolor(p, old_val, v.val);
-            p.bLayoutVars = 0;
+            p.bLayoutVars = false;
             return;
         }
     }
@@ -3834,7 +3834,7 @@ fn pik_set_var(p: *Pik, id: *PToken, val: PNum, op: *PToken) void {
     const old_val = v.val;
     pik_apply_var_op(p, v, val, op);
     if (std.mem.eql(u8, v.zName, "color")) pik_sync_textcolor(p, old_val, v.val);
-    p.bLayoutVars = 0;
+    p.bLayoutVars = false;
 }
 
 // This is an ugly hack, but it keeps diagrams output-identical.  It
@@ -4401,7 +4401,7 @@ fn pik_after_adding_attributes(p: *Pik, obj: ?*PObj) void {
         // "chop" processing:
         // If the line goes to the center of an object with an
         // xChop method, then use the xChop method to trim the line.
-        if (o.bChop != 0 and o.nPath >= 2) {
+        if (o.bChop and o.nPath >= 2) {
             pik_autochop(p, &o.aPath[n - 2], &o.aPath[n - 1], o.pTo);
             pik_autochop(p, &o.aPath[1], &o.aPath[0], o.pFrom);
         }
@@ -4428,7 +4428,7 @@ fn pik_after_adding_attributes(p: *Pik, obj: ?*PObj) void {
 
         // If this is a polygon (if it has the "close" attribute), then
         // adjust the exit point
-        if (o.bClose != 0) {
+        if (o.bClose) {
             // For "closed" lines, the .end is one of the .e, .s, .w, or .n
             // points of the bounding box, as with block objects.
             pik_elem_set_exit(o, o.inDir);
@@ -4784,11 +4784,11 @@ fn pik_close_path(p: *Pik, err: *PToken) void {
         pik_error(p, err, "need at least 3 vertexes in order to close the polygon");
         return;
     }
-    if (obj.bClose != 0) {
+    if (obj.bClose) {
         pik_error(p, err, "polygon already closed");
         return;
     }
-    obj.bClose = 1;
+    obj.bClose = true;
 }
 
 // Set the "from" of an object
@@ -4802,7 +4802,7 @@ fn pik_set_from(p: *Pik, obj: ?*PObj, tok: *PToken, pt: *PPoint) void {
         pik_error(p, tok, "line start location already fixed");
         return;
     }
-    if (o.bClose != 0) {
+    if (o.bClose) {
         pik_error(p, tok, "polygon is closed");
         return;
     }
@@ -4828,7 +4828,7 @@ fn pik_add_to(p: *Pik, obj: ?*PObj, tok: *PToken, pt: *PPoint) void {
         pik_error(p, tok, "use \"at\" to position this object");
         return;
     }
-    if (o.bClose != 0) {
+    if (o.bClose) {
         pik_error(p, tok, "polygon is closed");
         return;
     }
@@ -5044,11 +5044,11 @@ fn pik_size_to_fit(p: *Pik, fit: *PToken, which: i32) void {
     pik_bbox_init(&bbox);
     pik_compute_layout_settings(p);
     pik_append_txt(p, obj, &bbox);
-    const w = if ((which & 1) != 0 or obj.bAltAutoFit != 0)
+    const w = if ((which & 1) != 0 or obj.bAltAutoFit)
         (bbox.ne.x - bbox.sw.x) + p.charWidth
     else
         0.0;
-    const h = if ((which & 2) != 0 or obj.bAltAutoFit != 0) blk: {
+    const h = if ((which & 2) != 0 or obj.bAltAutoFit) blk: {
         const h1 = bbox.ne.y - obj.ptAt.y;
         const h2 = obj.ptAt.y - bbox.sw.y;
         break :blk 2.0 * @max(h1, h2) + 0.5 * p.charHeight;
@@ -5997,13 +5997,13 @@ fn pik_tokenize(p: *Pik, input: *PToken, parser: *PikParser, params: ?[]PToken) 
             p.nToken += 1;
             // only hash EOL once + normalize
             if (tokenKind(&token) == .EOL) {
-                if (p.bEOL == 0) {
-                    p.bEOL = 1;
+                if (!p.bEOL) {
+                    p.bEOL = true;
                     // treat every EOL as a newline
                     p.shaDigest.update("\n");
                 }
             } else {
-                p.bEOL = 0;
+                p.bEOL = false;
                 // Codeblocks (aka macros) we hash if and when they get used,
                 // XML class lists are hashed individually to discount whitespace
                 const kind = tokenKind(&token);
@@ -6070,7 +6070,7 @@ pub fn render(
     defer parser.deinit();
     pik_tokenize(&pik, &pik.sIn, &parser, null);
     // normalize end of diagram to hash as EOL
-    if (pik.bEOL == 0) {
+    if (!pik.bEOL) {
         pik.shaDigest.update("\n");
     }
     pik_set_id(&pik);
