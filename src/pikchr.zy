@@ -5940,7 +5940,7 @@ fn pik_parse_macro_args(
 
 // Split up the content of a PToken into multiple tokens and
 // send each to the parser.
-fn pik_tokenize(p: *Pik, input: *PToken, parser: *PikParser, params: ?[]PToken) void {
+fn pik_tokenize(p: *Pik, input: *PToken, parser: *PikParser, m_params: ?[]PToken) void {
     var i: usize = 0;
     var sz: usize = 0;
     while (i < input.z.len and input.z[i] != 0 and p.nErr == 0) : (i += sz) {
@@ -5964,16 +5964,18 @@ fn pik_tokenize(p: *Pik, input: *PToken, parser: *PikParser, params: ?[]PToken) 
         } else if (token.eType == T_PARAMETER) {
             // Substitute a parameter into the input stream
             const idx: usize = token.eCode;
-            if (params == null or params.?[idx].z.len == 0) continue;
-            token.z = token.z[0..@min(sz, 0xffff)];
-            if (p.nCtx >= p.aCtx.len) {
-                pik_error(p, &token, "macros nested too deep");
-            } else {
-                p.aCtx[p.nCtx] = token;
-                p.nCtx += 1;
-                pik_tokenize(p, &params.?[idx], parser, null);
-                p.nCtx -= 1;
-            }
+            if (m_params) |params| {
+                if (params[idx].z.len == 0) continue;
+                token.z = token.z[0..@min(sz, 0xffff)];
+                if (p.nCtx >= p.aCtx.len) {
+                    pik_error(p, &token, "macros nested too deep");
+                } else {
+                    p.aCtx[p.nCtx] = token;
+                    p.nCtx += 1;
+                    pik_tokenize(p, &params[idx], parser, null);
+                    p.nCtx -= 1;
+                }
+            } else continue;
         } else if (tokenKind(&token) == .ID and blk: {
             token.z = token.z[0..@min(sz, 0xffff)];
             break :blk pik_find_macro(p, &token) != null;
@@ -5993,7 +5995,7 @@ fn pik_tokenize(p: *Pik, input: *PToken, parser: *PikParser, params: ?[]PToken) 
             mac.inUse = 1;
             p.aCtx[p.nCtx] = token;
             p.nCtx += 1;
-            sz += pik_parse_macro_args(p, input.z[j..], &args, params);
+            sz += pik_parse_macro_args(p, input.z[j..], &args, m_params);
             pik_tokenize(p, &mac.macroBody, parser, args[0..]);
             p.nCtx -= 1;
             mac.inUse = 0;
