@@ -292,6 +292,8 @@ pub const PObj = struct {
     };
 };
 
+var pik_dummy_object_storage: PObj = .start;
+
 /// A list of graphics objects
 pub const PList = struct {
     n: usize, // Number of statements in the list
@@ -325,7 +327,7 @@ pub const Pik = struct {
     shaDigest: std.crypto.hash.Sha1,  // The hashing context for tokens
     eDir: u8,                         // Current direction
     mFlags: u32,                      // Flags passed to pikchr()
-    cur: ?*PObj,                      // Object under construction
+    cur: *PObj,                       // Object under construction
     lastRef: ?*PObj,                  // Last object references by name
     list: ?*PList,                    // Object list under construction
     pMacros: ?*PMacro,                // List of all defined macros
@@ -377,7 +379,7 @@ pub const Pik = struct {
         .shaDigest = std.crypto.hash.Sha1.init(sha1_options),
         .eDir = DIR_RIGHT,
         .mFlags = 0,
-        .cur = null,
+        .cur = &pik_dummy_object_storage,
         .lastRef = null,
         .list = null,
         .pMacros = null,
@@ -665,8 +667,8 @@ const OOM = Allocator.Error;
 %type locproperty PToken
 %type position PPoint
 %type place PPoint
-%type object {?*PObj}
-%type objectname {?*PObj}
+%type object {*PObj}
+%type objectname {*PObj}
 %type nth PToken
 %type textposition u16
 %type rvalue PNum
@@ -775,7 +777,7 @@ attribute ::= go direction(D) even position(P). { pik_evenwith(p, &D, &P); }
 attribute ::= CLASS ID(C). {pik_set_xml_class(p, &C);}
 attribute ::= CLASS XML_CLASSES(C). {pik_set_xml_classes(p, &C);}
 attribute ::= CLOSE(E).             { pik_close_path(p, &E); }
-attribute ::= CHOP.                 { p.cur.?.bChop = true; }
+attribute ::= CHOP.                 { p.cur.bChop = true; }
 attribute ::= FROM(T) position(X).  { pik_set_from(p, p.cur, &T, &X); }
 attribute ::= TO(T) position(X).    { pik_add_to(p, p.cur, &T, &X); }
 attribute ::= THEN(T).              { pik_then(p, &T, p.cur); }
@@ -816,16 +818,16 @@ colorproperty(A) ::= COLOR(A).
 colorproperty(A) ::= TEXTCOLOR(A).
 
 // Properties with no argument
-boolproperty ::= CW.          { p.cur.?.cw = 1; }
-boolproperty ::= CCW.         { p.cur.?.cw = 0; }
-boolproperty ::= LARROW.      { p.cur.?.larrow = 1; p.cur.?.rarrow = 0; }
-boolproperty ::= RARROW.      { p.cur.?.larrow = 0; p.cur.?.rarrow = 1; }
-boolproperty ::= LRARROW.     { p.cur.?.larrow = 1; p.cur.?.rarrow = 1; }
-boolproperty ::= INVIS.       { p.cur.?.sw = -0.00001; }
-boolproperty ::= THICK.       { p.cur.?.sw *= 1.5; }
-boolproperty ::= THIN.        { p.cur.?.sw *= 0.67; }
-boolproperty ::= SOLID.       { p.cur.?.sw = pik_value(p, "thickness", null);
-                               p.cur.?.dotted = 0.0; p.cur.?.dashed = 0.0; }
+boolproperty ::= CW.          { p.cur.cw = 1; }
+boolproperty ::= CCW.         { p.cur.cw = 0; }
+boolproperty ::= LARROW.      { p.cur.larrow = 1; p.cur.rarrow = 0; }
+boolproperty ::= RARROW.      { p.cur.larrow = 0; p.cur.rarrow = 1; }
+boolproperty ::= LRARROW.     { p.cur.larrow = 1; p.cur.rarrow = 1; }
+boolproperty ::= INVIS.       { p.cur.sw = -0.00001; }
+boolproperty ::= THICK.       { p.cur.sw *= 1.5; }
+boolproperty ::= THIN.        { p.cur.sw *= 0.67; }
+boolproperty ::= SOLID.       { p.cur.sw = pik_value(p, "thickness", null);
+                               p.cur.dotted = 0.0; p.cur.dashed = 0.0; }
 
 textposition(A) ::= .   { A = 0; }
 textposition(A) ::= textposition(B)
@@ -4546,7 +4548,7 @@ fn pik_param_ok(p: *Pik, obj: *PObj, id: *PToken, mask: u32) i32 {
 // The rAbs term is an absolute value to add in.  rRel is
 // a relative value by which to change the current value.
 fn pik_set_numprop(p: *Pik, prop: *PToken, val: *PRel) void {
-    const obj = p.cur orelse return;
+    const obj = p.cur;
     var target: *PNum = undefined;
     var mask: u32 = 0;
     switch (prop.eType) {
@@ -4581,7 +4583,7 @@ fn pik_set_numprop(p: *Pik, prop: *PToken, val: *PRel) void {
 
 // Set a color property.  The argument is an RGB value.
 fn pik_set_clrprop(p: *Pik, prop: *PToken, val: PNum) void {
-    const obj = p.cur orelse return;
+    const obj = p.cur;
     switch (prop.eType) {
         .FILL => {
             if (pik_param_ok(p, obj, prop, A_FILL) != 0) return;
@@ -4612,7 +4614,7 @@ fn pik_set_clrprop(p: *Pik, prop: *PToken, val: PNum) void {
 // Use the value supplied by pVal if available.  If pVal==0, use
 // a default.
 fn pik_set_dashed(p: *Pik, prop: *PToken, val: ?*PNum) void {
-    const obj = p.cur orelse return;
+    const obj = p.cur;
     const x = if (val) |v| v.* else pik_value(p, "dashwid", null);
     if (prop.eType == .DOTTED) {
         obj.dotted = x;
@@ -4649,7 +4651,7 @@ fn pik_next_rpath(p: *Pik, err: ?*PToken) i32 {
 // Add a direction term to an object.  "up 0.5", or "left 3", or "down"
 // or "down 50%".
 fn pik_add_direction(p: *Pik, dir: ?*PToken, val: *PRel) void {
-    const obj = p.cur orelse return;
+    const obj = p.cur;
     if (obj.type == null or obj.type.?.isLine == 0) {
         if (dir) |d| pik_error(p, d, "use with line-oriented objects only") else pik_error(p, &obj.errTok, "syntax error");
         return;
@@ -4694,7 +4696,7 @@ fn pik_add_direction(p: *Pik, dir: ?*PToken, val: *PRel) void {
 // The movement is in that direction until its closest approach to
 // the point specified by pPoint.
 fn pik_evenwith(p: *Pik, dir: *PToken, place: *PPoint) void {
-    const obj = p.cur orelse return;
+    const obj = p.cur;
     if (obj.type == null or obj.type.?.isLine == 0) {
         pik_error(p, dir, "use with line-oriented objects only");
         return;
@@ -4736,7 +4738,7 @@ fn pik_xml_class_prepend(obj: *PObj, xprepend: ?*PXmlClass) void {
 // Set a single XML class on an Object.
 //
 fn pik_set_xml_class(p: *Pik, tok: *PToken) void {
-    const obj = p.cur orelse return;
+    const obj = p.cur;
     if ((obj.mProp & A_CLASS) != 0) {
         pik_error(p, tok, "value already set");
         return;
@@ -4766,7 +4768,7 @@ fn pik_set_xml_class(p: *Pik, tok: *PToken) void {
 // Set a list of XML classes on an object.
 //
 fn pik_set_xml_classes(p: *Pik, tok: *PToken) void {
-    const obj = p.cur orelse return;
+    const obj = p.cur;
     if ((obj.mProp & A_CLASS) != 0) {
         pik_error(p, tok, "value already set");
         return;
@@ -4809,7 +4811,7 @@ fn pik_set_xml_classes(p: *Pik, tok: *PToken) void {
 }
 
 fn pik_close_path(p: *Pik, err: *PToken) void {
-    const obj = p.cur orelse return;
+    const obj = p.cur;
     if (p.nTPath < 3) {
         pik_error(p, err, "need at least 3 vertexes in order to close the polygon");
         return;
@@ -4822,17 +4824,16 @@ fn pik_close_path(p: *Pik, err: *PToken) void {
 }
 
 // Set the "from" of an object
-fn pik_set_from(p: *Pik, obj: ?*PObj, tok: *PToken, pt: *PPoint) void {
-    const o = obj orelse return;
-    if (o.type == null or o.type.?.isLine == 0) {
+fn pik_set_from(p: *Pik, obj: *PObj, tok: *PToken, pt: *PPoint) void {
+    if (obj.type == null or obj.type.?.isLine == 0) {
         pik_error(p, tok, "use \"at\" to position this object");
         return;
     }
-    if ((o.mProp & A_FROM) != 0) {
+    if ((obj.mProp & A_FROM) != 0) {
         pik_error(p, tok, "line start location already fixed");
         return;
     }
-    if (o.bClose) {
+    if (obj.bClose) {
         pik_error(p, tok, "polygon is closed");
         return;
     }
@@ -4847,18 +4848,17 @@ fn pik_set_from(p: *Pik, obj: ?*PObj, tok: *PToken, pt: *PPoint) void {
     }
     p.aTPath[0] = pt.*;
     p.mTPath = 3;
-    o.mProp |= A_FROM;
-    o.pFrom = pik_last_ref_object(p, pt);
+    obj.mProp |= A_FROM;
+    obj.pFrom = pik_last_ref_object(p, pt);
 }
 
 // Set the "to" of an object
-fn pik_add_to(p: *Pik, obj: ?*PObj, tok: *PToken, pt: *PPoint) void {
-    const o = obj orelse return;
-    if (o.type == null or o.type.?.isLine == 0) {
+fn pik_add_to(p: *Pik, obj: *PObj, tok: *PToken, pt: *PPoint) void {
+    if (obj.type == null or obj.type.?.isLine == 0) {
         pik_error(p, tok, "use \"at\" to position this object");
         return;
     }
-    if (o.bClose) {
+    if (obj.bClose) {
         pik_error(p, tok, "polygon is closed");
         return;
     }
@@ -4867,23 +4867,21 @@ fn pik_add_to(p: *Pik, obj: ?*PObj, tok: *PToken, pt: *PPoint) void {
     if (n == 0 or p.mTPath == 3 or p.thenFlag != 0) n = pik_next_rpath(p, tok);
     p.aTPath[@intCast(n)] = pt.*;
     p.mTPath = 3;
-    o.pTo = pik_last_ref_object(p, pt);
+    obj.pTo = pik_last_ref_object(p, pt);
 }
 
 // Add a new term to the path for a line-oriented object by transferring
 // the information in the ptTo field over onto the path and into ptFrom
 // resetting the ptTo.
-fn pik_then(p: *Pik, tok: *PToken, obj: ?*PObj) void {
-    if (obj) |o| {
-        if (o.type == null or o.type.?.isLine == 0) {
-            pik_error(p, tok, "use with line-oriented objects only");
-            return;
-        }
-        const n = p.nTPath - 1;
-        if (n < 1 and (o.mProp & A_FROM) == 0) {
-            pik_error(p, tok, "no prior path points");
-            return;
-        }
+fn pik_then(p: *Pik, tok: *PToken, obj: *PObj) void {
+    if (obj.type == null or obj.type.?.isLine == 0) {
+        pik_error(p, tok, "use with line-oriented objects only");
+        return;
+    }
+    const n = p.nTPath - 1;
+    if (n < 1 and (obj.mProp & A_FROM) == 0) {
+        pik_error(p, tok, "no prior path points");
+        return;
     }
     p.thenFlag = 1;
 }
@@ -4901,7 +4899,7 @@ fn pik_move_hdg(
     edge: ?*PToken,
     err: *PToken,
 ) void {
-    const obj = p.cur orelse return;
+    const obj = p.cur;
     var r_hdg = angle;
     const r_dist = rel.rAbs + pik_value(p, "linewid", null) * rel.rRel;
     if (obj.type == null or obj.type.?.isLine == 0) {
@@ -4943,7 +4941,7 @@ fn pik_move_hdg(
 fn pik_set_at(p: *Pik, edge: ?*PToken, at: *PPoint, err: *PToken) void {
     const e_dir_to_cp = [_]CompassPoint{ .e, .s, .w, .n };
     if (p.nErr != 0) return;
-    const obj = p.cur orelse return;
+    const obj = p.cur;
 
     if (obj.type != null and obj.type.?.isLine != 0) {
         pik_error(p, err, "use \"from\" and \"to\" to position this object");
@@ -4967,7 +4965,7 @@ fn pik_set_at(p: *Pik, edge: ?*PToken, at: *PPoint, err: *PToken) void {
 // same as the pOther object, or the most recent object of the same
 // type if pOther is NULL.
 fn pik_same(p: *Pik, other: ?*PObj, err: *PToken) void {
-    const obj = p.cur orelse return;
+    const obj = p.cur;
     if (p.nErr != 0) return;
     var same_obj = other;
     if (same_obj == null) {
@@ -5022,7 +5020,7 @@ fn pik_same(p: *Pik, other: ?*PObj, err: *PToken) void {
 
 // Try to add a text attribute to an object
 fn pik_add_txt(p: *Pik, txt: *PToken, pos: u16) void {
-    const obj = p.cur orelse return;
+    const obj = p.cur;
     if (obj.nTxt >= obj.aTxt.len) {
         pik_error(p, txt, "too many text terms");
         return;
@@ -5063,7 +5061,7 @@ fn pik_add_txt(p: *Pik, txt: *PToken, pos: u16) void {
 //    2:   Fit vertically only
 //    3:   Fit both ways
 fn pik_size_to_fit(p: *Pik, maybe_obj: ?*PObj, fit: *PToken, which: i32) void {
-    const obj = maybe_obj orelse p.cur orelse return;
+    const obj = maybe_obj orelse p.cur;
     if (p.nErr != 0) return;
     if (obj.nTxt == 0) {
         pik_error(p, fit, "no text to fit to");
@@ -5090,11 +5088,10 @@ fn pik_size_to_fit(p: *Pik, maybe_obj: ?*PObj, fit: *PToken, which: i32) void {
 
 // Lower the layer of the current object so that it is behind the
 // given object.
-fn pik_behind(p: *Pik, other: ?*PObj) void {
-    const obj = p.cur orelse return;
-    const o = other orelse return;
-    if (p.nErr == 0 and obj.iLayer >= o.iLayer) {
-        obj.iLayer = o.iLayer - 1;
+fn pik_behind(p: *Pik, other: *PObj) void {
+    const obj = p.cur;
+    if (p.nErr == 0 and obj.iLayer >= other.iLayer) {
+        obj.iLayer = other.iLayer - 1;
     }
 }
 
@@ -5178,23 +5175,21 @@ fn pik_last_ref_object(p: *Pik, pt: *PPoint) ?*PObj {
 // Return a "Place" associated with object pObj.  If pEdge is NULL
 // return the center of the object.  Otherwise, return the corner
 // described by pEdge.
-fn pik_place_of_elem(p: *Pik, obj: ?*PObj, edge: ?*PToken) PPoint {
-    const o = obj orelse return cZeroPoint;
-    if (edge == null) return o.ptAt;
+fn pik_place_of_elem(p: *Pik, obj: *PObj, edge: ?*PToken) PPoint {
+    if (edge == null) return obj.ptAt;
     const e = edge.?;
-    if (e.eType == .START) return o.ptEnter;
-    if (e.eType == .END) return o.ptExit;
+    if (e.eType == .START) return obj.ptEnter;
+    if (e.eType == .END) return obj.ptExit;
     const cp = e.eEdge;
-    const offset = pik_elem_offset(p, o, cp);
-    p.lastRef = o;
-    return .{ .x = o.ptAt.x + offset.x, .y = o.ptAt.y + offset.y };
+    const offset = pik_elem_offset(p, obj, cp);
+    p.lastRef = obj;
+    return .{ .x = obj.ptAt.x + offset.x, .y = obj.ptAt.y + offset.y };
 }
 
 // Return the coordinates for the n-th vertex of a line.
-fn pik_nth_vertex(p: *Pik, nth: *PToken, err: *PToken, obj: ?*PObj) PPoint {
-    if (p.nErr != 0 or obj == null) return p.aTPath[0];
-    const o = obj.?;
-    if (o.type == null or o.type.?.isLine == 0) {
+fn pik_nth_vertex(p: *Pik, nth: *PToken, err: *PToken, obj: *PObj) PPoint {
+    if (p.nErr != 0) return p.aTPath[0];
+    if (obj.type == null or obj.type.?.isLine == 0) {
         pik_error(p, err, "object is not a line");
         return cZeroPoint;
     }
@@ -5203,11 +5198,11 @@ fn pik_nth_vertex(p: *Pik, nth: *PToken, err: *PToken, obj: ?*PObj) PPoint {
         if (!std.ascii.isDigit(c)) break;
         n = n * 10 + @as(i32, c - '0');
     }
-    if (n < 1 or n > o.nPath) {
+    if (n < 1 or n > obj.nPath) {
         pik_error(p, nth, "no such vertex");
         return cZeroPoint;
     }
-    return o.aPath[@intCast(n - 1)];
+    return obj.aPath[@intCast(n - 1)];
 }
 
 // Search for the NTH object.
@@ -5224,18 +5219,18 @@ fn pik_nth_vertex(p: *Pik, nth: *PToken, err: *PToken, obj: ?*PObj) PPoint {
 // any type.
 //
 // Raise an error if the item is not found.
-fn pik_find_nth(p: *Pik, basis: ?*PObj, nth: *PToken) ?*PObj {
+fn pik_find_nth(p: *Pik, basis: ?*PObj, nth: *PToken) *PObj {
     const list = if (basis) |b| b.pSublist else p.list;
     const l = list orelse {
         pik_error(p, nth, "no such object");
-        return null;
+        return &pik_dummy_object_storage;
     };
     const class: ?*const PClass = switch (nth.eType) {
         .LAST => null,
         .LB => &sublistClass,
         else => pik_find_class(nth) orelse {
             pik_error(p, nth, "no such object type");
-            return null;
+            return &pik_dummy_object_storage;
         },
     };
     var n: i32 = tokenCodeSigned(nth);
@@ -5260,18 +5255,18 @@ fn pik_find_nth(p: *Pik, basis: ?*PObj, nth: *PToken) ?*PObj {
         }
     }
     pik_error(p, nth, "no such object");
-    return null;
+    return &pik_dummy_object_storage;
 }
 
 // Search for an object by name.
 //
 // Search in pBasis->pSublist if pBasis is not NULL.  If pBasis is NULL
 // then search in p->list.
-fn pik_find_byname(p: *Pik, basis: ?*PObj, name: *PToken) ?*PObj {
+fn pik_find_byname(p: *Pik, basis: ?*PObj, name: *PToken) *PObj {
     const list = if (basis) |b| b.pSublist else p.list;
     const l = list orelse {
         pik_error(p, name, "no such object");
-        return null;
+        return &pik_dummy_object_storage;
     };
     // First look explicitly tagged objects
     var i = l.n;
@@ -5297,7 +5292,7 @@ fn pik_find_byname(p: *Pik, basis: ?*PObj, name: *PToken) ?*PObj {
         }
     }
     pik_error(p, name, "no such object");
-    return null;
+    return &pik_dummy_object_storage;
 }
 
 // Convert a T_NTH token (ex: "2nd", "5th"} into a numeric value and
@@ -5315,25 +5310,24 @@ fn pik_nth_value(p: *Pik, nth: *PToken) i16 {
 }
 
 // Return the value of a property of an object.
-fn pik_property_of(obj: ?*PObj, prop: *PToken) PNum {
-    const o = obj orelse return 0.0;
+fn pik_property_of(obj: *PObj, prop: *PToken) PNum {
     return switch (prop.eType) {
-        .HEIGHT => o.h,
-        .WIDTH => o.w,
-        .RADIUS => o.rad,
-        .DIAMETER => o.rad * 2.0,
-        .THICKNESS => o.sw,
-        .DASHED => o.dashed,
-        .DOTTED => o.dotted,
-        .FILL => o.fill,
-        .COLOR => o.color,
-        .TEXTCOLOR => o.textcolor,
-        .X => o.ptAt.x,
-        .Y => o.ptAt.y,
-        .TOP => o.bbox.ne.y,
-        .BOTTOM => o.bbox.sw.y,
-        .LEFT => o.bbox.sw.x,
-        .RIGHT => o.bbox.ne.x,
+        .HEIGHT => obj.h,
+        .WIDTH => obj.w,
+        .RADIUS => obj.rad,
+        .DIAMETER => obj.rad * 2.0,
+        .THICKNESS => obj.sw,
+        .DASHED => obj.dashed,
+        .DOTTED => obj.dotted,
+        .FILL => obj.fill,
+        .COLOR => obj.color,
+        .TEXTCOLOR => obj.textcolor,
+        .X => obj.ptAt.x,
+        .Y => obj.ptAt.y,
+        .TOP => obj.bbox.ne.y,
+        .BOTTOM => obj.bbox.sw.y,
+        .LEFT => obj.bbox.sw.x,
+        .RIGHT => obj.bbox.ne.x,
         else => 0.0,
     };
 }
@@ -6345,8 +6339,8 @@ test "Pik lookup helpers find objects and properties" {
 
     var nth = classToken("box");
     nth.eCode = 1;
-    try std.testing.expectEqual(obj, pik_find_nth(&pik, null, &nth).?);
-    try std.testing.expectEqual(obj, pik_find_byname(&pik, null, &name).?);
+    try std.testing.expectEqual(obj, pik_find_nth(&pik, null, &nth));
+    try std.testing.expectEqual(obj, pik_find_byname(&pik, null, &name));
 
     var width: PToken = .zero;
     width.eType = .WIDTH;
@@ -6354,6 +6348,23 @@ test "Pik lookup helpers find objects and properties" {
     height.eType = .HEIGHT;
     try std.testing.expectEqual(obj.w, pik_property_of(obj, &width));
     try std.testing.expectEqual(obj.h, pik_property_of(obj, &height));
+}
+
+test "Pik current object starts at PObj.start" {
+    var pik = Pik.init(std.testing.allocator, "print this.width", "pikchr", 0);
+    defer pik.deinit();
+
+    try std.testing.expectEqual(@as(PNum, 0.0), pik.cur.w);
+    var width: PToken = .zero;
+    width.eType = .WIDTH;
+    try std.testing.expectEqual(@as(PNum, 0.0), pik_property_of(pik.cur, &width));
+
+    var edge: PToken = .zero;
+    edge.eType = .EDGEPT;
+    edge.eEdge = .e;
+    const east = pik_place_of_elem(&pik, pik.cur, &edge);
+    try std.testing.expectEqual(@as(PNum, 0.0), east.x);
+    try std.testing.expectEqual(@as(PNum, 0.0), east.y);
 }
 
 test "Pik sorted table lookups use sorted table edges" {
