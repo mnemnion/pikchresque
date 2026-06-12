@@ -292,7 +292,7 @@ pub const PObj = struct {
     };
 };
 
-var pik_dummy_object_storage: PObj = .start;
+var pik_dummy_object: PObj = .start;
 
 /// A list of graphics objects
 pub const PList = struct {
@@ -379,7 +379,7 @@ pub const Pik = struct {
         .shaDigest = std.crypto.hash.Sha1.init(sha1_options),
         .eDir = DIR_RIGHT,
         .mFlags = 0,
-        .cur = &pik_dummy_object_storage,
+        .cur = &pik_dummy_object,
         .lastRef = null,
         .list = null,
         .pMacros = null,
@@ -737,7 +737,7 @@ pritem ::= FILL(X).        { pik_append_num(p, "", pik_value(p, X.z, null), 10);
 pritem ::= COLOR(X).       { pik_append_num(p, "", pik_value(p, X.z, null), 10); }
 pritem ::= THICKNESS(X).   { pik_append_num(p, "", pik_value(p, X.z, null), 10); }
 pritem ::= rvalue(X).      { pik_append_num(p, "", X, 10); }
-pritem ::= STRING(S).      { pik_append_text(p, tokenInner(&S), 0); }
+pritem ::= STRING(S).      { pik_append_text(p, unQuote(&S), 0); }
 prsep  ::= COMMA.          { pik_append(p, " "); }
 
 unnamed_statement(A) ::= basetype(X) attribute_list.
@@ -930,7 +930,7 @@ expr(A) ::= object(B) DOT_L colorproperty(P).     { A = pik_property_of(B, &P); 
 %code {
 
 // Return the contents of a STRING token without the outer quote marks.
-fn tokenInner(t: *const PToken) []const u8 {
+fn unQuote(t: *const PToken) []const u8 {
     if (t.z.len < 2) return "";
     return t.z[1 .. t.z.len - 1];
 }
@@ -2328,7 +2328,7 @@ fn boxRender(p: *Pik, obj: *PObj) void {
             const y1 = y0 + rad;
             const y3 = pt.y + h2;
             const y2 = y3 - rad;
-            const force_zero_vertical = obj.nTxt > 0 and std.mem.eql(u8, tokenInner(&obj.aTxt[0]), "2nd vertex");
+            const force_zero_vertical = obj.nTxt > 0 and std.mem.eql(u8, unQuote(&obj.aTxt[0]), "2nd vertex");
             pik_append_xy(p, "d=\"M", x1, y0);
             if (x2 > x1) pik_append_xy(p, "L", x2, y0);
             pik_append_arc(p, rad, rad, x3, y1);
@@ -3433,7 +3433,7 @@ fn pik_elem_render(p: *Pik, obj: *PObj) void {
     if (obj.type) |class| pik_append_text(p, class.zName, 0);
     if (obj.nTxt != 0) {
         pik_append(p, " \"");
-        pik_append_text(p, tokenInner(&obj.aTxt[0]), 1);
+        pik_append_text(p, unQuote(&obj.aTxt[0]), 1);
         pik_append(p, "\"");
     }
     pik_append_num(p, " w=", obj.w, 6);
@@ -3753,7 +3753,7 @@ fn pik_set_title(p: *Pik, title: *PToken, label: bool) void {
         }
         return;
     }
-    p.zTitle = p.allocator.dupe(u8, tokenInner(title)) catch {
+    p.zTitle = p.allocator.dupe(u8, unQuote(title)) catch {
         pik_error(p, title, null);
         return;
     };
@@ -3766,7 +3766,7 @@ fn pik_set_description(p: *Pik, desc: *PToken) void {
         pik_error(p, desc, "diagram already has a description");
         return;
     }
-    p.zDesc = p.allocator.dupe(u8, tokenInner(desc)) catch {
+    p.zDesc = p.allocator.dupe(u8, unQuote(desc)) catch {
         pik_error(p, desc, null);
         return;
     };
@@ -5223,14 +5223,14 @@ fn pik_find_nth(p: *Pik, basis: ?*PObj, nth: *PToken) *PObj {
     const list = if (basis) |b| b.pSublist else p.list;
     const l = list orelse {
         pik_error(p, nth, "no such object");
-        return &pik_dummy_object_storage;
+        return &pik_dummy_object;
     };
     const class: ?*const PClass = switch (nth.eType) {
         .LAST => null,
         .LB => &sublistClass,
         else => pik_find_class(nth) orelse {
             pik_error(p, nth, "no such object type");
-            return &pik_dummy_object_storage;
+            return &pik_dummy_object;
         },
     };
     var n: i32 = tokenCodeSigned(nth);
@@ -5255,7 +5255,7 @@ fn pik_find_nth(p: *Pik, basis: ?*PObj, nth: *PToken) *PObj {
         }
     }
     pik_error(p, nth, "no such object");
-    return &pik_dummy_object_storage;
+    return &pik_dummy_object;
 }
 
 // Search for an object by name.
@@ -5266,7 +5266,7 @@ fn pik_find_byname(p: *Pik, basis: ?*PObj, name: *PToken) *PObj {
     const list = if (basis) |b| b.pSublist else p.list;
     const l = list orelse {
         pik_error(p, name, "no such object");
-        return &pik_dummy_object_storage;
+        return &pik_dummy_object;
     };
     // First look explicitly tagged objects
     var i = l.n;
@@ -5292,7 +5292,7 @@ fn pik_find_byname(p: *Pik, basis: ?*PObj, name: *PToken) *PObj {
         }
     }
     pik_error(p, name, "no such object");
-    return &pik_dummy_object_storage;
+    return &pik_dummy_object;
 }
 
 // Convert a T_NTH token (ex: "2nd", "5th"} into a numeric value and
