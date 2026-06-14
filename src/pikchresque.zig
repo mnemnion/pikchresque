@@ -9,8 +9,8 @@ pub const extra_unique_id: u32 = pik.PIKCHR_EXTRA_UNIQUE_ID;
 /// The SVG rendering of a Pikchr diagram.
 pub const PikchrSvg = struct {
     svg: [:0]u8,
-    width: i32,
-    height: i32,
+    width: u32,
+    height: u32,
     n_err: u32,
 
     pub fn deinit(rendered: *const PikchrSvg, allocator: std.mem.Allocator) void {
@@ -43,4 +43,9 @@ test "empty input renders the upstream empty diagram marker" {
     defer out.deinit(std.testing.allocator);
     try std.testing.expect(out.ok());
     try std.testing.expectEqualStrings("<!-- empty pikchr diagram -->\n", out.svg);
+}
+
+test "SVG dimensions are unsigned" {
+    try std.testing.expect(@TypeOf(@as(PikchrSvg, undefined).width) == u32);
+    try std.testing.expect(@TypeOf(@as(PikchrSvg, undefined).height) == u32);
 }

@@ -350,8 +350,8 @@ pub const Pik = struct {
     zID: []const u8,                  // Suffix for id fields
     zTitle: []const u8,               // Text of title or label
     zDesc: []const u8,                // Text of extended description
-    wSVG: i32,                        // Width of the <svg>
-    hSVG: i32,                        // Height of the <svg>
+    wSVG: u32,                        // Width of the <svg>
+    hSVG: u32,                        // Height of the <svg>
     fgcolor: i32,                     // foreground color value, or -1 for none
     bgcolor: i32,                     // background color value, or -1 for none
     seenColor: [150]u8,               // which built-in colors have been seen
@@ -3517,8 +3517,8 @@ fn pik_render(p: *Pik, list: ?*PList) void {
         if (p.list == l) p.list = null;
     }
     if (p.nErr != 0) {
-        p.wSVG = -1;
-        p.hSVG = -1;
+        p.wSVG = 0;
+        p.hSVG = 0;
         return;
     }
     pik_compute_layout_settings(p);
@@ -3535,8 +3535,8 @@ fn pik_render(p: *Pik, list: ?*PList) void {
     p.bbox.sw.y -= margin + pik_value(p, "bottommargin", null);
     const w = p.bbox.ne.x - p.bbox.sw.x;
     const h = p.bbox.ne.y - p.bbox.sw.y;
-    p.wSVG = pik_round(p.rScale * w);
-    p.hSVG = pik_round(p.rScale * h);
+    p.wSVG = pik_round_dimension(p.rScale * w);
+    p.hSVG = pik_round_dimension(p.rScale * h);
     var debug_label_miss: i32 = 0;
     const debug_label_color = pik_value(p, "debug_label_color", &debug_label_miss);
     if (debug_label_miss == 0 and debug_label_color >= 0.0) {
@@ -3578,8 +3578,8 @@ fn pik_render(p: *Pik, list: ?*PList) void {
     }
     const pik_scale = pik_value(p, "scale", null);
     if (pik_scale >= 0.001 and pik_scale <= 1000.0 and (pik_scale < 0.99 or pik_scale > 1.01)) {
-        p.wSVG = pik_round(@as(PNum, @floatFromInt(p.wSVG)) * pik_scale);
-        p.hSVG = pik_round(@as(PNum, @floatFromInt(p.hSVG)) * pik_scale);
+        p.wSVG = pik_round_dimension(@as(PNum, @floatFromInt(p.wSVG)) * pik_scale);
+        p.hSVG = pik_round_dimension(@as(PNum, @floatFromInt(p.hSVG)) * pik_scale);
         pik_append_num(p, " width=\"", @floatFromInt(p.wSVG), 6);
         pik_append_num(p, "\" height=\"", @floatFromInt(p.hSVG), 6);
         pik_append(p, "\"");
@@ -3888,6 +3888,11 @@ fn pik_round(v: PNum) i32 {
     if (v < -2147483647) return -2147483648;
     if (v >= 2147483647) return 2147483647;
     return @intFromFloat(v);
+}
+
+fn pik_round_dimension(v: PNum) u32 {
+    const rounded = pik_round(v);
+    return if (rounded <= 0) 0 else @intCast(rounded);
 }
 
 // Search for the variable named z[0..n-1] in:
@@ -6050,8 +6055,8 @@ fn pik_tokenize(p: *Pik, input: *PToken, parser: *PikParser, m_params: ?[]PToken
 
 pub const RenderResult = struct {
     text: [:0]u8,
-    width: i32,
-    height: i32,
+    width: u32,
+    height: u32,
     n_err: u32,
 
     pub fn deinit(result: RenderResult, allocator: Allocator) void {
@@ -6059,7 +6064,7 @@ pub const RenderResult = struct {
     }
 
     pub fn ok(result: RenderResult) bool {
-        return result.width >= 0;
+        return result.n_err == 0;
     }
 };
 
@@ -6070,9 +6075,7 @@ pub const RenderError = OOM;
 // is HTML formatted.  So regardless of what happens, the return text
 // is safe to be insertd into an HTML output stream.
 //
-// If pnWidth and pnHeight are not NULL, then this routine writes the
-// width and height of the <SVG> object into the integers that they
-// point to.  A value of -1 is written if an error is seen.
+// Width and height are zero if an error is seen.
 //
 // zClass is the class name to be included in the <SVG> markup.
 //
@@ -6113,8 +6116,8 @@ pub fn render(
     }
     return .{
         .text = try pik.zOut.toOwnedSliceSentinel(0),
-        .width = if (pik.nErr != 0) -1 else pik.wSVG,
-        .height = if (pik.nErr != 0) -1 else pik.hSVG,
+        .width = pik.wSVG,
+        .height = pik.hSVG,
         .n_err = pik.nErr,
     };
 }
@@ -6460,6 +6463,21 @@ test "Pik generated render entrypoint parses simple source" {
     defer out.deinit(std.testing.allocator);
     try std.testing.expect(out.ok());
     try std.testing.expect(std.mem.startsWith(u8, out.text, "<svg "));
+}
+
+test "Pik generated render result dimensions are unsigned" {
+    try std.testing.expect(@TypeOf(@as(RenderResult, undefined).width) == u32);
+    try std.testing.expect(@TypeOf(@as(RenderResult, undefined).height) == u32);
+}
+
+test "Pik generated render reports errors without sentinel dimensions" {
+    const out = try render(std.testing.allocator, "box width\n", "pikchr", 0);
+    defer out.deinit(std.testing.allocator);
+
+    try std.testing.expect(!out.ok());
+    try std.testing.expect(out.n_err > 0);
+    try std.testing.expectEqual(@as(u32, 0), out.width);
+    try std.testing.expectEqual(@as(u32, 0), out.height);
 }
 
 test "Pik generated render emits color class CSS" {
