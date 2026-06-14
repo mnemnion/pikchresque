@@ -127,7 +127,7 @@ pub fn main(init: std.process.Init) !void {
         };
         defer allocator.free(input);
 
-        const out = pikchresque.render(allocator, input, "pikchr", flags) catch |err| {
+        const out = pikchresque.pikchr(allocator, input, "pikchr", flags) catch |err| {
             switch (err) {
                 error.OutOfMemory => try stderr.writeAll("pikchr() returns NULL.  Out of memory?\n"),
             }
