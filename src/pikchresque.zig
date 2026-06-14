@@ -6,14 +6,13 @@ pub const dark_mode: u32 = pikchr.PIKCHR_DARK_MODE;
 pub const extra_unique_id: u32 = pikchr.PIKCHR_EXTRA_UNIQUE_ID;
 
 pub const Rendered = struct {
-    allocator: std.mem.Allocator,
     text: [:0]u8,
     width: i32,
     height: i32,
     n_err: u32,
 
-    pub fn deinit(rendered: Rendered) void {
-        rendered.allocator.free(rendered.text);
+    pub fn deinit(rendered: Rendered, allocator: std.mem.Allocator) void {
+        allocator.free(rendered.text);
     }
 
     pub fn ok(rendered: Rendered) bool {
@@ -31,7 +30,6 @@ pub fn render(
 ) RenderError!Rendered {
     const out = try pikchr.render(allocator, source, class, flags);
     return .{
-        .allocator = allocator,
         .text = out.text,
         .width = out.width,
         .height = out.height,
@@ -41,7 +39,7 @@ pub fn render(
 
 test "empty input renders the upstream empty diagram marker" {
     const out = try render(std.testing.allocator, "", "pikchr", 0);
-    defer out.deinit();
+    defer out.deinit(std.testing.allocator);
     try std.testing.expect(out.ok());
     try std.testing.expectEqualStrings("<!-- empty pikchr diagram -->\n", out.text);
 }

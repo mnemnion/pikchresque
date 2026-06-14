@@ -134,7 +134,7 @@ pub fn main(init: std.process.Init) !void {
             if (!dont_stop) std.process.exit(1);
             continue;
         };
-        defer out.deinit();
+        defer out.deinit(allocator);
 
         if (!out.ok()) {
             exit_code = 1;
