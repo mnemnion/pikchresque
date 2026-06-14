@@ -91,7 +91,7 @@ pub fn main(init: std.process.Init) !void {
     var svg_only = false;
     var dont_stop = false;
     var exit_code: u8 = 0;
-    var flags: u32 = 0;
+    var options = pikchresque.PikOptions.default;
     var style: []const u8 = "";
     var html_header_pending = true;
 
@@ -102,14 +102,14 @@ pub fn main(init: std.process.Init) !void {
                 dont_stop = true;
             } else if (std.mem.eql(u8, option, "dark-mode")) {
                 style = "color:white;background-color:black;";
-                flags |= pikchresque.dark_mode;
+                options.dark_mode = true;
             } else if (std.mem.eql(u8, option, "svg-only")) {
                 if (!html_header_pending) {
                     try stderr.print("the \"{s}\" option must come first\n", .{arg});
                     std.process.exit(1);
                 }
                 svg_only = true;
-                flags |= pikchresque.plaintext_errors;
+                options.plaintext_errors = true;
             } else {
                 try stderr.print("unknown option: \"{s}\"\n", .{arg});
                 try usage(stderr, args[0]);
@@ -127,7 +127,7 @@ pub fn main(init: std.process.Init) !void {
         };
         defer allocator.free(input);
 
-        const out = pikchresque.pikchr(allocator, input, "pikchr", flags) catch |err| {
+        const out = pikchresque.pikchr(allocator, input, "pikchr", options) catch |err| {
             switch (err) {
                 error.OutOfMemory => try stderr.writeAll("pikchr() returns NULL.  Out of memory?\n"),
             }
@@ -141,7 +141,7 @@ pub fn main(init: std.process.Init) !void {
             if (!svg_only and !dont_stop) std.process.exit(1);
         }
         if (svg_only) {
-            try stdout.print("{s}\n", .{out.text});
+            try stdout.print("{s}\n", .{out.svg});
         } else {
             if (html_header_pending) {
                 try stdout.writeAll(html_header);
@@ -149,11 +149,11 @@ pub fn main(init: std.process.Init) !void {
             }
             try stdout.print("<h1>File {s}</h1>\n", .{arg});
             if (!out.ok()) {
-                try stdout.print("<p>ERROR</p>\n{s}\n", .{out.text});
+                try stdout.print("<p>ERROR</p>\n{s}\n", .{out.svg});
             } else {
                 try stdout.print("<div id=\"svg-{d}\" onclick=\"toggleHidden('svg-{d}')\">\n", .{ arg_index, arg_index });
                 try stdout.print("<div style='border:3px solid lightgray;max-width:{d}px;{s}'>\n", .{ out.width, style });
-                try stdout.print("{s}</div>\n", .{out.text});
+                try stdout.print("{s}</div>\n", .{out.svg});
                 try stdout.writeAll("<pre class='hidden'>");
                 try printEscapeHtml(stdout, input);
                 try stdout.writeAll("</pre>\n</div>\n");

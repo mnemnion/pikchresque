@@ -22,14 +22,28 @@ pub const PikchrSvg = struct {
     }
 };
 
+/// Configurable options for Pikchr rendering.
+pub const PikOptions = packed struct(u32) {
+    plaintext_errors: bool,
+    dark_mode: bool,
+    extra_unique_id: bool,
+    reserved: u29 = 0,
+
+    pub const default: PikOptions = .{
+        .plaintext_errors = false,
+        .dark_mode = false,
+        .extra_unique_id = false,
+    };
+};
+
 /// Render a Pikchr diagram as an SVG.
 pub fn pikchr(
     allocator: std.mem.Allocator,
     source: []const u8,
     class: []const u8,
-    flags: u32,
+    options: PikOptions,
 ) OOM!PikchrSvg {
-    const out = try pik.render(allocator, source, class, flags);
+    const out = try pik.render(allocator, source, class, @bitCast(options));
     return .{
         .svg = out.text,
         .width = out.width,
@@ -39,7 +53,7 @@ pub fn pikchr(
 }
 
 test "empty input renders the upstream empty diagram marker" {
-    const out = try pikchr(std.testing.allocator, "", "pikchr", 0);
+    const out = try pikchr(std.testing.allocator, "", "pikchr", PikOptions.default);
     defer out.deinit(std.testing.allocator);
     try std.testing.expect(out.ok());
     try std.testing.expectEqualStrings("<!-- empty pikchr diagram -->\n", out.svg);
@@ -48,4 +62,31 @@ test "empty input renders the upstream empty diagram marker" {
 test "SVG dimensions are unsigned" {
     try std.testing.expect(@TypeOf(@as(PikchrSvg, undefined).width) == u32);
     try std.testing.expect(@TypeOf(@as(PikchrSvg, undefined).height) == u32);
+}
+
+test "Pik options default has no flags" {
+    try std.testing.expectEqual(@as(u32, 0), @as(u32, @bitCast(PikOptions.default)));
+}
+
+test "Pik options map to C flags" {
+    var options = PikOptions.default;
+    options.plaintext_errors = true;
+    try std.testing.expectEqual(
+        plaintext_errors,
+        @as(u32, @bitCast(options)),
+    );
+
+    options = PikOptions.default;
+    options.dark_mode = true;
+    try std.testing.expectEqual(
+        dark_mode,
+        @as(u32, @bitCast(options)),
+    );
+
+    options = PikOptions.default;
+    options.extra_unique_id = true;
+    try std.testing.expectEqual(
+        extra_unique_id,
+        @as(u32, @bitCast(options)),
+    );
 }
