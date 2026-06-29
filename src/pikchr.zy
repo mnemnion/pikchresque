@@ -124,10 +124,10 @@ pub const PXmlClass = struct {
     pub const zero: PXmlClass = .{ .zClass = &.{}, .pNext = null };
 };
 
-// A variable created by the ID = EXPR construct of the PIKCHR script
-//
-// PIKCHR (and PIC) scripts do not use many variables, so it is reasonable
-// to store them all on a linked list.
+/// A variable created by the ID = EXPR construct of the PIKCHR script
+///
+/// PIKCHR (and PIC) scripts do not use many variables, so it is reasonable
+/// to store them all on a linked list.
 pub const PVar = struct {
     zName: []u8, // Name of the variable
     val: PNum, // Value of the variable

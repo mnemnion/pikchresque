@@ -34,6 +34,7 @@ fn usage(stderr: *std.Io.Writer, argv0: []const u8) !void {
             "   --dont-stop      Process all files even if earlier files have errors\n" ++
             "   --svg-only       Emit raw SVG without the HTML wrapper\n",
     );
+    try stderr.flush();
 }
 
 fn printEscapeHtml(stdout: *std.Io.Writer, text: []const u8) !void {
