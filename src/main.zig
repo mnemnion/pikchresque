@@ -1,38 +1,180 @@
 const std = @import("std");
 const pikchresque = @import("pikchresque");
 
+const pik_classic = false; // If this is true, classic pikchr html will be generated
+
+const classic_html_header =
+    \\<!DOCTYPE html>
+    \\<html lang="en-US">
+    \\<head><title>PIKCHR Test</title>\n
+    \\<style>
+    \\  .hidden {
+    \\     position: absolute !important;
+    \\     opacity: 0 !important;
+    \\     pointer-events: none !important;
+    \\     display: none !important;
+    \\  }
+    \\</style>
+    \\<script>
+    \\  function toggleHidden(id){
+    \\    for(var c of document.getElementById(id).children){
+    \\      c.classList.toggle('hidden');
+    \\    }
+    \\  }
+    \\</script>
+    \\<meta charset="utf-8">
+    \\</head>
+    \\<body>
+;
+
 const html_header =
-    "<!DOCTYPE html>\n" ++
-    "<html lang=\"en-US\">\n" ++
-    "<head>\n<title>PIKCHR Test</title>\n" ++
-    "<style>\n" ++
-    "  .hidden {\n" ++
-    "     position: absolute !important;\n" ++
-    "     opacity: 0 !important;\n" ++
-    "     pointer-events: none !important;\n" ++
-    "     display: none !important;\n" ++
-    "  }\n" ++
-    "</style>\n" ++
-    "<script>\n" ++
-    "  function toggleHidden(id){\n" ++
-    "    for(var c of document.getElementById(id).children){\n" ++
-    "      c.classList.toggle('hidden');\n" ++
-    "    }\n" ++
-    "  }\n" ++
-    "</script>\n" ++
-    "<meta charset=\"utf-8\">\n" ++
-    "</head>\n" ++
-    "<body>\n";
+    \\<!DOCTYPE html>
+    \\<html lang="en-US">
+    \\<head>
+    \\<title>PIKCHR Test</title>
+    \\<meta charset="utf-8">
+    \\<meta name="viewport" content="width=device-width, initial-scale=1">
+    \\<style>
+    \\  html {
+    \\    height: 100%;
+    \\  }
+    \\  :root {
+    \\    color-scheme: light dark;
+    \\    background: Canvas;
+    \\    color: CanvasText;
+    \\  }
+    \\  :root[data-theme="light"] {
+    \\    color-scheme: light;
+    \\  }
+    \\  :root[data-theme="dark"] {
+    \\    color-scheme: dark;
+    \\  }
+    \\  body {
+    \\    height: 100%;
+    \\    margin: 0;
+    \\    background: Canvas;
+    \\    color: CanvasText;
+    \\    font-family: system-ui, sans-serif;
+    \\  }
+    \\  section {
+    \\    box-sizing: border-box;
+    \\    display: grid;
+    \\    gap: 1rem;
+    \\    grid-template-rows: auto minmax(0, 1fr);
+    \\    height: 100vh;
+    \\    height: 100dvh;
+    \\    overflow: hidden;
+    \\    padding: 1rem;
+    \\  }
+    \\  section.no-title {
+    \\    grid-template-rows: minmax(0, 1fr);
+    \\  }
+    \\  .diagram {
+    \\    display: contents;
+    \\  }
+    \\  .diagram h1 {
+    \\    font-size: 1rem;
+    \\    font-weight: 600;
+    \\    margin: 0;
+    \\  }
+    \\  .viewport {
+    \\    height: 100%;
+    \\    min-height: 0;
+    \\    min-width: 0;
+    \\    overflow: hidden;
+    \\    width: 100%;
+    \\  }
+    \\  .viewport svg {
+    \\    display: block;
+    \\    height: 100%;
+    \\    width: 100%;
+    \\  }
+    \\  pre {
+    \\    box-sizing: border-box;
+    \\    height: 100%;
+    \\    margin: 0;
+    \\    overflow: auto;
+    \\    padding: 1rem;
+    \\    white-space: pre-wrap;
+    \\  }
+    \\  .theme-toggle {
+    \\    background: Canvas;
+    \\    border: 0.18rem solid CanvasText;
+    \\    border-radius: 999px;
+    \\    color: CanvasText;
+    \\    cursor: pointer;
+    \\    height: 1.7rem;
+    \\    padding: 0;
+    \\    position: fixed;
+    \\    right: 0.75rem;
+    \\    top: 0.75rem;
+    \\    width: 3.25rem;
+    \\    z-index: 1;
+    \\  }
+    \\  .theme-toggle::before {
+    \\    border: 0.18rem solid CanvasText;
+    \\    border-radius: 50%;
+    \\    box-sizing: border-box;
+    \\    content: "";
+    \\    height: 1.7rem;
+    \\    left: -0.18rem;
+    \\    position: absolute;
+    \\    top: -0.18rem;
+    \\    transition: transform 120ms ease;
+    \\    width: 1.7rem;
+    \\  }
+    \\  :root[data-theme="light"] .theme-toggle::before {
+    \\    transform: translateX(1.55rem);
+    \\  }
+    \\  .hidden {
+    \\    display: none !important;
+    \\  }
+    \\</style>
+    \\<script>
+    \\  function toggleHidden(id){
+    \\    for(var c of document.getElementById(id).children){
+    \\      c.classList.toggle('hidden');
+    \\    }
+    \\  }
+    \\  function setTheme(theme){
+    \\    document.documentElement.dataset.theme = theme;
+    \\    document.getElementById('theme-toggle').setAttribute('aria-pressed', theme == 'dark');
+    \\    for(var svg of document.querySelectorAll('svg.pikchr')){
+    \\      svg.style.colorScheme = theme;
+    \\    }
+    \\  }
+    \\  function toggleTheme(event){
+    \\    event.stopPropagation();
+    \\    var root = document.documentElement;
+    \\    var current = root.dataset.theme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    \\    setTheme(current == 'dark' ? 'light' : 'dark');
+    \\  }
+    \\  addEventListener('DOMContentLoaded', function(){
+    \\    var theme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    \\    setTheme(theme);
+    \\  });
+    \\</script>
+    \\</head>
+    \\<body>
+    \\<button
+    \\   aria-label="Toggle light or dark mode"
+    \\   aria-pressed="false"
+    \\   class="theme-toggle"
+    \\   id="theme-toggle"
+    \\   onclick="toggleTheme(event)"
+    \\   type="button">
+    \\</button>
+;
 
 fn usage(stderr: *std.Io.Writer, argv0: []const u8) !void {
     try stderr.print("usage: {s} [OPTIONS] FILE ...\n", .{argv0});
     try stderr.writeAll(
-        "Convert Pikchr input files into SVG.  Filename \"-\" means stdin.\n" ++
-            "All output goes to stdout.\n" ++
-            "Options:\n" ++
-            "   --dark-mode      Generate \"dark mode\" output\n" ++
-            "   --dont-stop      Process all files even if earlier files have errors\n" ++
-            "   --svg-only       Emit raw SVG without the HTML wrapper\n",
+        \\Convert Pikchr input files into SVG.  Filename "-" means stdin.
+        \\    All output goes to stdout.
+        \\    Options:
+        \\       --dark-mode      Generate "dark mode" output
+        \\       --dont-stop      Process all files even if earlier files have errors
+        \\       --svg-only       Emit raw SVG without the HTML wrapper
     );
     try stderr.flush();
 }
@@ -55,6 +197,56 @@ fn printEscapeHtml(stdout: *std.Io.Writer, text: []const u8) !void {
         }
     }
     if (start < text.len) try stdout.writeAll(text[start..]);
+}
+
+fn writeHtmlHeader(stdout: *std.Io.Writer) !void {
+    if (pik_classic) {
+        try stdout.writeAll(classic_html_header);
+    } else {
+        try stdout.writeAll(html_header);
+    }
+}
+
+fn writeHtmlOutput(
+    stdout: *std.Io.Writer,
+    input: []const u8,
+    out: pikchresque.PikchrSvg,
+    arg: []const u8,
+    arg_index: usize,
+    style: []const u8,
+) !void {
+    if (pik_classic) {
+        try stdout.print("<h1>File {s}</h1>\n", .{arg});
+        if (!out.ok()) {
+            try stdout.print("<p>ERROR</p>\n{s}\n", .{out.svg});
+        } else {
+            try stdout.print("<div id=\"svg-{d}\" onclick=\"toggleHidden('svg-{d}')\">\n", .{ arg_index, arg_index });
+            try stdout.print("<div style='border:3px solid lightgray;max-width:{d}px;{s}'>\n", .{ out.width, style });
+            try stdout.print("{s}</div>\n", .{out.svg});
+            try stdout.writeAll("<pre class='hidden'>");
+            try printEscapeHtml(stdout, input);
+            try stdout.writeAll("</pre>\n</div>\n");
+        }
+        return;
+    }
+
+    const has_title = !std.mem.eql(u8, arg, "-");
+    if (has_title) {
+        try stdout.print("<section id=\"svg-{d}\" onclick=\"toggleHidden('svg-{d}')\">\n", .{ arg_index, arg_index });
+    } else {
+        try stdout.print("<section class=\"no-title\" id=\"svg-{d}\" onclick=\"toggleHidden('svg-{d}')\">\n", .{ arg_index, arg_index });
+    }
+    try stdout.writeAll("<div class=\"diagram\">\n");
+    if (has_title) {
+        try stdout.writeAll("<h1>");
+        try printEscapeHtml(stdout, arg);
+        try stdout.writeAll("</h1>\n");
+    }
+    try stdout.writeAll("<div class=\"viewport\">\n");
+    try stdout.writeAll(out.svg);
+    try stdout.writeAll("</div>\n</div>\n<pre class=\"hidden\">");
+    try printEscapeHtml(stdout, input);
+    try stdout.writeAll("</pre>\n</section>\n");
 }
 
 fn readFile(init: std.process.Init, allocator: std.mem.Allocator, path: []const u8) ![]u8 {
@@ -145,20 +337,10 @@ pub fn main(init: std.process.Init) !void {
             try stdout.print("{s}\n", .{out.svg});
         } else {
             if (html_header_pending) {
-                try stdout.writeAll(html_header);
+                try writeHtmlHeader(stdout);
                 html_header_pending = false;
             }
-            try stdout.print("<h1>File {s}</h1>\n", .{arg});
-            if (!out.ok()) {
-                try stdout.print("<p>ERROR</p>\n{s}\n", .{out.svg});
-            } else {
-                try stdout.print("<div id=\"svg-{d}\" onclick=\"toggleHidden('svg-{d}')\">\n", .{ arg_index, arg_index });
-                try stdout.print("<div style='border:3px solid lightgray;max-width:{d}px;{s}'>\n", .{ out.width, style });
-                try stdout.print("{s}</div>\n", .{out.svg});
-                try stdout.writeAll("<pre class='hidden'>");
-                try printEscapeHtml(stdout, input);
-                try stdout.writeAll("</pre>\n</div>\n");
-            }
+            try writeHtmlOutput(stdout, input, out, arg, arg_index, style);
         }
     }
 
