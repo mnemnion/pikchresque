@@ -6,7 +6,7 @@
 //! into Zitron `%impl @name(...)` blocks during this pass.
 
 
-pub const pik_pedantic = true; // maximum compatibility
+pub const pik_pedantic = false; // maximum compatibility
 pub const pik_no_style = true;
 
 pub const PNum = f64; // Numeric value
