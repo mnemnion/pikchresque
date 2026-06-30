@@ -5,13 +5,11 @@
 ._T {fill:transparent}
 ._tM {text-anchor:middle}
 color-scheme:light dark;
-._fg {fill:light-dark(rgb(135,206,235),rgb(20,91,120))}
+._fe {fill:light-dark(rgb(135,206,235),rgb(20,91,120))}
 ._fb {fill:light-dark(rgb(0,0,0),rgb(255,255,255))}
-._fd {fill:light-dark(rgb(139,0,0),rgb(255,127,127))}
-._ff {fill:light-dark(rgb(0,0,139),rgb(127,127,255))}
 ._sa {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
 ._sc {stroke:light-dark(rgb(139,0,0),rgb(255,127,127))}
-._se {stroke:light-dark(rgb(0,0,139),rgb(127,127,255))}
+._sd {stroke:light-dark(rgb(0,0,139),rgb(127,127,255))}
 }
 </style>
 <!-- box "one" w=0.6 h=0.4 center=0,0 enter=-0.3,0 exit=0.3,0 right -->
@@ -19,7 +17,7 @@ color-scheme:light dark;
 <text class="box _fb _D _tM" x="45.36" y="56.16">one</text>
 <!-- box "two" w=1.125 h=0.5 center=0.8625,0 enter=0.3,0 exit=1.425,0 right -->
 <path class="box _T _sc" d="M88.56,92.16L250.56,92.16L250.56,20.16L88.56,20.16Z"  stroke-width="2.16" />
-<text class="box _fd _D _tM" x="169.56" y="56.16">two</text>
+<text class="box _fb _D _tM" x="169.56" y="56.16">two</text>
 <!-- arrow "xyz" w=0.5 h=0 center=1.675,0 enter=1.425,0 exit=1.925,0 right -->
 <g class="arrow" >
 <polygon class="arrow _fb" points="322.56,56.16 311.04,60.48 311.04,51.84" />
@@ -27,8 +25,8 @@ color-scheme:light dark;
 </g>
 <text class="arrow _fb _D _tM" x="286.56" y="44.46">xyz</text>
 <!-- box "three" w=0.75 h=0.75 center=2.3,0 enter=1.925,0 exit=2.3,-0.375 down -->
-<path class="box _T _se" d="M322.56,110.16L430.56,110.16L430.56,2.16L322.56,2.16Z"  stroke-width="2.16" />
-<text class="box _ff _D _tM" x="376.56" y="56.16">three</text>
+<path class="box _T _sd" d="M322.56,110.16L430.56,110.16L430.56,2.16L322.56,2.16Z"  stroke-width="2.16" />
+<text class="box _fb _D _tM" x="376.56" y="56.16">three</text>
 <!-- arrow w=0 h=0.5 center=2.3,-0.625 enter=2.3,-0.375 exit=2.3,-0.875 down -->
 <g class="arrow" >
 <polygon class="arrow _fb" points="376.56,182.16 372.24,170.64 380.88,170.64" />
@@ -38,7 +36,7 @@ color-scheme:light dark;
 <path class="box B4 _T _sa" d="M322.56,254.16L430.56,254.16L430.56,182.16L322.56,182.16Z"  stroke-width="2.16" />
 <text class="box B4 _fb _D _tM" x="376.56" y="218.16">four</text>
 <!-- B45: box "4.5" w=0.75 h=0.5 center=2.3,-1.625 enter=2.3,-1.375 exit=2.3,-1.875 down -->
-<path class="box B45 _sa _fg" d="M322.56,326.16L430.56,326.16L430.56,254.16L322.56,254.16Z"  stroke-width="2.16" />
+<path class="box B45 _sa _fe" d="M322.56,326.16L430.56,326.16L430.56,254.16L322.56,254.16Z"  stroke-width="2.16" />
 <text class="box B45 _fb _D _tM" x="376.56" y="290.16">4.5</text>
 <!-- move w=0 h=0.5 center=2.3,-2.125 enter=2.3,-1.875 exit=2.3,-2.375 down -->
 <!-- B5: box "five" w=0.75 h=0.5 center=2.3,-2.625 enter=2.3,-2.375 exit=1.925,-2.625 left -->

@@ -9,9 +9,7 @@ Colors: 16753920 0 16777215 16711680 32768 255<br>
 ._tM {text-anchor:middle}
 ._tE {text-anchor:end}
 color-scheme:light dark;
-._fb {fill:light-dark(rgb(139,0,0),rgb(255,127,127))}
-._fc {fill:light-dark(rgb(0,0,0),rgb(255,255,255))}
-._fd {fill:light-dark(rgb(0,0,139),rgb(127,127,255))}
+._fb {fill:light-dark(rgb(0,0,0),rgb(255,255,255))}
 ._sa {stroke:light-dark(rgb(139,0,0),rgb(255,127,127))}
 }
 </style>
@@ -19,13 +17,13 @@ color-scheme:light dark;
 <text class="box B _fb _D _tM" x="105.178" y="43.2">This is</text>
 <text class="box B _fb _D _tM" x="105.178" y="63.36">&lt;b&gt;</text>
 <text class="box B _fb _D _tM" x="105.178" y="83.52">box "B"</text>
-<text class="text _fc _D _tE" x="43.9776" y="17.28">B.nw</text>
-<text class="text _fc _D _tE" x="43.9776" y="63.36">B.w</text>
-<text class="text _fc _D _tE" x="43.9776" y="109.44">B.sw</text>
-<text class="text _fc _D _tM" x="105.178" y="109.44">B.s</text>
-<text class="text _fd _D _tS" x="166.378" y="109.44">B.se</text>
-<text class="text _fc _D _tS" x="166.378" y="63.36">B.e</text>
-<text class="text _fc _D _tS" x="166.378" y="17.28">B.ne</text>
-<text class="text _fc _D _tM" x="105.178" y="17.28">B.n</text>
+<text class="text _fb _D _tE" x="43.9776" y="17.28">B.nw</text>
+<text class="text _fb _D _tE" x="43.9776" y="63.36">B.w</text>
+<text class="text _fb _D _tE" x="43.9776" y="109.44">B.sw</text>
+<text class="text _fb _D _tM" x="105.178" y="109.44">B.s</text>
+<text class="text _fb _D _tS" x="166.378" y="109.44">B.se</text>
+<text class="text _fb _D _tS" x="166.378" y="63.36">B.e</text>
+<text class="text _fb _D _tS" x="166.378" y="17.28">B.ne</text>
+<text class="text _fb _D _tM" x="105.178" y="17.28">B.n</text>
 </svg>
 

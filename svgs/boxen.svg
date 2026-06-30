@@ -6,31 +6,31 @@
 ._tM {text-anchor:middle}
 ._Fb {font-weight:bold}
 color-scheme:light dark;
-._ff {fill:light-dark(rgb(255,222,173),rgb(82,49,0))}
+._fg {fill:light-dark(rgb(255,222,173),rgb(82,49,0))}
 ._fk {fill:light-dark(rgb(47,79,79),rgb(107,127,127))}
-._fb {fill:light-dark(rgb(0,0,255),rgb(127,127,255))}
-._fe {fill:light-dark(rgb(102,51,153),rgb(191,127,255))}
-._fh {fill:light-dark(rgb(255,0,0),rgb(255,127,127))}
-._fj {fill:light-dark(rgb(0,128,0),rgb(127,255,127))}
+._fb {fill:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._fd {fill:light-dark(rgb(0,0,255),rgb(127,127,255))}
+._ff {fill:light-dark(rgb(102,51,153),rgb(191,127,255))}
+._fi {fill:light-dark(rgb(255,0,0),rgb(255,127,127))}
 ._sa {stroke:light-dark(rgb(0,0,255),rgb(127,127,255))}
 ._sc {stroke:light-dark(rgb(255,0,0),rgb(255,127,127))}
-._sd {stroke:light-dark(rgb(255,165,0),rgb(255,209,127))}
-._sg {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
-._si {stroke:light-dark(rgb(0,128,0),rgb(127,255,127))}
+._se {stroke:light-dark(rgb(255,165,0),rgb(255,209,127))}
+._sh {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._sj {stroke:light-dark(rgb(0,128,0),rgb(127,255,127))}
 }
 </style>
 <path class="box First _T _sa" d="M2.16,74.16L110.16,74.16L110.16,2.16L2.16,2.16Z"  stroke-width="2.16" />
 <text class="box First _fb _D _tM" x="56.16" y="38.16">first box</text>
 <path class="box _T _sc" d="M182.16,74.16L290.16,74.16L290.16,2.16L182.16,2.16Z"  stroke-width="2.16" />
-<text class="box _fb _D _tM _Fb" x="236.16" y="38.16">second box</text>
-<path class="box _sd _ff" d="M362.16,74.16L470.16,74.16L470.16,2.16L362.16,2.16Z"  stroke-width="2.16" />
-<text class="box _fe _D _tM _Fb" x="416.16" y="38.16" font-size="125%">third box</text>
-<path class="box _T _sg" d="M2.16,218.16L110.16,218.16L110.16,146.16L2.16,146.16Z"  stroke-width="2.16" />
-<text class="box _fh _D _tM" x="56.16" y="182.16">fourth box</text>
-<path class="box _T _si" d="M182.16,218.16L290.16,218.16L290.16,146.16L182.16,146.16Z"  stroke-width="2.16" />
-<text class="box _fj _D _tM" x="236.16" y="182.16">fifth box</text>
-<path class="box _sg _fk" d="M362.16,218.16L470.16,218.16L470.16,146.16L362.16,146.16Z"  stroke-width="2.16" />
-<text class="box _fh _D _tM" x="416.16" y="172.08">sixth</text>
-<text class="box _fh _D _tM" x="416.16" y="192.24">box</text>
+<text class="box _fd _D _tM _Fb" x="236.16" y="38.16">second box</text>
+<path class="box _se _fg" d="M362.16,74.16L470.16,74.16L470.16,2.16L362.16,2.16Z"  stroke-width="2.16" />
+<text class="box _ff _D _tM _Fb" x="416.16" y="38.16" font-size="125%">third box</text>
+<path class="box _T _sh" d="M2.16,218.16L110.16,218.16L110.16,146.16L2.16,146.16Z"  stroke-width="2.16" />
+<text class="box _fi _D _tM" x="56.16" y="182.16">fourth box</text>
+<path class="box _T _sj" d="M182.16,218.16L290.16,218.16L290.16,146.16L182.16,146.16Z"  stroke-width="2.16" />
+<text class="box _fi _D _tM" x="236.16" y="182.16">fifth box</text>
+<path class="box _sh _fk" d="M362.16,218.16L470.16,218.16L470.16,146.16L362.16,146.16Z"  stroke-width="2.16" />
+<text class="box _fi _D _tM" x="416.16" y="172.08">sixth</text>
+<text class="box _fi _D _tM" x="416.16" y="192.24">box</text>
 </svg>
 

@@ -12,19 +12,13 @@ color-scheme:light dark;
 ._fg {fill:light-dark(rgb(0,0,255),rgb(0,0,127))}
 ._fh {fill:light-dark(rgb(238,130,238),rgb(125,17,125))}
 ._fb {fill:light-dark(rgb(0,0,0),rgb(255,255,255))}
-._fj {fill:light-dark(rgb(255,0,0),rgb(255,127,127))}
-._fl {fill:light-dark(rgb(255,165,0),rgb(255,209,127))}
-._fn {fill:light-dark(rgb(255,255,0),rgb(255,255,127))}
-._fp {fill:light-dark(rgb(0,128,0),rgb(127,255,127))}
-._fr {fill:light-dark(rgb(0,0,255),rgb(127,127,255))}
-._ft {fill:light-dark(rgb(238,130,238),rgb(255,127,255))}
 ._sa {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
 ._si {stroke:light-dark(rgb(255,0,0),rgb(255,127,127))}
-._sk {stroke:light-dark(rgb(255,165,0),rgb(255,209,127))}
-._sm {stroke:light-dark(rgb(255,255,0),rgb(255,255,127))}
-._so {stroke:light-dark(rgb(0,128,0),rgb(127,255,127))}
-._sq {stroke:light-dark(rgb(0,0,255),rgb(127,127,255))}
-._ss {stroke:light-dark(rgb(238,130,238),rgb(255,127,255))}
+._sj {stroke:light-dark(rgb(255,165,0),rgb(255,209,127))}
+._sk {stroke:light-dark(rgb(255,255,0),rgb(255,255,127))}
+._sl {stroke:light-dark(rgb(0,128,0),rgb(127,255,127))}
+._sm {stroke:light-dark(rgb(0,0,255),rgb(127,127,255))}
+._sn {stroke:light-dark(rgb(238,130,238),rgb(255,127,255))}
 }
 </style>
 <path class="box _sa _fc" d="M2.16,32.4L42.0192,32.4L42.0192,2.16L2.16,2.16Z"  stroke-width="2.16" />
@@ -40,16 +34,16 @@ color-scheme:light dark;
 <path class="box _sa _fh" d="M646.013,32.4L704.074,32.4L704.074,2.16L646.013,2.16Z"  stroke-width="2.16" />
 <text class="box _fb _D _tM" x="675.043" y="17.28">violet</text>
 <path class="box _T _si" d="M2.16,119.333L42.0192,119.333L42.0192,89.0929L2.16,89.0929Z"  stroke-width="2.16" />
-<text class="box _fj _D _tM" x="22.0896" y="104.213">red</text>
-<path class="box _T _sk" d="M114.019,119.333L184.291,119.333L184.291,89.0929L114.019,89.0929Z"  stroke-width="2.16" />
-<text class="box _fl _D _tM" x="149.155" y="104.213">orange</text>
-<path class="box _T _sm" d="M256.291,119.333L321.725,119.333L321.725,89.0929L256.291,89.0929Z"  stroke-width="2.16" />
-<text class="box _fn _D _tM" x="289.008" y="104.213">yellow</text>
-<path class="box _T _so" d="M393.725,119.333L453.974,119.333L453.974,89.0929L393.725,89.0929Z"  stroke-width="2.16" />
-<text class="box _fp _D _tM" x="423.85" y="104.213">green</text>
-<path class="box _T _sq" d="M525.974,119.333L574.013,119.333L574.013,89.0929L525.974,89.0929Z"  stroke-width="2.16" />
-<text class="box _fr _D _tM" x="549.994" y="104.213">blue</text>
-<path class="box _T _ss" d="M646.013,119.333L704.074,119.333L704.074,89.0929L646.013,89.0929Z"  stroke-width="2.16" />
-<text class="box _ft _D _tM" x="675.043" y="104.213">violet</text>
+<text class="box _fb _D _tM" x="22.0896" y="104.213">red</text>
+<path class="box _T _sj" d="M114.019,119.333L184.291,119.333L184.291,89.0929L114.019,89.0929Z"  stroke-width="2.16" />
+<text class="box _fb _D _tM" x="149.155" y="104.213">orange</text>
+<path class="box _T _sk" d="M256.291,119.333L321.725,119.333L321.725,89.0929L256.291,89.0929Z"  stroke-width="2.16" />
+<text class="box _fb _D _tM" x="289.008" y="104.213">yellow</text>
+<path class="box _T _sl" d="M393.725,119.333L453.974,119.333L453.974,89.0929L393.725,89.0929Z"  stroke-width="2.16" />
+<text class="box _fb _D _tM" x="423.85" y="104.213">green</text>
+<path class="box _T _sm" d="M525.974,119.333L574.013,119.333L574.013,89.0929L525.974,89.0929Z"  stroke-width="2.16" />
+<text class="box _fb _D _tM" x="549.994" y="104.213">blue</text>
+<path class="box _T _sn" d="M646.013,119.333L704.074,119.333L704.074,89.0929L646.013,89.0929Z"  stroke-width="2.16" />
+<text class="box _fb _D _tM" x="675.043" y="104.213">violet</text>
 </svg>
 
