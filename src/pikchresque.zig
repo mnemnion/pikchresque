@@ -5,6 +5,7 @@ const pik = @import("pikchr");
 pub const plaintext_errors: u32 = pik.PIKCHR_PLAINTEXT_ERRORS;
 pub const dark_mode: u32 = pik.PIKCHR_DARK_MODE;
 pub const extra_unique_id: u32 = pik.PIKCHR_EXTRA_UNIQUE_ID;
+pub const pik_single_color = pik.PIKCHR_SINGLE_COLOR;
 
 /// The SVG rendering of a Pikchr diagram.
 pub const PikchrSvg = struct {
@@ -27,12 +28,14 @@ pub const PikOptions = packed struct(u32) {
     plaintext_errors: bool,
     dark_mode: bool,
     extra_unique_id: bool,
-    reserved: u29 = 0,
+    single_color: bool,
+    reserved: u28 = 0,
 
     pub const default: PikOptions = .{
         .plaintext_errors = false,
         .dark_mode = false,
         .extra_unique_id = false,
+        .single_color = false,
     };
 };
 
@@ -87,6 +90,13 @@ test "Pik options map to C flags" {
     options.extra_unique_id = true;
     try std.testing.expectEqual(
         extra_unique_id,
+        @as(u32, @bitCast(options)),
+    );
+
+    options = PikOptions.default;
+    options.single_color = true;
+    try std.testing.expectEqual(
+        pik_single_color,
         @as(u32, @bitCast(options)),
     );
 }
