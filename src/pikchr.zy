@@ -7,7 +7,6 @@
 
 
 pub const pik_pedantic = false; // maximum compatibility
-pub const pik_no_style = true;
 
 pub const PNum = f64; // Numeric value
 
@@ -1760,7 +1759,6 @@ fn pik_append_style(p: *Pik, obj: *PObj, e_fill: i32) void {
             if (e_fill == 2) fill_is_bg = false;
             if (e_fill == 3) clr_is_bg = true;
         }
-        if (comptime !pik_no_style) pik_append_clr(p, "fill=\"", obj.fill, "\"", fill_is_bg);
     } else {
         p.mAttr |= ATTR_FILL_NO;
     }
@@ -1770,7 +1768,6 @@ fn pik_append_style(p: *Pik, obj: *PObj, e_fill: i32) void {
         if (obj.nPath > 2 and obj.rad <= obj.sw) {
             pik_append(p, " stroke-linejoin=\"round\"");
         }
-        if (comptime !pik_no_style) pik_append_clr(p, " stroke=\"", obj.color, "\"", clr_is_bg);
         if (obj.dotted > 0.0) {
             const v = obj.dotted;
             if (sw < 2.1 / p.rScale) sw = 2.1 / p.rScale;
@@ -2256,11 +2253,6 @@ fn pik_append_txt(p: *Pik, obj: *PObj, box: ?*PBox) void {
         pik_append(p, "\" ");
         pik_append_x(p, "x=\"", nx, "\"");
         pik_append_y(p, " y=\"", y, "\"");
-        if (comptime !pik_no_style) {
-            if (obj.textcolor >= 0.0) {
-                pik_append_clr(p, " fill=\"", obj.textcolor, "\"", false);
-            }
-        }
         xtra_font_scale *= p.fontScale;
         if (xtra_font_scale <= 0.99 or xtra_font_scale >= 1.01) {
             pik_append_num(p, " font-size=\"", xtra_font_scale * 100.0, 6);
@@ -2543,26 +2535,20 @@ fn pik_draw_arrowhead(p: *Pik, f: *PPoint, t: *PPoint, obj: *PObj) void {
     bx = f.x + e1 * dx;
     by = f.y + e1 * dy;
     pik_append_tag_open(p, obj, "polygon");
-    if (comptime pik_no_style) {
-        if (obj.sw >= 0.0 and obj.color >= 0.0) {
-            if (p.hFgFill.get(obj.color)) |tag| {
-                pik_append(p, " _f");
-                pik_append_color_tag(p, tag);
-            } else {
-                pik_error(p, null, "internal error: missing generated color class");
-                return;
-            }
+    if (obj.sw >= 0.0 and obj.color >= 0.0) {
+        if (p.hFgFill.get(obj.color)) |tag| {
+            pik_append(p, " _f");
+            pik_append_color_tag(p, tag);
+        } else {
+            pik_error(p, null, "internal error: missing generated color class");
+            return;
         }
     }
     pik_append(p, "\" ");
     pik_append_xy(p, "points=\"", t.x, t.y);
     pik_append_xy(p, " ", bx - ddx, by - ddy);
     pik_append_xy(p, " ", bx + ddx, by + ddy);
-    if (comptime pik_no_style) {
-        pik_append(p, "\" />\n");
-    } else {
-        pik_append_clr(p, "\" fill=\"", obj.color, "\" />\n", false);
-    }
+    pik_append(p, "\" />\n");
     pik_chop(f, t, h / 2.0);
 }
 
@@ -4610,7 +4596,8 @@ fn pik_set_clrprop(p: *Pik, prop: *PToken, val: PNum) void {
         .COLOR => {
             if (pik_param_ok(p, obj, prop, A_COLOR) != 0) return;
             obj.color = val;
-            // without these lines we would have a breaking change
+            // In Pikchr, setting color sets textcolor, since the latter
+            // doesn't exist.  For our dialect that doesn't make sense.
             if (comptime pik_pedantic) {
                 // Probably, setting fg color should not set textcolor, tho
                 if ((obj.mProp & A_TEXTCOLOR) == 0) {
