@@ -318,7 +318,8 @@ const sha1_options = std.crypto.hash.Sha1.Options{};
 /// Each call to the pikchr() subroutine uses an instance of the following
 /// object to pass around context to all of its subroutines.
 pub const Pik = struct {
-    allocator: Allocator,             // Allocator for all per-render memory
+    arena: std.heap.ArenaAllocator,   // Owns all per-render memory
+    allocator: Allocator,             // Arena allocator for per-render memory
     nErr: u32,                        // Number of errors seen
     nToken: u32,                      // Number of tokens parsed
     sIn: PToken,                      // Input Pikchr-language text
@@ -370,6 +371,7 @@ pub const Pik = struct {
 // zig fmt: on
 
     pub const start: Pik = .{
+        .arena = undefined,
         .allocator = undefined,
         .nErr = 0,
         .nToken = 0,
@@ -417,44 +419,25 @@ pub const Pik = struct {
         .aCtx = [_]PToken{.zero} ** 10,
     };
 
-    pub fn init(
+    pub fn setup(
+        p: *Pik,
         allocator: Allocator,
         source: []const u8,
         class: []const u8,
         flags: u32,
-    ) Pik {
-        var pik: Pik = .start;
-        pik.allocator = allocator;
-        pik.sIn.z = source;
-        pik.zOut = .init(allocator);
-        pik.zClass = class;
-        pik.mFlags = flags;
-        return pik;
+    ) void {
+        p.* = .start;
+        p.arena = std.heap.ArenaAllocator.init(allocator);
+        p.allocator = p.arena.allocator();
+        p.sIn.z = source;
+        p.zOut = .init(allocator);
+        p.zClass = class;
+        p.mFlags = flags;
     }
 
     pub fn deinit(p: *Pik) void {
         p.zOut.deinit();
-        p.hFill.deinit(p.allocator);
-        p.hFgFill.deinit(p.allocator);
-        p.hStroke.deinit(p.allocator);
-        p.hBgStroke.deinit(p.allocator);
-        if (p.zID.len != 0) p.allocator.free(p.zID);
-        if (p.zTitle.len != 0) p.allocator.free(p.zTitle);
-        if (p.zDesc.len != 0) p.allocator.free(p.zDesc);
-        var v = p.pVar;
-        while (v) |vv| {
-            const next = vv.pNext;
-            p.allocator.free(vv.zName);
-            p.allocator.destroy(vv);
-            v = next;
-        }
-        var m = p.pMacros;
-        while (m) |mm| {
-            const next = mm.pNext;
-            p.allocator.destroy(mm);
-            m = next;
-        }
-        pik_elist_free(p, p.list);
+        p.arena.deinit();
     }
 };
 
@@ -607,30 +590,6 @@ fn pik_error(p: *Pik, token: ?*const PToken, message: ?[]const u8) void {
     }
 }
 
-// Free a complete list of objects
-fn pik_elist_free(p: *Pik, list: ?*PList) void {
-    const l = list orelse return;
-    if (p.list == l) p.list = null;
-    for (l.a[0..l.n]) |obj| pik_elem_free(p, obj);
-    p.allocator.free(l.a);
-    p.allocator.destroy(l);
-}
-
-// Free a single object, and its substructure
-fn pik_elem_free(p: *Pik, elem: ?*PObj) void {
-    const obj = elem orelse return;
-    if (obj.zName.len != 0) p.allocator.free(obj.zName);
-    var xclass = obj.pXmlClass;
-    while (xclass) |xc| {
-        const next = xc.pNext;
-        p.allocator.free(xc.zClass);
-        p.allocator.destroy(xc);
-        xclass = next;
-    }
-    pik_elist_free(p, obj.pSublist);
-    p.allocator.free(obj.aPath);
-    p.allocator.destroy(obj);
-}
 } // end include
 
 %include{
@@ -655,13 +614,9 @@ const OOM = Allocator.Error;
 %right UMINUS.
 
 %type statement_list {?*PList}
-%destructor statement_list {pik_elist_free(p,$$);}
 %type statement {?*PObj}
-%destructor statement {pik_elem_free(p,$$);}
 %type unnamed_statement {?*PObj}
-%destructor unnamed_statement {pik_elem_free(p,$$);}
 %type basetype {?*PObj}
-%destructor basetype {pik_elem_free(p,$$);}
 %type expr PNum
 %type numproperty PToken
 %type edge PToken
@@ -3510,11 +3465,9 @@ fn pik_elist_render(p: *Pik, list: *PList) void {
 }
 
 // Render a list of objects.  Write the SVG into p->zOut.
-// Delete the input object_list before returnning.
 fn pik_render(p: *Pik, list: ?*PList) void {
     const l = list orelse return;
     defer {
-        pik_elist_free(p, l);
         if (p.list == l) p.list = null;
     }
     if (p.nErr != 0) {
@@ -3587,9 +3540,6 @@ fn pik_render(p: *Pik, list: ?*PList) void {
     }
     pik_append_dis(p, " viewBox=\"0 0 ", w, "");
     pik_append_dis(p, " ", h, "\">\n");
-    if (pik_dark_mode(p)) {
-        pik_append(p, "<rect class=\"_B\" width=\"100%\" height=\"100%\"/>\n");
-    }
     // CSS
     pik_append(p, "<style>\n#");
     pik_append(p, p.zClass);
@@ -3655,7 +3605,6 @@ fn pik_elist_append(p: *Pik, list: ?*PList, obj: ?*PObj) ?*PList {
         const n_new = (l.n + 5) * 2;
         l.a = p.allocator.realloc(l.a, n_new) catch {
             pik_error(p, null, null);
-            pik_elem_free(p, o);
             return l;
         };
         l.nAlloc = n_new;
@@ -3676,7 +3625,6 @@ fn pik_elem_new(p: *Pik, id: ?*PToken, str: ?*PToken, sublist: ?*PList) ?*PObj {
     if (p.nErr != 0) return null;
     const obj = p.allocator.create(PObj) catch {
         pik_error(p, null, null);
-        pik_elist_free(p, sublist);
         return null;
     };
     obj.* = .start;
@@ -3734,7 +3682,6 @@ fn pik_elem_new(p: *Pik, id: ?*PToken, str: ?*PToken, sublist: ?*PList) ?*PObj {
             return obj;
         }
         pik_error(p, i, "unknown object type");
-        pik_elem_free(p, obj);
         return null;
     }
     obj.type = &noopClass;
@@ -3800,7 +3747,6 @@ fn pik_set_direction(p: *Pik, dir: u16) void {
 // Attach a name to an object
 fn pik_elem_setname(p: *Pik, obj: ?*PObj, name: *PToken) void {
     const o = obj orelse return;
-    if (o.zName.len != 0) p.allocator.free(o.zName);
     o.zName = p.allocator.dupe(u8, name.z) catch {
         pik_error(p, name, null);
         return;
@@ -3844,7 +3790,6 @@ fn pik_set_var(p: *Pik, id: *PToken, val: PNum, op: *PToken) void {
         return;
     };
     const name = p.allocator.dupe(u8, id.z) catch {
-        p.allocator.destroy(v);
         pik_error(p, id, null);
         return;
     };
@@ -3875,7 +3820,6 @@ fn pik_sync_textcolor(p: *Pik, old_val: PNum, new_val: PNum) void {
         return;
     };
     const name = p.allocator.dupe(u8, "textcolor") catch {
-        p.allocator.destroy(v);
         pik_error(p, null, null);
         return;
     };
@@ -3896,18 +3840,18 @@ fn pik_round_dimension(v: PNum) u32 {
     return if (rounded <= 0) 0 else @intCast(rounded);
 }
 
-// Search for the variable named z[0..n-1] in:
-//
-//   * Application defined variables
-//   * Built-in variables
-//
-// Return the value of the variable if found.  If not found
-// return 0.0.  Also if pMiss is not NULL, then set it to 1
-// if not found.
-//
-// This routine is a subroutine to pik_get_var().  But it is also
-// used by object implementations to look up (possibly overwritten)
-// values for built-in variables like "boxwid".
+/// Search for the variable named z[0..n-1] in:
+///
+///   * Application defined variables
+///   * Built-in variables
+///
+/// Return the value of the variable if found.  If not found
+/// return 0.0.  Also if pMiss is not NULL, then set it to 1
+/// if not found.
+///
+/// This routine is a subroutine to pik_get_var().  But it is also
+/// used by object implementations to look up (possibly overwritten)
+/// values for built-in variables like "boxwid".
 fn pik_value(p: *Pik, z: []const u8, miss: ?*i32) PNum {
     var v = p.pVar;
     while (v) |vv| : (v = vv.pNext) {
@@ -4320,9 +4264,6 @@ fn pik_append_color_css(p: *Pik) void {
         responsive.append_map(p, &p.hStroke, "_s", "stroke", false);
         responsive.append_map(p, &p.hBgStroke, "_s", "stroke", true);
     } else {
-        if (pik_dark_mode(p)) {
-            pik_append(p, "._B {fill:rgba(0,0,0,0.8)}\n");
-        }
         pik_append_color_css_map(p, &p.hFill, "_f", "fill", true);
         pik_append_color_css_map(p, &p.hFgFill, "_f", "fill", false);
         pik_append_color_css_map(p, &p.hStroke, "_s", "stroke", false);
@@ -4758,7 +4699,6 @@ fn pik_set_xml_class(p: *Pik, tok: *PToken) void {
         return;
     };
     const name = p.allocator.dupe(u8, tok.z) catch {
-        p.allocator.destroy(xnext);
         pik_error(p, null, null);
         return;
     };
@@ -4794,7 +4734,6 @@ fn pik_set_xml_classes(p: *Pik, tok: *PToken) void {
             return;
         };
         const name = p.allocator.dupe(u8, tok.z[st..i]) catch {
-            p.allocator.destroy(xnext);
             pik_error(p, null, null);
             return;
         };
@@ -6088,7 +6027,8 @@ pub fn render(
     class: []const u8,
     flags: u32,
 ) RenderError!RenderResult {
-    var pik = Pik.init(allocator, source, class, flags);
+    var pik: Pik = undefined;
+    pik.setup(allocator, source, class, flags);
     defer pik.deinit();
     if ((flags & PIKCHR_SINGLE_COLOR) != 0) {
         if ((flags & PIKCHR_DARK_MODE) != 0) {
@@ -6103,8 +6043,7 @@ pub fn render(
     pikchr_call_count += 1;
 
     var parser: PikParser = undefined;
-    try parser.init(allocator, &pik);
-    defer parser.deinit();
+    try parser.init(pik.allocator, &pik);
     pik_tokenize(&pik, &pik.sIn, &parser, null);
     // normalize end of diagram to hash as EOL
     if (!pik.bEOL) {
@@ -6134,7 +6073,8 @@ fn test_svg_id_suffix(svg: []const u8) []const u8 {
 }
 
 test "Pik parser module carries translated state" {
-    var pik = Pik.init(std.testing.allocator, "box", "pikchr", 0);
+    var pik: Pik = undefined;
+    pik.setup(std.testing.allocator, "box", "pikchr", 0);
     defer pik.deinit();
     try std.testing.expectEqual(@as(u8, DIR_RIGHT), pik.eDir);
     try std.testing.expectEqualStrings("box", pik.sIn.z);
@@ -6179,7 +6119,8 @@ test "Pik color maps sort by generated tag values" {
 }
 
 test "Pik after adding attributes records color tags" {
-    var pik = Pik.init(std.testing.allocator, "box", "pikchr", 0);
+    var pik: Pik = undefined;
+    pik.setup(std.testing.allocator, "box", "pikchr", 0);
     defer pik.deinit();
     var tok = classToken("box");
     const obj = pik_elem_new(&pik, &tok, null, null).?;
@@ -6205,7 +6146,8 @@ test "Pik after adding attributes records color tags" {
 }
 
 test "Pik after adding attributes records dot fill as foreground fill" {
-    var pik = Pik.init(std.testing.allocator, "dot", "pikchr", 0);
+    var pik: Pik = undefined;
+    pik.setup(std.testing.allocator, "dot", "pikchr", 0);
     defer pik.deinit();
     var tok = classToken("dot");
     const obj = pik_elem_new(&pik, &tok, null, null).?;
@@ -6227,7 +6169,8 @@ test "Pik after adding attributes records dot fill as foreground fill" {
 }
 
 test "Pik after adding attributes records matching box color as background stroke" {
-    var pik = Pik.init(std.testing.allocator, "box", "pikchr", 0);
+    var pik: Pik = undefined;
+    pik.setup(std.testing.allocator, "box", "pikchr", 0);
     defer pik.deinit();
     var tok = classToken("box");
     const obj = pik_elem_new(&pik, &tok, null, null).?;
@@ -6249,7 +6192,8 @@ test "Pik after adding attributes records matching box color as background strok
 }
 
 test "Pik color class emission reports missing generated tags as internal error" {
-    var pik = Pik.init(std.testing.allocator, "box", "pikchr", 0);
+    var pik: Pik = undefined;
+    pik.setup(std.testing.allocator, "box", "pikchr", 0);
     defer pik.deinit();
     var tok = classToken("box");
     const obj = pik_elem_new(&pik, &tok, null, null).?;
@@ -6265,7 +6209,8 @@ test "Pik color class emission reports missing generated tags as internal error"
 }
 
 test "Pik object allocation initializes class defaults" {
-    var pik = Pik.init(std.testing.allocator, "box", "pikchr", 0);
+    var pik: Pik = undefined;
+    pik.setup(std.testing.allocator, "box", "pikchr", 0);
     defer pik.deinit();
     var tok = classToken("box");
     const obj = pik_elem_new(&pik, &tok, null, null).?;
@@ -6276,7 +6221,8 @@ test "Pik object allocation initializes class defaults" {
 }
 
 test "Pik render consumes object list into allocating writer" {
-    var pik = Pik.init(std.testing.allocator, "box", "pikchr", 0);
+    var pik: Pik = undefined;
+    pik.setup(std.testing.allocator, "box", "pikchr", 0);
     defer pik.deinit();
     var tok = classToken("box");
     const obj = pik_elem_new(&pik, &tok, null, null).?;
@@ -6289,7 +6235,8 @@ test "Pik render consumes object list into allocating writer" {
 }
 
 test "Pik line direction builds path before render" {
-    var pik = Pik.init(std.testing.allocator, "line", "pikchr", 0);
+    var pik: Pik = undefined;
+    pik.setup(std.testing.allocator, "line", "pikchr", 0);
     defer pik.deinit();
     var tok = classToken("line");
     const obj = pik_elem_new(&pik, &tok, null, null).?;
@@ -6302,7 +6249,8 @@ test "Pik line direction builds path before render" {
 }
 
 test "Pik set at records edge placement" {
-    var pik = Pik.init(std.testing.allocator, "box", "pikchr", 0);
+    var pik: Pik = undefined;
+    pik.setup(std.testing.allocator, "box", "pikchr", 0);
     defer pik.deinit();
     var tok = classToken("box");
     const obj = pik_elem_new(&pik, &tok, null, null).?;
@@ -6323,7 +6271,8 @@ test "Pik set at records edge placement" {
 }
 
 test "Pik XML classes and macros preserve parser state" {
-    var pik = Pik.init(std.testing.allocator, "box", "pikchr", 0);
+    var pik: Pik = undefined;
+    pik.setup(std.testing.allocator, "box", "pikchr", 0);
     defer pik.deinit();
     var tok = classToken("box");
     const obj = pik_elem_new(&pik, &tok, null, null).?;
@@ -6343,7 +6292,8 @@ test "Pik XML classes and macros preserve parser state" {
 }
 
 test "Pik lookup helpers find objects and properties" {
-    var pik = Pik.init(std.testing.allocator, "box", "pikchr", 0);
+    var pik: Pik = undefined;
+    pik.setup(std.testing.allocator, "box", "pikchr", 0);
     defer pik.deinit();
     var box = classToken("box");
     const obj = pik_elem_new(&pik, &box, null, null).?;
@@ -6365,7 +6315,8 @@ test "Pik lookup helpers find objects and properties" {
 }
 
 test "Pik current object starts at PObj.start" {
-    var pik = Pik.init(std.testing.allocator, "print this.width", "pikchr", 0);
+    var pik: Pik = undefined;
+    pik.setup(std.testing.allocator, "print this.width", "pikchr", 0);
     defer pik.deinit();
 
     try std.testing.expectEqual(@as(PNum, 0.0), pik.cur.w);
@@ -6395,7 +6346,8 @@ test "Pik sorted table lookups use sorted table edges" {
         try std.testing.expectEqual(.lt, std.mem.order(u8, pik_keywords[i - 1].zWord, word.zWord));
     }
 
-    var pik = Pik.init(std.testing.allocator, "", "pikchr", 0);
+    var pik: Pik = undefined;
+    pik.setup(std.testing.allocator, "", "pikchr", 0);
     defer pik.deinit();
 
     var arc = classToken("arc");
@@ -6423,7 +6375,8 @@ test "Pik sorted table lookups use sorted table edges" {
 }
 
 test "Pik math and text-position helpers follow token codes" {
-    var pik = Pik.init(std.testing.allocator, "", "pikchr", 0);
+    var pik: Pik = undefined;
+    pik.setup(std.testing.allocator, "", "pikchr", 0);
     defer pik.deinit();
     var sqrt_tok: PToken = .zero;
     sqrt_tok.eCode = FN_SQRT;
@@ -6552,16 +6505,16 @@ test "Pik generated italic text emits italic CSS without bold" {
     try std.testing.expect(std.mem.indexOf(u8, out.text, "class=\"text _fa _D _tM _Fi\"") != null);
 }
 
-test "Pik generated single color dark SVG emits fixed dark backdrop" {
+test "Pik generated single color dark SVG omits fixed dark backdrop" {
     const out = try render(std.testing.allocator, "box fill 0x778899 color 0x112233\n", "pikchr", PIKCHR_SINGLE_COLOR | PIKCHR_DARK_MODE);
     defer out.deinit(std.testing.allocator);
     try std.testing.expect(out.ok());
     try std.testing.expect(std.mem.indexOf(u8, out.text, "color-scheme:light dark;") == null);
     try std.testing.expect(std.mem.indexOf(u8, out.text, "light-dark(") == null);
-    try std.testing.expect(std.mem.indexOf(u8, out.text, "._B {fill:rgba(0,0,0,0.8)}") != null);
+    try std.testing.expect(std.mem.indexOf(u8, out.text, "._B") == null);
     try std.testing.expect(std.mem.indexOf(u8, out.text, "._sa {stroke:rgb(204,221,238)}") != null);
     try std.testing.expect(std.mem.indexOf(u8, out.text, "._fb {fill:rgb(95,111,127)}") != null);
-    try std.testing.expect(std.mem.indexOf(u8, out.text, "\">\n<rect class=\"_B\" width=\"100%\" height=\"100%\"/>\n<style>") != null);
+    try std.testing.expect(std.mem.indexOf(u8, out.text, "<rect class=\"_B\"") == null);
 }
 
 test "Pik generated normal SVG omits responsive backdrop" {
@@ -6612,12 +6565,13 @@ test "Pik generated arrowhead chops shaft before emitting path" {
 }
 
 test "Pik generated responsive color CSS preserves fg/bg fallback" {
-    var pik = Pik.init(std.testing.allocator, "box", "pikchr", 0);
+    var pik: Pik = undefined;
+    pik.setup(std.testing.allocator, "box", "pikchr", 0);
     defer pik.deinit();
     pik.fgcolor = 0x123456;
     pik.bgcolor = 0xabcdef;
-    try pik.hStroke.put(std.testing.allocator, 0.0, .{ 'a', 0, 0, 0 });
-    try pik.hFill.put(std.testing.allocator, 0xffffff, .{ 'b', 0, 0, 0 });
+    try pik.hStroke.put(pik.allocator, 0.0, .{ 'a', 0, 0, 0 });
+    try pik.hFill.put(pik.allocator, 0xffffff, .{ 'b', 0, 0, 0 });
 
     pik_append_color_css(&pik);
 
