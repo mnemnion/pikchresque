@@ -482,7 +482,7 @@ pub const PIKCHR_SINGLE_COLOR = 0x0008;
 /// this structure. This is the "virtual method" table.
 pub const PClass = struct {
     zName: []const u8,                                 // Name of class
-    isLine: u8,                                        // True if a line class
+    isLine: bool,                                      // True if a line class
     eJust: u8,                                         // Use box-style text justification
     xInit: ?*const fn (*Pik, *PObj) void,              // Initializer
     xNumProp: ?*const fn (*Pik, *PObj, *PToken) void,  // Value change notification
@@ -688,6 +688,7 @@ const OOM = Allocator.Error;
     pik_error(p, null, "syntax error");
   }
 }
+
 %stack_overflow {
   pik_error(p, null, "parser stack overflow");
 }
@@ -1786,7 +1787,7 @@ fn pik_style_e_fill(obj: *const PObj) i32 {
     if (class.xRender == null or class.xRender == nullRender or class.xRender == textRender) return 0;
     if (class.xInit == dotInit) return 2;
     if (class.xInit == fileInit) return 1;
-    if (class.isLine != 0) return if (obj.bClose) 3 else 0;
+    if (class.isLine) return if (obj.bClose) 3 else 0;
     return 3;
 }
 
@@ -2099,7 +2100,7 @@ fn pik_append_txt(p: *Pik, obj: *PObj, box: ?*PBox) void {
     const x = obj.ptAt.x;
     for (a_txt) |txt| all_mask |= txt.eCode;
     if (obj.type) |class| {
-        if (class.isLine != 0) {
+        if (class.isLine) {
             hc = sw * 1.5;
         } else if (obj.rad > 0.0 and class.xInit == cylinderInit) {
             y_base = -0.75 * obj.rad;
@@ -3014,7 +3015,7 @@ const sublistClass = PClass{
     // name
     .zName = "[]",
     // isline
-    .isLine = 0,
+    .isLine = false,
     // eJust
     .eJust = 0,
     // xInit
@@ -3037,7 +3038,7 @@ const noopClass = PClass{
     // name
     .zName = "noop",
     // isline
-    .isLine = 0,
+    .isLine = false,
     // eJust
     .eJust = 0,
     // xInit
@@ -3061,7 +3062,7 @@ const aClass = [_]PClass{
         // name
         .zName = "arc",
         // isline
-        .isLine = 1,
+        .isLine = true,
         // eJust
         .eJust = 0,
         // xInit
@@ -3083,7 +3084,7 @@ const aClass = [_]PClass{
         // name
         .zName = "arrow",
         // isline
-        .isLine = 1,
+        .isLine = true,
         // eJust
         .eJust = 0,
         // xInit
@@ -3105,7 +3106,7 @@ const aClass = [_]PClass{
         // name
         .zName = "box",
         // isline
-        .isLine = 0,
+        .isLine = false,
         // eJust
         .eJust = 1,
         // xInit
@@ -3127,7 +3128,7 @@ const aClass = [_]PClass{
         // name
         .zName = "circle",
         // isline
-        .isLine = 0,
+        .isLine = false,
         // eJust
         .eJust = 0,
         // xInit
@@ -3149,7 +3150,7 @@ const aClass = [_]PClass{
         // name
         .zName = "cylinder",
         // isline
-        .isLine = 0,
+        .isLine = false,
         // eJust
         .eJust = 1,
         // xInit
@@ -3171,7 +3172,7 @@ const aClass = [_]PClass{
         // name
         .zName = "diamond",
         // isline
-        .isLine = 0,
+        .isLine = false,
         // eJust
         .eJust = 0,
         // xInit
@@ -3193,7 +3194,7 @@ const aClass = [_]PClass{
         // name
         .zName = "dot",
         // isline
-        .isLine = 0,
+        .isLine = false,
         // eJust
         .eJust = 0,
         // xInit
@@ -3215,7 +3216,7 @@ const aClass = [_]PClass{
         // name
         .zName = "ellipse",
         // isline
-        .isLine = 0,
+        .isLine = false,
         // eJust
         .eJust = 0,
         // xInit
@@ -3237,7 +3238,7 @@ const aClass = [_]PClass{
         // name
         .zName = "file",
         // isline
-        .isLine = 0,
+        .isLine = false,
         // eJust
         .eJust = 1,
         // xInit
@@ -3259,7 +3260,7 @@ const aClass = [_]PClass{
         // name
         .zName = "line",
         // isline
-        .isLine = 1,
+        .isLine = true,
         // eJust
         .eJust = 0,
         // xInit
@@ -3281,7 +3282,7 @@ const aClass = [_]PClass{
         // name
         .zName = "move",
         // isline
-        .isLine = 1,
+        .isLine = true,
         // eJust
         .eJust = 0,
         // xInit
@@ -3303,7 +3304,7 @@ const aClass = [_]PClass{
         // name
         .zName = "oval",
         // isline
-        .isLine = 0,
+        .isLine = false,
         // eJust
         .eJust = 1,
         // xInit
@@ -3325,7 +3326,7 @@ const aClass = [_]PClass{
         // name
         .zName = "spline",
         // isline
-        .isLine = 1,
+        .isLine = true,
         // eJust
         .eJust = 0,
         // xInit
@@ -3347,7 +3348,7 @@ const aClass = [_]PClass{
         // name
         .zName = "text",
         // isline
-        .isLine = 0,
+        .isLine = false,
         // eJust
         .eJust = 0,
         // xInit
@@ -3407,7 +3408,7 @@ fn pik_bbox_add_elist(p: *Pik, list: *PList, w_arrow: PNum) void {
 
         // Expand the bounding box to account for arrowheads on lines
         if (obj.type) |class| {
-            if (class.isLine != 0 and obj.nPath > 0 and obj.aPath.len >= @as(usize, @intCast(obj.nPath))) {
+            if (class.isLine and obj.nPath > 0 and obj.aPath.len >= @as(usize, @intCast(obj.nPath))) {
                 if (obj.larrow != 0) {
                     pik_bbox_addellipse(&p.bbox, obj.aPath[0].x, obj.aPath[0].y, w_arrow, w_arrow);
                 }
@@ -3776,7 +3777,7 @@ fn pik_set_description(p: *Pik, desc: *PToken) void {
 fn pik_elem_set_exit(obj: *PObj, dir: i32) void {
     std.debug.assert(ValidDir(dir));
     obj.outDir = dir;
-    if (obj.type == null or obj.type.?.isLine == 0 or obj.bClose) {
+    if (obj.type == null or !obj.type.?.isLine or obj.bClose) {
         obj.ptExit = obj.ptAt;
         switch (obj.outDir) {
             DIR_LEFT => obj.ptExit.x -= obj.w * 0.5,
@@ -4338,7 +4339,7 @@ fn pik_after_adding_attributes(p: *Pik, obj: ?*PObj) void {
     const e_fill = pik_style_e_fill(o);
     const use_fill = o.fill >= 0.0 and e_fill != 0;
 
-    if ((e_fill != 0 or class.isLine != 0) and o.sw >= 0.0 and o.color >= 0.0) {
+    if ((e_fill != 0 or class.isLine) and o.sw >= 0.0 and o.color >= 0.0) {
         pik_remember_color(p, pik_style_stroke_map(p, o, e_fill), o.color);
     }
     if ((o.larrow != 0 or o.rarrow != 0) and o.sw > 0.0 and o.color >= 0.0) {
@@ -4358,7 +4359,7 @@ fn pik_after_adding_attributes(p: *Pik, obj: ?*PObj) void {
     }
 
     // Position block objects
-    if (class.isLine == 0) {
+    if (!class.isLine) {
         // A height or width less than or equal to zero means "autofit".
         // Change the height or width to be big enough to contain the text,
         if (o.h <= 0.0) {
@@ -4387,7 +4388,7 @@ fn pik_after_adding_attributes(p: *Pik, obj: ?*PObj) void {
 
     // For a line object with no movement specified, a single movement
     // of the default length in the current direction
-    if (class.isLine != 0 and p.nTPath < 2) {
+    if (class.isLine and p.nTPath < 2) {
         _ = pik_next_rpath(p, null);
         std.debug.assert(p.nTPath == 2);
         switch (o.inDir) {
@@ -4420,7 +4421,7 @@ fn pik_after_adding_attributes(p: *Pik, obj: ?*PObj) void {
 
     // Compute final bounding box, entry and exit points, center
     // point (ptAt) and path for the object
-    if (class.isLine != 0) {
+    if (class.isLine) {
         o.nPath = p.nTPath;
         const n: usize = @intCast(p.nTPath);
         o.aPath = p.allocator.dupe(PPoint, p.aTPath[0..n]) catch {
@@ -4657,7 +4658,7 @@ fn pik_next_rpath(p: *Pik, err: ?*PToken) i32 {
 // or "down 50%".
 fn pik_add_direction(p: *Pik, dir: ?*PToken, val: *PRel) void {
     const obj = p.cur;
-    if (obj.type == null or obj.type.?.isLine == 0) {
+    if (obj.type == null or !obj.type.?.isLine) {
         if (dir) |d| pik_error(p, d, "use with line-oriented objects only") else pik_error(p, &obj.errTok, "syntax error");
         return;
     }
@@ -4702,7 +4703,7 @@ fn pik_add_direction(p: *Pik, dir: ?*PToken, val: *PRel) void {
 // the point specified by pPoint.
 fn pik_evenwith(p: *Pik, dir: *PToken, place: *PPoint) void {
     const obj = p.cur;
-    if (obj.type == null or obj.type.?.isLine == 0) {
+    if (obj.type == null or !obj.type.?.isLine) {
         pik_error(p, dir, "use with line-oriented objects only");
         return;
     }
@@ -4830,7 +4831,7 @@ fn pik_close_path(p: *Pik, err: *PToken) void {
 
 // Set the "from" of an object
 fn pik_set_from(p: *Pik, obj: *PObj, tok: *PToken, pt: *PPoint) void {
-    if (obj.type == null or obj.type.?.isLine == 0) {
+    if (obj.type == null or !obj.type.?.isLine) {
         pik_error(p, tok, "use \"at\" to position this object");
         return;
     }
@@ -4859,7 +4860,7 @@ fn pik_set_from(p: *Pik, obj: *PObj, tok: *PToken, pt: *PPoint) void {
 
 // Set the "to" of an object
 fn pik_add_to(p: *Pik, obj: *PObj, tok: *PToken, pt: *PPoint) void {
-    if (obj.type == null or obj.type.?.isLine == 0) {
+    if (obj.type == null or !obj.type.?.isLine) {
         pik_error(p, tok, "use \"at\" to position this object");
         return;
     }
@@ -4879,7 +4880,7 @@ fn pik_add_to(p: *Pik, obj: *PObj, tok: *PToken, pt: *PPoint) void {
 // the information in the ptTo field over onto the path and into ptFrom
 // resetting the ptTo.
 fn pik_then(p: *Pik, tok: *PToken, obj: *PObj) void {
-    if (obj.type == null or obj.type.?.isLine == 0) {
+    if (obj.type == null or !obj.type.?.isLine) {
         pik_error(p, tok, "use with line-oriented objects only");
         return;
     }
@@ -4907,7 +4908,7 @@ fn pik_move_hdg(
     const obj = p.cur;
     var r_hdg = angle;
     const r_dist = rel.rAbs + pik_value(p, "linewid", null) * rel.rRel;
-    if (obj.type == null or obj.type.?.isLine == 0) {
+    if (obj.type == null or !obj.type.?.isLine) {
         pik_error(p, err, "use with line-oriented objects only");
         return;
     }
@@ -4948,7 +4949,7 @@ fn pik_set_at(p: *Pik, edge: ?*PToken, at: *PPoint, err: *PToken) void {
     if (p.nErr != 0) return;
     const obj = p.cur;
 
-    if (obj.type != null and obj.type.?.isLine != 0) {
+    if (obj.type != null and obj.type.?.isLine) {
         pik_error(p, err, "use \"from\" and \"to\" to position this object");
         return;
     }
@@ -4991,7 +4992,7 @@ fn pik_same(p: *Pik, other: ?*PObj, err: *PToken) void {
         }
     }
     const src = same_obj.?;
-    if (src.nPath != 0 and obj.type != null and obj.type.?.isLine != 0) {
+    if (src.nPath != 0 and obj.type != null and obj.type.?.isLine) {
         const dx = p.aTPath[0].x - src.aPath[0].x;
         const dy = p.aTPath[0].y - src.aPath[0].y;
         var i: usize = 1;
@@ -5004,7 +5005,7 @@ fn pik_same(p: *Pik, other: ?*PObj, err: *PToken) void {
         p.mTPath = 3;
         p.samePath = 1;
     }
-    if (obj.type == null or obj.type.?.isLine == 0) {
+    if (obj.type == null or !obj.type.?.isLine) {
         obj.w = src.w;
         obj.h = src.h;
     }
@@ -5194,7 +5195,7 @@ fn pik_place_of_elem(p: *Pik, obj: *PObj, edge: ?*PToken) PPoint {
 // Return the coordinates for the n-th vertex of a line.
 fn pik_nth_vertex(p: *Pik, nth: *PToken, err: *PToken, obj: *PObj) PPoint {
     if (p.nErr != 0) return p.aTPath[0];
-    if (obj.type == null or obj.type.?.isLine == 0) {
+    if (obj.type == null or !obj.type.?.isLine) {
         pik_error(p, err, "object is not a line");
         return cZeroPoint;
     }
