@@ -370,7 +370,7 @@ pub const Pik = struct {
     aCtx: [10]PToken,                 // Nested error contexts
 // zig fmt: on
 
-    pub const start: Pik = .{
+    pub const init: Pik = .{
         .arena = undefined,
         .allocator = undefined,
         .nErr = 0,
@@ -426,7 +426,6 @@ pub const Pik = struct {
         class: []const u8,
         flags: u32,
     ) void {
-        p.* = .start;
         p.arena = std.heap.ArenaAllocator.init(allocator);
         p.allocator = p.arena.allocator();
         p.sIn.z = source;
@@ -6027,7 +6026,7 @@ pub fn render(
     class: []const u8,
     flags: u32,
 ) RenderError!RenderResult {
-    var pik: Pik = undefined;
+    var pik: Pik = .init;
     pik.setup(allocator, source, class, flags);
     defer pik.deinit();
     if ((flags & PIKCHR_SINGLE_COLOR) != 0) {
@@ -6073,7 +6072,7 @@ fn test_svg_id_suffix(svg: []const u8) []const u8 {
 }
 
 test "Pik parser module carries translated state" {
-    var pik: Pik = undefined;
+    var pik: Pik = .init;
     pik.setup(std.testing.allocator, "box", "pikchr", 0);
     defer pik.deinit();
     try std.testing.expectEqual(@as(u8, DIR_RIGHT), pik.eDir);
@@ -6119,7 +6118,7 @@ test "Pik color maps sort by generated tag values" {
 }
 
 test "Pik after adding attributes records color tags" {
-    var pik: Pik = undefined;
+    var pik: Pik = .init;
     pik.setup(std.testing.allocator, "box", "pikchr", 0);
     defer pik.deinit();
     var tok = classToken("box");
@@ -6146,7 +6145,7 @@ test "Pik after adding attributes records color tags" {
 }
 
 test "Pik after adding attributes records dot fill as foreground fill" {
-    var pik: Pik = undefined;
+    var pik: Pik = .init;
     pik.setup(std.testing.allocator, "dot", "pikchr", 0);
     defer pik.deinit();
     var tok = classToken("dot");
@@ -6169,7 +6168,7 @@ test "Pik after adding attributes records dot fill as foreground fill" {
 }
 
 test "Pik after adding attributes records matching box color as background stroke" {
-    var pik: Pik = undefined;
+    var pik: Pik = .init;
     pik.setup(std.testing.allocator, "box", "pikchr", 0);
     defer pik.deinit();
     var tok = classToken("box");
@@ -6192,7 +6191,7 @@ test "Pik after adding attributes records matching box color as background strok
 }
 
 test "Pik color class emission reports missing generated tags as internal error" {
-    var pik: Pik = undefined;
+    var pik: Pik = .init;
     pik.setup(std.testing.allocator, "box", "pikchr", 0);
     defer pik.deinit();
     var tok = classToken("box");
@@ -6209,7 +6208,7 @@ test "Pik color class emission reports missing generated tags as internal error"
 }
 
 test "Pik object allocation initializes class defaults" {
-    var pik: Pik = undefined;
+    var pik: Pik = .init;
     pik.setup(std.testing.allocator, "box", "pikchr", 0);
     defer pik.deinit();
     var tok = classToken("box");
@@ -6221,7 +6220,7 @@ test "Pik object allocation initializes class defaults" {
 }
 
 test "Pik render consumes object list into allocating writer" {
-    var pik: Pik = undefined;
+    var pik: Pik = .init;
     pik.setup(std.testing.allocator, "box", "pikchr", 0);
     defer pik.deinit();
     var tok = classToken("box");
@@ -6235,7 +6234,7 @@ test "Pik render consumes object list into allocating writer" {
 }
 
 test "Pik line direction builds path before render" {
-    var pik: Pik = undefined;
+    var pik: Pik = .init;
     pik.setup(std.testing.allocator, "line", "pikchr", 0);
     defer pik.deinit();
     var tok = classToken("line");
@@ -6249,7 +6248,7 @@ test "Pik line direction builds path before render" {
 }
 
 test "Pik set at records edge placement" {
-    var pik: Pik = undefined;
+    var pik: Pik = .init;
     pik.setup(std.testing.allocator, "box", "pikchr", 0);
     defer pik.deinit();
     var tok = classToken("box");
@@ -6271,7 +6270,7 @@ test "Pik set at records edge placement" {
 }
 
 test "Pik XML classes and macros preserve parser state" {
-    var pik: Pik = undefined;
+    var pik: Pik = .init;
     pik.setup(std.testing.allocator, "box", "pikchr", 0);
     defer pik.deinit();
     var tok = classToken("box");
@@ -6292,7 +6291,7 @@ test "Pik XML classes and macros preserve parser state" {
 }
 
 test "Pik lookup helpers find objects and properties" {
-    var pik: Pik = undefined;
+    var pik: Pik = .init;
     pik.setup(std.testing.allocator, "box", "pikchr", 0);
     defer pik.deinit();
     var box = classToken("box");
@@ -6315,7 +6314,7 @@ test "Pik lookup helpers find objects and properties" {
 }
 
 test "Pik current object starts at PObj.start" {
-    var pik: Pik = undefined;
+    var pik: Pik = .init;
     pik.setup(std.testing.allocator, "print this.width", "pikchr", 0);
     defer pik.deinit();
 
@@ -6346,7 +6345,7 @@ test "Pik sorted table lookups use sorted table edges" {
         try std.testing.expectEqual(.lt, std.mem.order(u8, pik_keywords[i - 1].zWord, word.zWord));
     }
 
-    var pik: Pik = undefined;
+    var pik: Pik = .init;
     pik.setup(std.testing.allocator, "", "pikchr", 0);
     defer pik.deinit();
 
@@ -6375,7 +6374,7 @@ test "Pik sorted table lookups use sorted table edges" {
 }
 
 test "Pik math and text-position helpers follow token codes" {
-    var pik: Pik = undefined;
+    var pik: Pik = .init;
     pik.setup(std.testing.allocator, "", "pikchr", 0);
     defer pik.deinit();
     var sqrt_tok: PToken = .zero;
@@ -6565,7 +6564,7 @@ test "Pik generated arrowhead chops shaft before emitting path" {
 }
 
 test "Pik generated responsive color CSS preserves fg/bg fallback" {
-    var pik: Pik = undefined;
+    var pik: Pik = .init;
     pik.setup(std.testing.allocator, "box", "pikchr", 0);
     defer pik.deinit();
     pik.fgcolor = 0x123456;
