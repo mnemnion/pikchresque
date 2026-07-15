@@ -333,6 +333,8 @@ pub const Pik = struct {
     pVar: ?*PVar,                     // Application-defined variables
     bbox: PBox,                       // Bounding box around all statements
     // Cache of layout values.  <=0.0 for unknown...
+    // NOTE: rScale is set to 144 once and cannot be changed.  Consider
+    // making it an actual constant.
     rScale: PNum,                     // Multiply to convert inches to pixels
     fontScale: PNum,                  // Scale fonts by this percent
     charWidth: PNum,                  // Character width
@@ -965,7 +967,7 @@ const aBuiltin = [_]Builtin{
     .{ .zName = "movewid", .val = 0.5 },
     .{ .zName = "ovalht", .val = 0.5 },
     .{ .zName = "ovalwid", .val = 1.0 },
-    .{ .zName = "scale", .val = 1.0 },
+    .{ .zName = "scale", .val = -1.0 },
     .{ .zName = "textcolor", .val = 0.0 },
     .{ .zName = "textht", .val = 0.5 },
     .{ .zName = "textwid", .val = 0.75 },
@@ -3554,7 +3556,7 @@ fn pik_render(p: *Pik, list: ?*PList) void {
         pik_append(p, "\"");
     }
     const pik_scale = pik_value(p, "scale", null);
-    if (pik_scale >= 0.001 and pik_scale <= 1000.0 and (pik_scale < 0.99 or pik_scale > 1.01)) {
+    if (pik_scale >= 0.001 and pik_scale <= 1000.0) {
         p.wSVG = pik_round_dimension(@as(PNum, @floatFromInt(p.wSVG)) * pik_scale);
         p.hSVG = pik_round_dimension(@as(PNum, @floatFromInt(p.hSVG)) * pik_scale);
         pik_append_num(p, " width=\"", @floatFromInt(p.wSVG), 6);
