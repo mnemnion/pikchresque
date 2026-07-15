@@ -211,7 +211,7 @@ fn writeHtmlHeader(stdout: *std.Io.Writer) !void {
 fn writeHtmlOutput(
     stdout: *std.Io.Writer,
     input: []const u8,
-    out: pikchresque.PikchrSvg,
+    out: pikchresque.RenderResult,
     arg: []const u8,
     arg_index: usize,
     style: []const u8,
@@ -219,11 +219,11 @@ fn writeHtmlOutput(
     if (pik_classic) {
         try stdout.print("<h1>File {s}</h1>\n", .{arg});
         if (!out.ok()) {
-            try stdout.print("<p>ERROR</p>\n{s}\n", .{out.svg});
+            try stdout.print("<p>ERROR</p>\n{s}\n", .{out.text});
         } else {
             try stdout.print("<div id=\"svg-{d}\" onclick=\"toggleHidden('svg-{d}')\">\n", .{ arg_index, arg_index });
             try stdout.print("<div style='border:3px solid lightgray;max-width:{d}px;{s}'>\n", .{ out.width, style });
-            try stdout.print("{s}</div>\n", .{out.svg});
+            try stdout.print("{s}</div>\n", .{out.text});
             try stdout.writeAll("<pre class='hidden'>");
             try printEscapeHtml(stdout, input);
             try stdout.writeAll("</pre>\n</div>\n");
@@ -244,7 +244,7 @@ fn writeHtmlOutput(
         try stdout.writeAll("</h1>\n");
     }
     try stdout.writeAll("<div class=\"viewport\">\n");
-    try stdout.writeAll(out.svg);
+    try stdout.writeAll(out.text);
     try stdout.writeAll("</div>\n</div>\n<pre class=\"hidden\">");
     try printEscapeHtml(stdout, input);
     try stdout.writeAll("</pre>\n</section>\n");
@@ -288,6 +288,9 @@ pub fn main(init: std.process.Init) !void {
     var options = pikchresque.PikOptions.default;
     var style: []const u8 = "";
     var html_header_pending = true;
+    var pik: pikchresque.Pik = .init;
+    pik.setup(allocator, "pikchr", @bitCast(options));
+    defer pik.deinit();
 
     for (args[1..], 1..) |arg, arg_index| {
         if (arg.len > 1 and arg[0] == '-') {
@@ -323,13 +326,16 @@ pub fn main(init: std.process.Init) !void {
         };
         defer allocator.free(input);
 
-        const out = pikchresque.pikchr(allocator, input, "pikchr", options) catch |err| {
+        pik.mFlags = @bitCast(options);
+        const out = pik.render(input) catch |err| {
+            pik.reset(.retain_capacity);
             switch (err) {
                 error.OutOfMemory => try stderr.writeAll("pikchr() returns NULL.  Out of memory?\n"),
             }
             if (!dont_stop) std.process.exit(1);
             continue;
         };
+        defer pik.reset(.retain_capacity);
         defer out.deinit(allocator);
 
         if (!out.ok()) {
@@ -337,7 +343,7 @@ pub fn main(init: std.process.Init) !void {
             if (!svg_only and !dont_stop) std.process.exit(1);
         }
         if (svg_only) {
-            try stdout.print("{s}\n", .{out.svg});
+            try stdout.print("{s}\n", .{out.text});
         } else {
             if (html_header_pending) {
                 try writeHtmlHeader(stdout);
@@ -353,4 +359,5 @@ pub fn main(init: std.process.Init) !void {
     try stdout.flush();
     try stderr.flush();
     if (exit_code != 0) std.process.exit(exit_code);
+    std.process.cleanExit(init.io);
 }

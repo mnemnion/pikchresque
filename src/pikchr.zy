@@ -319,7 +319,6 @@ const sha1_options = std.crypto.hash.Sha1.Options{};
 /// object to pass around context to all of its subroutines.
 pub const Pik = struct {
     arena: std.heap.ArenaAllocator,   // Owns all per-render memory
-    allocator: Allocator,             // Arena allocator for per-render memory
     nErr: u32,                        // Number of errors seen
     nToken: u32,                      // Number of tokens parsed
     sIn: PToken,                      // Input Pikchr-language text
@@ -374,7 +373,6 @@ pub const Pik = struct {
     /// provided to pik.setup.
     pub const init: Pik = .{
         .arena = undefined,
-        .allocator = undefined,
         .nErr = 0,
         .nToken = 0,
         .sIn = .zero,
@@ -431,7 +429,6 @@ pub const Pik = struct {
         flags: u32,
     ) void {
         p.arena = std.heap.ArenaAllocator.init(allocator);
-        p.allocator = p.arena.allocator();
         p.zOut = .init(allocator);
         p.zClass = class;
         p.mFlags = flags;
@@ -439,12 +436,28 @@ pub const Pik = struct {
 
     /// Render a Pikchr diagram.  The source is considered to be borrowed.
     /// No memory used in rendering is freed, and it is invalid to call
-    /// `render` again unless `reset` or `resetRetainingCapacity` are called
-    /// first.
+    /// `render` again unless `reset` is called first.
     pub fn render(p: *Pik, source: []const u8) RenderError!RenderResult {
         return pik_render_impl(p, source);
     }
 
+    /// Reset Pikchr for reuse.  The mode is the same as for an ArenaAllocator.
+    /// Flags and class (if any) are retained.
+    pub fn reset(p: *Pik, mode: std.heap.ArenaAllocator.ResetMode) void {
+        const allocator = p.arena.child_allocator;
+        const zClass = p.zClass;
+        const mFlags = p.mFlags;
+        p.zOut.deinit();
+        _ = p.arena.reset(mode);
+        const arena_state = p.arena.state;
+        p.* = .init;
+        p.arena = arena_state.promote(allocator);
+        p.zOut = .init(allocator);
+        p.zClass = zClass;
+        p.mFlags = mFlags;
+    }
+
+    /// De-initialize all memory held by the Pik instance.
     pub fn deinit(p: *Pik) void {
         p.zOut.deinit();
         p.arena.deinit();
@@ -3606,14 +3619,14 @@ fn pik_render(p: *Pik, list: ?*PList) void {
 // the new object list.
 fn pik_elist_append(p: *Pik, list: ?*PList, obj: ?*PObj) ?*PList {
     const o = obj orelse return list;
-    const l = list orelse p.allocator.create(PList) catch {
+    const l = list orelse p.arena.allocator().create(PList) catch {
         pik_error(p, null, null);
         return null;
     };
     if (list == null) l.* = .zero;
     if (l.n >= l.nAlloc) {
         const n_new = (l.n + 5) * 2;
-        l.a = p.allocator.realloc(l.a, n_new) catch {
+        l.a = p.arena.allocator().realloc(l.a, n_new) catch {
             pik_error(p, null, null);
             return l;
         };
@@ -3633,7 +3646,7 @@ fn pik_elist_append(p: *Pik, list: ?*PList, obj: ?*PObj) ?*PList {
 // are NULL then this is a no-op object used to define a PLACENAME.
 fn pik_elem_new(p: *Pik, id: ?*PToken, str: ?*PToken, sublist: ?*PList) ?*PObj {
     if (p.nErr != 0) return null;
-    const obj = p.allocator.create(PObj) catch {
+    const obj = p.arena.allocator().create(PObj) catch {
         pik_error(p, null, null);
         return null;
     };
@@ -3711,7 +3724,7 @@ fn pik_set_title(p: *Pik, title: *PToken, label: bool) void {
         }
         return;
     }
-    p.zTitle = p.allocator.dupe(u8, unQuote(title)) catch {
+    p.zTitle = p.arena.allocator().dupe(u8, unQuote(title)) catch {
         pik_error(p, title, null);
         return;
     };
@@ -3724,7 +3737,7 @@ fn pik_set_description(p: *Pik, desc: *PToken) void {
         pik_error(p, desc, "diagram already has a description");
         return;
     }
-    p.zDesc = p.allocator.dupe(u8, unQuote(desc)) catch {
+    p.zDesc = p.arena.allocator().dupe(u8, unQuote(desc)) catch {
         pik_error(p, desc, null);
         return;
     };
@@ -3757,7 +3770,7 @@ fn pik_set_direction(p: *Pik, dir: u16) void {
 // Attach a name to an object
 fn pik_elem_setname(p: *Pik, obj: ?*PObj, name: *PToken) void {
     const o = obj orelse return;
-    o.zName = p.allocator.dupe(u8, name.z) catch {
+    o.zName = p.arena.allocator().dupe(u8, name.z) catch {
         pik_error(p, name, null);
         return;
     };
@@ -3795,11 +3808,11 @@ fn pik_set_var(p: *Pik, id: *PToken, val: PNum, op: *PToken) void {
             return;
         }
     }
-    const v = p.allocator.create(PVar) catch {
+    const v = p.arena.allocator().create(PVar) catch {
         pik_error(p, id, null);
         return;
     };
-    const name = p.allocator.dupe(u8, id.z) catch {
+    const name = p.arena.allocator().dupe(u8, id.z) catch {
         pik_error(p, id, null);
         return;
     };
@@ -3825,11 +3838,11 @@ fn pik_sync_textcolor(p: *Pik, old_val: PNum, new_val: PNum) void {
             return;
         }
     }
-    const v = p.allocator.create(PVar) catch {
+    const v = p.arena.allocator().create(PVar) catch {
         pik_error(p, null, null);
         return;
     };
-    const name = p.allocator.dupe(u8, "textcolor") catch {
+    const name = p.arena.allocator().dupe(u8, "textcolor") catch {
         pik_error(p, null, null);
         return;
     };
@@ -4164,7 +4177,7 @@ fn pik_next_color_tag(tag: []u8) void {
 }
 
 fn pik_remember_color(p: *Pik, map: *ColorMap, value: PNum) void {
-    const entry = map.getOrPut(p.allocator, value) catch {
+    const entry = map.getOrPut(p.arena.allocator(), value) catch {
         pik_error(p, null, null);
         return;
     };
@@ -4375,7 +4388,7 @@ fn pik_after_adding_attributes(p: *Pik, obj: ?*PObj) void {
     if (class.isLine) {
         o.nPath = p.nTPath;
         const n: usize = @intCast(p.nTPath);
-        o.aPath = p.allocator.dupe(PPoint, p.aTPath[0..n]) catch {
+        o.aPath = p.arena.allocator().dupe(PPoint, p.aTPath[0..n]) catch {
             pik_error(p, &o.errTok, null);
             return;
         };
@@ -4704,11 +4717,11 @@ fn pik_set_xml_class(p: *Pik, tok: *PToken) void {
         pik_error(p, tok, "illegal first character (_, $, or @) for class token");
         return;
     }
-    const xnext = p.allocator.create(PXmlClass) catch {
+    const xnext = p.arena.allocator().create(PXmlClass) catch {
         pik_error(p, null, null);
         return;
     };
-    const name = p.allocator.dupe(u8, tok.z) catch {
+    const name = p.arena.allocator().dupe(u8, tok.z) catch {
         pik_error(p, null, null);
         return;
     };
@@ -4739,11 +4752,11 @@ fn pik_set_xml_classes(p: *Pik, tok: *PToken) void {
             st = i + 1;
             continue;
         }
-        const xnext = p.allocator.create(PXmlClass) catch {
+        const xnext = p.arena.allocator().create(PXmlClass) catch {
             pik_error(p, null, null);
             return;
         };
-        const name = p.allocator.dupe(u8, tok.z[st..i]) catch {
+        const name = p.arena.allocator().dupe(u8, tok.z[st..i]) catch {
             pik_error(p, null, null);
             return;
         };
@@ -5414,7 +5427,7 @@ fn pik_find_macro(p: *Pik, id: *PToken) ?*PMacro {
 fn pik_add_macro(p: *Pik, id: *PToken, code: *PToken) void {
     var new = pik_find_macro(p, id);
     if (new == null) {
-        new = p.allocator.create(PMacro) catch {
+        new = p.arena.allocator().create(PMacro) catch {
             pik_error(p, null, null);
             return;
         };
@@ -5814,7 +5827,7 @@ fn pik_set_id(p: *Pik) void {
     var digest: [std.crypto.hash.Sha1.digest_length]u8 = undefined;
     var sha = p.shaDigest;
     sha.final(&digest);
-    const id = p.allocator.alloc(u8, 11) catch {
+    const id = p.arena.allocator().alloc(u8, 11) catch {
         pik_error(p, null, null);
         return;
     };
@@ -6059,7 +6072,7 @@ fn pik_render_impl(pik: *Pik, source: []const u8) RenderError!RenderResult {
     pikchr_call_count += 1;
 
     var parser: PikParser = undefined;
-    try parser.init(pik.allocator, pik);
+    try parser.init(pik.arena.allocator(), pik);
     pik_tokenize(pik, &pik.sIn, &parser, null);
     // normalize end of diagram to hash as EOL
     if (!pik.bEOL) {
@@ -6097,6 +6110,32 @@ test "Pik parser module carries translated state" {
     try std.testing.expectEqualStrings("pikchr", pik.zClass);
     pik_append(&pik, "svg");
     try std.testing.expectEqualStrings("svg", pik.zOut.written());
+}
+
+test "Pik resets for reuse and retains configuration" {
+    var pik: Pik = .init;
+    pik.setup(std.testing.allocator, "pikchr", PIKCHR_SINGLE_COLOR);
+    defer pik.deinit();
+
+    const first = try pik.render("box \"first\"\n");
+    defer first.deinit(std.testing.allocator);
+    try std.testing.expect(first.ok());
+
+    pik.reset(.retain_capacity);
+    try std.testing.expectEqualStrings("pikchr", pik.zClass);
+    try std.testing.expectEqual(PIKCHR_SINGLE_COLOR, pik.mFlags);
+
+    const second = try pik.render("box \"second\"\n");
+    defer second.deinit(std.testing.allocator);
+    try std.testing.expect(second.ok());
+    try std.testing.expect(std.mem.indexOf(u8, second.text, "second") != null);
+    try std.testing.expect(std.mem.indexOf(u8, second.text, "first") == null);
+
+    pik.reset(.free_all);
+    const third = try pik.render("box \"third\"\n");
+    defer third.deinit(std.testing.allocator);
+    try std.testing.expect(third.ok());
+    try std.testing.expect(std.mem.indexOf(u8, third.text, "third") != null);
 }
 
 test "Pik color tag generator advances with carry" {
@@ -6586,8 +6625,8 @@ test "Pik generated responsive color CSS preserves fg/bg fallback" {
     defer pik.deinit();
     pik.fgcolor = 0x123456;
     pik.bgcolor = 0xabcdef;
-    try pik.hStroke.put(pik.allocator, 0.0, .{ 'a', 0, 0, 0 });
-    try pik.hFill.put(pik.allocator, 0xffffff, .{ 'b', 0, 0, 0 });
+    try pik.hStroke.put(pik.arena.allocator(), 0.0, .{ 'a', 0, 0, 0 });
+    try pik.hFill.put(pik.arena.allocator(), 0xffffff, .{ 'b', 0, 0, 0 });
 
     pik_append_color_css(&pik);
 

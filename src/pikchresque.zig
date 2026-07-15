@@ -6,6 +6,8 @@ pub const plaintext_errors: u32 = pik.PIKCHR_PLAINTEXT_ERRORS;
 pub const dark_mode: u32 = pik.PIKCHR_DARK_MODE;
 pub const extra_unique_id: u32 = pik.PIKCHR_EXTRA_UNIQUE_ID;
 pub const pik_single_color = pik.PIKCHR_SINGLE_COLOR;
+pub const Pik = pik.Pik;
+pub const RenderResult = pik.RenderResult;
 
 /// The SVG rendering of a Pikchr diagram.
 pub const PikchrSvg = struct {
