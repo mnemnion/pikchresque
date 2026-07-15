@@ -340,7 +340,7 @@ pub const Pik = struct {
     wArrow: PNum,                     // Width of arrowhead at the fat end
     hArrow: PNum,                     // Ht of arrowhead - dist from tip to fat end
     bLayoutVars: bool,                // True if cache is valid
-    thenFlag: u8,                     // True if "then" seen
+    thenFlag: bool,                   // True if "then" seen
     bLabel: bool,                     // True if zTitle should be rendered as a label
     samePath: u8,                     // aTPath copied by "same"
     bEOL: bool,                       // Flag for if we're in a run of T_EOL (hashing)
@@ -393,7 +393,7 @@ pub const Pik = struct {
         .wArrow = 0.0,
         .hArrow = 0.0,
         .bLayoutVars = false,
-        .thenFlag = 0,
+        .thenFlag = false,
         .bLabel = false,
         .samePath = 0,
         .bEOL = false,
@@ -3653,7 +3653,7 @@ fn pik_elem_new(p: *Pik, id: ?*PToken, str: ?*PToken, sublist: ?*PList) ?*PObj {
     obj.* = .start;
     p.cur = obj;
     p.nTPath = 1;
-    p.thenFlag = 0;
+    p.thenFlag = false;
     if (p.list == null or p.list.?.n == 0) {
         obj.ptAt = cZeroPoint;
         obj.eWith = .c;
@@ -4628,9 +4628,9 @@ fn pik_add_direction(p: *Pik, dir: ?*PToken, val: *PRel) void {
     }
     pik_reset_samepath(p);
     var n = p.nTPath - 1;
-    if (p.thenFlag != 0 or p.mTPath == 3 or n == 0) {
+    if (p.thenFlag or p.mTPath == 3 or n == 0) {
         n = pik_next_rpath(p, dir);
-        p.thenFlag = 0;
+        p.thenFlag = false;
     }
     const d: i32 = if (dir) |dd| @intCast(dd.eCode) else @intCast(p.eDir);
     switch (d) {
@@ -4657,7 +4657,7 @@ fn pik_add_direction(p: *Pik, dir: ?*PToken, val: *PRel) void {
         else => {},
     }
     obj.outDir = d;
-    p.thenFlag = 0;
+    p.thenFlag = false;
 }
 
 // Process a movement attribute of the form "right until even with ..."
@@ -4673,9 +4673,9 @@ fn pik_evenwith(p: *Pik, dir: *PToken, place: *PPoint) void {
     }
     pik_reset_samepath(p);
     var n = p.nTPath - 1;
-    if (p.thenFlag != 0 or p.mTPath == 3 or n == 0) {
+    if (p.thenFlag or p.mTPath == 3 or n == 0) {
         n = pik_next_rpath(p, dir);
-        p.thenFlag = 0;
+        p.thenFlag = false;
     }
     switch (@as(i32, dir.eCode)) {
         DIR_DOWN, DIR_UP => {
@@ -4832,7 +4832,7 @@ fn pik_add_to(p: *Pik, obj: *PObj, tok: *PToken, pt: *PPoint) void {
     }
     pik_reset_samepath(p);
     var n = p.nTPath - 1;
-    if (n == 0 or p.mTPath == 3 or p.thenFlag != 0) n = pik_next_rpath(p, tok);
+    if (n == 0 or p.mTPath == 3 or p.thenFlag) n = pik_next_rpath(p, tok);
     p.aTPath[@intCast(n)] = pt.*;
     p.mTPath = 3;
     obj.pTo = pik_last_ref_object(p, pt);
@@ -4851,7 +4851,7 @@ fn pik_then(p: *Pik, tok: *PToken, obj: *PObj) void {
         pik_error(p, tok, "no prior path points");
         return;
     }
-    p.thenFlag = 1;
+    p.thenFlag = true;
 }
 
 // Process a movement attribute of one of these forms:
