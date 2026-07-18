@@ -1,10 +1,32 @@
 %include {
-//! Pikchr grammar for the Zig port.
+//! This software translates a PIC-inspired diagram language into SVG.
 //!
-//! This is derived from the modified `pikchr/pikchr.y` in this repository.
-//! The reduce actions intentionally stay inline for now; do not split them
-//! into Zitron `%impl @name(...)` blocks during this pass.
-
+//! PIKCHR (pronounced like "picture") is *mostly* backwards compatible
+//! with legacy PIC, though some features of legacy PIC are removed
+//! (for example, the "sh" command is removed for security) and
+//! many enhancements are added.
+//!
+//! PIKCHR is designed for use in an internet facing web environment.
+//! In particular, PIKCHR is designed to safely generate benign SVG from
+//! source text that provided by a hostile agent.
+//!
+//! This code was originally written by D. Richard Hipp using documentation
+//! from prior PIC implementations but without reference to prior code.
+//! All of the code in this project is original.
+//!
+//! This port, pikchresque, began as a fork of the original Pikchr.  The
+//! fork's author, Sam Atman, was interested in making the output diagrams
+//! use a reactive light-dark color scheme, and adding a few other affordances.
+//!
+//! How it got translated to Zitron (and Zig) is a story for somewhere
+//! with more room for that story than a doc comment should take up.
+//!
+//! This file implements a Zig-language subroutine that accepts a string
+//! of PIKCHR language text and generates a second string of SVG output that
+//! renders the drawing defined by the input.
+//!
+//! If there are errors in the PIKCHR input, the output will consist of an
+//! error message and the original PIKCHR input text (inside of <pre>...</pre>).
 
 pub const pik_pedantic = false; // maximum compatibility
 
@@ -662,7 +684,7 @@ const OOM = Allocator.Error;
 %type optrelexpr PRel
 
 %syntax_error {
-  if( err_token.z.len > 0 ){
+  if (err_token.z.len > 0) {
     pik_error(p, &err_token, "syntax error");
   }else{
     pik_error(p, null, "syntax error");
