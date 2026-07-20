@@ -813,8 +813,10 @@ even ::= EVEN WITH.
 withclause ::=  DOT_E edge(E) AT(A) position(P).{ pik_set_at(p, &E, &P, &A); }
 withclause ::=  edge(E) AT(A) position(P).      { pik_set_at(p, &E, &P, &A); }
 
+%token_class numprop HEIGHT|WIDTH|RADIUS|DIAMETER|THICKNESS.
+
 // Properties that require an argument
-numproperty(A) ::= HEIGHT|WIDTH|RADIUS|DIAMETER|THICKNESS(P).  { A = P; }
+numproperty(A) ::= numprop(P).  { A = P; }
 
 // Properties with optional arguments
 dashproperty(A) ::= DOTTED(A).
