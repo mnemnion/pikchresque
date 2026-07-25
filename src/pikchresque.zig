@@ -7,6 +7,7 @@ pub const dark_mode: u32 = pik.PIKCHR_DARK_MODE;
 pub const extra_unique_id: u32 = pik.PIKCHR_EXTRA_UNIQUE_ID;
 pub const pik_single_color = pik.PIKCHR_SINGLE_COLOR;
 pub const Pik = pik.Pik;
+pub const PikOptions = pik.PikOptions;
 pub const RenderResult = pik.RenderResult;
 
 /// The SVG rendering of a Pikchr diagram.
@@ -25,22 +26,6 @@ pub const PikchrSvg = struct {
     }
 };
 
-/// Configurable options for Pikchr rendering.
-pub const PikOptions = packed struct(u32) {
-    plaintext_errors: bool,
-    dark_mode: bool,
-    extra_unique_id: bool,
-    single_color: bool,
-    reserved: u28 = 0,
-
-    pub const default: PikOptions = .{
-        .plaintext_errors = false,
-        .dark_mode = false,
-        .extra_unique_id = false,
-        .single_color = false,
-    };
-};
-
 /// Render a Pikchr diagram as an SVG.
 pub fn pikchr(
     allocator: std.mem.Allocator,
@@ -48,7 +33,7 @@ pub fn pikchr(
     class: []const u8,
     options: PikOptions,
 ) OOM!PikchrSvg {
-    const out = try pik.render(allocator, source, class, @bitCast(options));
+    const out = try pik.render(allocator, source, class, options);
     return .{
         .svg = out.text,
         .width = out.width,

@@ -337,6 +337,17 @@ pub const PMacro = struct {
 // zig fmt: off
 const sha1_options = std.crypto.hash.Sha1.Options{};
 
+/// Configurable options for Pikchr rendering.
+pub const PikOptions = packed struct(u32) {
+    plaintext_errors: bool = false,
+    dark_mode: bool = false,
+    extra_unique_id: bool = false,
+    single_color: bool = false,
+    reserved: u28 = 0,
+
+    pub const default: PikOptions = .{};
+};
+
 /// Each call to the pikchr() subroutine uses an instance of the following
 /// object to pass around context to all of its subroutines.
 pub const Pik = struct {
@@ -450,12 +461,12 @@ pub const Pik = struct {
         p: *Pik,
         allocator: Allocator,
         class: []const u8,
-        flags: u32,
+        options: PikOptions,
     ) void {
         p.arena = std.heap.ArenaAllocator.init(allocator);
         p.zOut = .init(allocator);
         p.zClass = class;
-        p.mFlags = flags;
+        p.mFlags = @bitCast(options);
     }
 
     /// Render a Pikchr diagram.  The source is considered to be borrowed.
@@ -6074,10 +6085,10 @@ pub fn render(
     allocator: Allocator,
     source: []const u8,
     class: []const u8,
-    flags: u32,
+    options: PikOptions,
 ) RenderError!RenderResult {
     var pik: Pik = .init;
-    pik.setup(allocator, class, flags);
+    pik.setup(allocator, class, options);
     defer pik.deinit();
     return pik_render_impl(&pik, source);
 }
@@ -6129,7 +6140,7 @@ fn test_svg_id_suffix(svg: []const u8) []const u8 {
 
 test "Pik parser module carries translated state" {
     var pik: Pik = .init;
-    pik.setup(std.testing.allocator, "pikchr", 0);
+    pik.setup(std.testing.allocator, "pikchr", .default);
     defer pik.deinit();
     try std.testing.expectEqual(@as(u8, DIR_RIGHT), pik.eDir);
     try std.testing.expectEqualStrings("", pik.sIn.z);
@@ -6140,7 +6151,9 @@ test "Pik parser module carries translated state" {
 
 test "Pik resets for reuse and retains configuration" {
     var pik: Pik = .init;
-    pik.setup(std.testing.allocator, "pikchr", PIKCHR_SINGLE_COLOR);
+    var options = PikOptions.default;
+    options.single_color = true;
+    pik.setup(std.testing.allocator, "pikchr", options);
     defer pik.deinit();
 
     const first = try pik.render("box \"first\"\n");
@@ -6201,7 +6214,7 @@ test "Pik color maps sort by generated tag values" {
 
 test "Pik after adding attributes records color tags" {
     var pik: Pik = .init;
-    pik.setup(std.testing.allocator, "pikchr", 0);
+    pik.setup(std.testing.allocator, "pikchr", .default);
     defer pik.deinit();
     var tok = classToken("box");
     const obj = pik_elem_new(&pik, &tok, null, null).?;
@@ -6228,7 +6241,7 @@ test "Pik after adding attributes records color tags" {
 
 test "Pik after adding attributes records dot fill as foreground fill" {
     var pik: Pik = .init;
-    pik.setup(std.testing.allocator, "pikchr", 0);
+    pik.setup(std.testing.allocator, "pikchr", .default);
     defer pik.deinit();
     var tok = classToken("dot");
     const obj = pik_elem_new(&pik, &tok, null, null).?;
@@ -6251,7 +6264,7 @@ test "Pik after adding attributes records dot fill as foreground fill" {
 
 test "Pik after adding attributes records matching box color as background stroke" {
     var pik: Pik = .init;
-    pik.setup(std.testing.allocator, "pikchr", 0);
+    pik.setup(std.testing.allocator, "pikchr", .default);
     defer pik.deinit();
     var tok = classToken("box");
     const obj = pik_elem_new(&pik, &tok, null, null).?;
@@ -6274,7 +6287,7 @@ test "Pik after adding attributes records matching box color as background strok
 
 test "Pik color class emission reports missing generated tags as internal error" {
     var pik: Pik = .init;
-    pik.setup(std.testing.allocator, "pikchr", 0);
+    pik.setup(std.testing.allocator, "pikchr", .default);
     defer pik.deinit();
     var tok = classToken("box");
     const obj = pik_elem_new(&pik, &tok, null, null).?;
@@ -6291,7 +6304,7 @@ test "Pik color class emission reports missing generated tags as internal error"
 
 test "Pik object allocation initializes class defaults" {
     var pik: Pik = .init;
-    pik.setup(std.testing.allocator, "pikchr", 0);
+    pik.setup(std.testing.allocator, "pikchr", .default);
     defer pik.deinit();
     var tok = classToken("box");
     const obj = pik_elem_new(&pik, &tok, null, null).?;
@@ -6303,7 +6316,7 @@ test "Pik object allocation initializes class defaults" {
 
 test "Pik render consumes object list into allocating writer" {
     var pik: Pik = .init;
-    pik.setup(std.testing.allocator, "pikchr", 0);
+    pik.setup(std.testing.allocator, "pikchr", .default);
     defer pik.deinit();
     var tok = classToken("box");
     const obj = pik_elem_new(&pik, &tok, null, null).?;
@@ -6317,7 +6330,7 @@ test "Pik render consumes object list into allocating writer" {
 
 test "Pik line direction builds path before render" {
     var pik: Pik = .init;
-    pik.setup(std.testing.allocator, "pikchr", 0);
+    pik.setup(std.testing.allocator, "pikchr", .default);
     defer pik.deinit();
     var tok = classToken("line");
     const obj = pik_elem_new(&pik, &tok, null, null).?;
@@ -6331,7 +6344,7 @@ test "Pik line direction builds path before render" {
 
 test "Pik set at records edge placement" {
     var pik: Pik = .init;
-    pik.setup(std.testing.allocator, "pikchr", 0);
+    pik.setup(std.testing.allocator, "pikchr", .default);
     defer pik.deinit();
     var tok = classToken("box");
     const obj = pik_elem_new(&pik, &tok, null, null).?;
@@ -6353,7 +6366,7 @@ test "Pik set at records edge placement" {
 
 test "Pik XML classes and macros preserve parser state" {
     var pik: Pik = .init;
-    pik.setup(std.testing.allocator, "pikchr", 0);
+    pik.setup(std.testing.allocator, "pikchr", .default);
     defer pik.deinit();
     var tok = classToken("box");
     const obj = pik_elem_new(&pik, &tok, null, null).?;
@@ -6374,7 +6387,7 @@ test "Pik XML classes and macros preserve parser state" {
 
 test "Pik lookup helpers find objects and properties" {
     var pik: Pik = .init;
-    pik.setup(std.testing.allocator, "pikchr", 0);
+    pik.setup(std.testing.allocator, "pikchr", .default);
     defer pik.deinit();
     var box = classToken("box");
     const obj = pik_elem_new(&pik, &box, null, null).?;
@@ -6397,7 +6410,7 @@ test "Pik lookup helpers find objects and properties" {
 
 test "Pik current object starts at PObj.start" {
     var pik: Pik = .init;
-    pik.setup(std.testing.allocator, "pikchr", 0);
+    pik.setup(std.testing.allocator, "pikchr", .default);
     defer pik.deinit();
 
     try std.testing.expectEqual(@as(PNum, 0.0), pik.cur.w);
@@ -6428,7 +6441,7 @@ test "Pik sorted table lookups use sorted table edges" {
     }
 
     var pik: Pik = .init;
-    pik.setup(std.testing.allocator, "pikchr", 0);
+    pik.setup(std.testing.allocator, "pikchr", .default);
     defer pik.deinit();
 
     var arc = classToken("arc");
@@ -6457,7 +6470,7 @@ test "Pik sorted table lookups use sorted table edges" {
 
 test "Pik math and text-position helpers follow token codes" {
     var pik: Pik = .init;
-    pik.setup(std.testing.allocator, "pikchr", 0);
+    pik.setup(std.testing.allocator, "pikchr", .default);
     defer pik.deinit();
     var sqrt_tok: PToken = .zero;
     sqrt_tok.eCode = FN_SQRT;
@@ -6504,7 +6517,7 @@ test "Pik tokenizer classifies core tokens" {
 }
 
 test "Pik generated render entrypoint parses simple source" {
-    const out = try render(std.testing.allocator, "box\n", "pikchr", 0);
+    const out = try render(std.testing.allocator, "box\n", "pikchr", .default);
     defer out.deinit(std.testing.allocator);
     try std.testing.expect(out.ok());
     try std.testing.expect(std.mem.startsWith(u8, out.text, "<svg "));
@@ -6516,7 +6529,7 @@ test "Pik generated render result dimensions are unsigned" {
 }
 
 test "Pik generated render reports errors without sentinel dimensions" {
-    const out = try render(std.testing.allocator, "box width\n", "pikchr", 0);
+    const out = try render(std.testing.allocator, "box width\n", "pikchr", .default);
     defer out.deinit(std.testing.allocator);
 
     try std.testing.expect(!out.ok());
@@ -6526,7 +6539,7 @@ test "Pik generated render reports errors without sentinel dimensions" {
 }
 
 test "Pik generated render emits color class CSS" {
-    const out = try render(std.testing.allocator, "box \"hi\" fill 0x778899 color 0x112233 textcolor 0x445566\n", "pikchr", 0);
+    const out = try render(std.testing.allocator, "box \"hi\" fill 0x778899 color 0x112233 textcolor 0x445566\n", "pikchr", .default);
     defer out.deinit(std.testing.allocator);
     try std.testing.expect(out.ok());
     try std.testing.expect(std.mem.indexOf(u8, out.text, "color-scheme:light dark;") != null);
@@ -6541,9 +6554,9 @@ test "Pik generated render emits color class CSS" {
 }
 
 test "Pik generated bare dark mode matches responsive output" {
-    const normal = try render(std.testing.allocator, "box fill 0x778899 color 0x112233\n", "pikchr", 0);
+    const normal = try render(std.testing.allocator, "box fill 0x778899 color 0x112233\n", "pikchr", .default);
     defer normal.deinit(std.testing.allocator);
-    const bare_dark = try render(std.testing.allocator, "box fill 0x778899 color 0x112233\n", "pikchr", PIKCHR_DARK_MODE);
+    const bare_dark = try render(std.testing.allocator, "box fill 0x778899 color 0x112233\n", "pikchr", .{ .dark_mode = true });
     defer bare_dark.deinit(std.testing.allocator);
     try std.testing.expect(normal.ok());
     try std.testing.expect(bare_dark.ok());
@@ -6551,11 +6564,11 @@ test "Pik generated bare dark mode matches responsive output" {
 }
 
 test "Pik generated single color hashes fixed color modes" {
-    const responsive = try render(std.testing.allocator, "box fill 0x778899 color 0x112233\n", "pikchr", 0);
+    const responsive = try render(std.testing.allocator, "box fill 0x778899 color 0x112233\n", "pikchr", .default);
     defer responsive.deinit(std.testing.allocator);
-    const light = try render(std.testing.allocator, "box fill 0x778899 color 0x112233\n", "pikchr", PIKCHR_SINGLE_COLOR);
+    const light = try render(std.testing.allocator, "box fill 0x778899 color 0x112233\n", "pikchr", .{ .single_color = true });
     defer light.deinit(std.testing.allocator);
-    const dark = try render(std.testing.allocator, "box fill 0x778899 color 0x112233\n", "pikchr", PIKCHR_SINGLE_COLOR | PIKCHR_DARK_MODE);
+    const dark = try render(std.testing.allocator, "box fill 0x778899 color 0x112233\n", "pikchr", .{ .single_color = true, .dark_mode = true });
     defer dark.deinit(std.testing.allocator);
 
     try std.testing.expect(responsive.ok());
@@ -6567,7 +6580,7 @@ test "Pik generated single color hashes fixed color modes" {
 }
 
 test "Pik generated single color light CSS uses fixed light colors" {
-    const out = try render(std.testing.allocator, "box fill 0x778899 color 0x112233\n", "pikchr", PIKCHR_SINGLE_COLOR);
+    const out = try render(std.testing.allocator, "box fill 0x778899 color 0x112233\n", "pikchr", .{ .single_color = true });
     defer out.deinit(std.testing.allocator);
     try std.testing.expect(out.ok());
     try std.testing.expect(std.mem.indexOf(u8, out.text, "color-scheme:light dark;") == null);
@@ -6578,7 +6591,7 @@ test "Pik generated single color light CSS uses fixed light colors" {
 }
 
 test "Pik generated italic text emits italic CSS without bold" {
-    const out = try render(std.testing.allocator, "text \"hi\" italic\n", "pikchr", 0);
+    const out = try render(std.testing.allocator, "text \"hi\" italic\n", "pikchr", .default);
     defer out.deinit(std.testing.allocator);
     try std.testing.expect(out.ok());
     try std.testing.expect(std.mem.indexOf(u8, out.text, "._Fi {font-style:italic}") != null);
@@ -6587,7 +6600,7 @@ test "Pik generated italic text emits italic CSS without bold" {
 }
 
 test "Pik generated single color dark SVG omits fixed dark backdrop" {
-    const out = try render(std.testing.allocator, "box fill 0x778899 color 0x112233\n", "pikchr", PIKCHR_SINGLE_COLOR | PIKCHR_DARK_MODE);
+    const out = try render(std.testing.allocator, "box fill 0x778899 color 0x112233\n", "pikchr", .{ .single_color = true, .dark_mode = true });
     defer out.deinit(std.testing.allocator);
     try std.testing.expect(out.ok());
     try std.testing.expect(std.mem.indexOf(u8, out.text, "color-scheme:light dark;") == null);
@@ -6599,7 +6612,7 @@ test "Pik generated single color dark SVG omits fixed dark backdrop" {
 }
 
 test "Pik generated normal SVG omits responsive backdrop" {
-    const out = try render(std.testing.allocator, "box fill 0x778899 color 0x112233\n", "pikchr", 0);
+    const out = try render(std.testing.allocator, "box fill 0x778899 color 0x112233\n", "pikchr", .default);
     defer out.deinit(std.testing.allocator);
     try std.testing.expect(out.ok());
     try std.testing.expect(std.mem.indexOf(u8, out.text, "._B") == null);
@@ -6607,7 +6620,7 @@ test "Pik generated normal SVG omits responsive backdrop" {
 }
 
 test "Pik generated text color classes use foreground dark conversion" {
-    const out = try render(std.testing.allocator, "box \"hi\" textcolor 0x445566\n", "pikchr", PIKCHR_SINGLE_COLOR | PIKCHR_DARK_MODE);
+    const out = try render(std.testing.allocator, "box \"hi\" textcolor 0x445566\n", "pikchr", .{ .single_color = true, .dark_mode = true });
     defer out.deinit(std.testing.allocator);
     try std.testing.expect(out.ok());
     try std.testing.expect(std.mem.indexOf(u8, out.text, "._fb {fill:rgb(153,170,187)}") != null);
@@ -6615,7 +6628,7 @@ test "Pik generated text color classes use foreground dark conversion" {
 }
 
 test "Pik generated debug label color is registered before CSS" {
-    const out = try render(std.testing.allocator, "debug_label_color = Red\nA: box\n", "pikchr", 0);
+    const out = try render(std.testing.allocator, "debug_label_color = Red\nA: box\n", "pikchr", .default);
     defer out.deinit(std.testing.allocator);
     try std.testing.expect(out.ok());
     try std.testing.expect(std.mem.indexOf(u8, out.text, "._sb {stroke:light-dark(rgb(255,0,0),rgb(255,127,127))}") != null);
@@ -6626,7 +6639,7 @@ test "Pik generated debug label color is registered before CSS" {
 }
 
 test "Pik generated arrowhead fill uses foreground color class" {
-    const out = try render(std.testing.allocator, "arrow color 0x112233\n", "pikchr", PIKCHR_SINGLE_COLOR | PIKCHR_DARK_MODE);
+    const out = try render(std.testing.allocator, "arrow color 0x112233\n", "pikchr", .{ .single_color = true, .dark_mode = true });
     defer out.deinit(std.testing.allocator);
     try std.testing.expect(out.ok());
     try std.testing.expect(std.mem.indexOf(u8, out.text, "._sa {stroke:rgb(204,221,238)}") != null);
@@ -6637,7 +6650,7 @@ test "Pik generated arrowhead fill uses foreground color class" {
 }
 
 test "Pik generated arrowhead chops shaft before emitting path" {
-    const out = try render(std.testing.allocator, "arrow up\n", "pikchr", 0);
+    const out = try render(std.testing.allocator, "arrow up\n", "pikchr", .default);
     defer out.deinit(std.testing.allocator);
     try std.testing.expect(out.ok());
     try std.testing.expect(std.mem.indexOf(u8, out.text, "<polygon class=\"arrow _fb\" points=\"6.48,6.48 10.8,18 2.16,18\" />") != null);
@@ -6647,7 +6660,7 @@ test "Pik generated arrowhead chops shaft before emitting path" {
 
 test "Pik generated responsive color CSS preserves fg/bg fallback" {
     var pik: Pik = .init;
-    pik.setup(std.testing.allocator, "pikchr", 0);
+    pik.setup(std.testing.allocator, "pikchr", .default);
     defer pik.deinit();
     pik.fgcolor = 0x123456;
     pik.bgcolor = 0xabcdef;
@@ -6661,14 +6674,14 @@ test "Pik generated responsive color CSS preserves fg/bg fallback" {
 }
 
 test "Pik generated render expands macros" {
-    const out = try render(std.testing.allocator, "define b {box \"hi\"}\nb\n", "pikchr", 0);
+    const out = try render(std.testing.allocator, "define b {box \"hi\"}\nb\n", "pikchr", .default);
     defer out.deinit(std.testing.allocator);
     try std.testing.expect(out.ok());
     try std.testing.expect(std.mem.indexOf(u8, out.text, "hi") != null);
 }
 
 test "Pik generated render expands macro arguments" {
-    const out = try render(std.testing.allocator, "define b {box $1}\nb(\"hi\")\n", "pikchr", 0);
+    const out = try render(std.testing.allocator, "define b {box $1}\nb(\"hi\")\n", "pikchr", .default);
     defer out.deinit(std.testing.allocator);
     try std.testing.expect(out.ok());
     try std.testing.expect(std.mem.indexOf(u8, out.text, "hi") != null);

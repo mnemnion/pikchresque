@@ -289,7 +289,7 @@ pub fn main(init: std.process.Init) !void {
     var style: []const u8 = "";
     var html_header_pending = true;
     var pik: pikchresque.Pik = .init;
-    pik.setup(allocator, "pikchr", @bitCast(options));
+    pik.setup(allocator, "pikchr", options);
     defer pik.deinit();
 
     for (args[1..], 1..) |arg, arg_index| {
