@@ -3,8 +3,12 @@ const std = @import("std");
 
 pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
-
     const optimize = b.standardOptimizeOption(.{});
+    const linkage = b.option(
+        std.builtin.LinkMode,
+        "linkage",
+        "Library linkage",
+    ) orelse .static;
 
     const zitron_dep = b.dependency("zitron", .{
         .target = b.graph.host,
@@ -58,12 +62,15 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     });
     lib_mod.addImport("pikchr", grammar_mod);
+    lib_mod.link_libc = true;
 
     const lib = b.addLibrary(.{
+        .linkage = linkage,
         .name = "pikchresque",
         .root_module = lib_mod,
     });
     lib.step.dependOn(&grammar_write_out.step);
+    lib.installHeader(b.path("include/pikchr.h"), "pikchr.h");
 
     b.installArtifact(lib);
 
@@ -91,6 +98,29 @@ pub fn build(b: *std.Build) void {
 
     const run_pikchresque = b.step("run", "run the pikchresque binary");
     run_pikchresque.dependOn(&run_cmd.step);
+
+    const pik2svg_mod = b.createModule(.{
+        .target = target,
+        .optimize = optimize,
+        .link_libc = true,
+    });
+    pik2svg_mod.addCSourceFile(.{
+        .file = b.path("src/pik2svg.c"),
+        .flags = &.{ "-std=c99", "-Wall", "-Wextra", "-Wpedantic" },
+    });
+    pik2svg_mod.linkLibrary(lib);
+
+    const pik2svg = b.addExecutable(.{
+        .name = "pik2svg",
+        .root_module = pik2svg_mod,
+    });
+    b.installArtifact(pik2svg);
+
+    const run_pik2svg_cmd = b.addRunArtifact(pik2svg);
+    run_pik2svg_cmd.stdio = .inherit;
+
+    const run_pik2svg = b.step("run-pik2svg", "Render stdin to stdout through the C interface");
+    run_pik2svg.dependOn(&run_pik2svg_cmd.step);
 
     const render_step = b.step("render", "Render piks/ fixtures into SVG files");
     const render_outputs = b.addUpdateSourceFiles();
@@ -136,12 +166,18 @@ pub fn build(b: *std.Build) void {
 
     const test_step = b.step("test", "Run unit tests");
 
+    const run_pik2svg_test = b.addRunArtifact(pik2svg);
+    run_pik2svg_test.setStdIn(.{ .bytes = "box\n" });
+    run_pik2svg_test.expectStdOutMatch("<svg ");
+    run_pik2svg_test.skip_foreign_checks = true;
+
     test_step.dependOn(&run_module_unit_tests.step);
     test_step.dependOn(&run_grammar_unit_tests.step);
 
     test_step.dependOn(&run_lib_unit_tests.step);
 
     test_step.dependOn(&run_exe_unit_tests.step);
+    test_step.dependOn(&run_pik2svg_test.step);
 
     const run_kcov = b.addSystemCommand(&.{
         "kcov",
