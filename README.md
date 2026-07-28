@@ -49,23 +49,26 @@ time, and having nice tooling, while not a hard requirement, is a boon
 to developing anything so complex as a language, little or otherwise.
 
 So I told Codex to translate my C/Lemon fork of Pikchr to Zig/Zitron,
-and, it did.  There's always more to it than that, but not much.
+and, it did.  There's more to it than that, always is.  But not much.
 
-Where I stalled out on the Pikchr fork is, well.  The obvious way to do
-what I wanted to do is a hash map.  Pikchr doesn't use those, it's a few
-linked lists and some array tables — and in C, one does not simply _use_
-a hash map.  I had reckoned some halfway plausible routes to the summit
-using more linked lists, but never picked up the gumption to haul my
-carcass uphill.
+Where I stalled out on the original Pikchr fork is, well.  The obvious
+way to do what I wanted to do is a hash map.  Pikchr doesn't use those,
+it's a few linked lists and some array tables — and in C, one does not
+simply _use_ a hash map.  I had reckoned some halfway plausible routes
+to the summit using more linked lists, but never picked up the gumption
+to haul my carcass uphill.
 
-In Zig, this is just a call to `HashMap` away.  So here we are!
+It's not that hand-rolling a hashmap is difficult, it's isn't, but it's
+undignified.
+
+In Zig, this is just a call to `HashMap` away.  So here we are.
 
 
 ## Further Features
 
 Pikchresque is a proper superset of Pikchr.  Although it doesn't
-generate eyeball-identical SVG for the same inputs, it can be build-
-time configured to do so.
+generate eyeball-identical SVG for the same inputs, it can be
+build-time configured to do so[^1].
 
 Textually, the SVGs are markedly different.  This was in the service of
 the following:
@@ -139,7 +142,11 @@ effect.  As a result, a Pikchr diagram with `color` set in a context
 which would affect text color as well, will not see the color of that
 text change.
 
-<tk build setting once added>
+#### Those diagrams don't look responsive lol
+
+It's [not my bug][nmb], you're in dark mode and [using Safari][safari].
+
+[^1]: Pass `pikchr_perfect` at build time.
 
 [pic]: https://pikchr.org/home/uv/pic.pdf
 [troff]: https://en.wikipedia.org/wiki/Troff
@@ -153,3 +160,5 @@ text change.
 [lemon]: https://sqlite.org/lemon.html
 [pikchr fork]: https://chiselapp.com/user/mnemnion/repository/pikchresque/doc/trunk/homepage.md
 [zitron]: https://github.com/mnemnion/zitron
+[nmb]: https://github.com/w3c/csswg-drafts/issues/7213
+[safari]: https://bugs.webkit.org/show_bug.cgi?id=199134

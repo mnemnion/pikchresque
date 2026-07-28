@@ -28,7 +28,9 @@
 //! If there are errors in the PIKCHR input, the output will consist of an
 //! error message and the original PIKCHR input text (inside of <pre>...</pre>).
 
-pub const pik_pedantic = false; // maximum compatibility
+const config = @import("config");
+
+pub const pik_pedantic = config.pikchr_perfect; // maximum compatibility
 
 pub const PNum = f64; // Numeric value
 

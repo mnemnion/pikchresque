@@ -9,6 +9,11 @@ pub fn build(b: *std.Build) void {
         "linkage",
         "Library linkage",
     ) orelse .static;
+    const pikchr_perfect = b.option(
+        bool,
+        "pikchr_perfect",
+        "Match Pikchr output semantics exactly",
+    ) orelse false;
 
     const zitron_dep = b.dependency("zitron", .{
         .target = b.graph.host,
@@ -48,6 +53,9 @@ pub fn build(b: *std.Build) void {
         .target = target,
         .optimize = optimize,
     });
+    const pikchr_options = b.addOptions();
+    pikchr_options.addOption(bool, "pikchr_perfect", pikchr_perfect);
+    grammar_mod.addOptions("config", pikchr_options);
 
     const pikchresque_mod = b.addModule("pikchresque", .{
         .root_source_file = b.path("src/pikchresque.zig"),
