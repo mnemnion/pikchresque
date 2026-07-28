@@ -103,13 +103,13 @@ It has enough information that users of screen readers will have \
 as much information about the diagram as text can provide."
 ```
 
-These are properly marked up with aria roles[^1].  I'm no a11y expert,
+These are properly marked up with aria roles[^2].  I'm no a11y expert,
 but my limited experiments with the results suggest that it's at least
 acceptable: which, it pains me to say, is not true of stock Pikchr
 diagrams.  I am open to any informed suggestions about how to improve
 the experience further.
 
-[^1]: Note that the browser will take no interest in these elements
+[^2]: Note that the browser will take no interest in these elements
 unless the SVG is inlined or an `<object>`: as an `<img>` you'll want
 that `alt` tag anyway.
 
