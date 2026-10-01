@@ -1,0 +1,79 @@
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-06fba6fdd3" role="img" viewBox="0 0 709.92 472.32">
+<style>
+#pikchr-06fba6fdd3 {
+._D {dominant-baseline:central}
+._T {fill:transparent}
+._tM {text-anchor:middle}
+color-scheme:light dark;
+._fc {fill:light-dark(rgb(255,182,193),rgb(143,80,91))}
+._fh {fill:light-dark(rgb(173,216,230),rgb(69,109,122))}
+._fm {fill:light-dark(rgb(152,251,152),rgb(19,129,32))}
+._fp {fill:light-dark(rgb(128,0,128),rgb(104,0,105))}
+._fy {fill:light-dark(rgb(0,0,128),rgb(0,0,127))}
+._fab {fill:light-dark(rgb(128,0,0),rgb(111,0,0))}
+._fad {fill:light-dark(rgb(0,0,0),rgb(6,6,6))}
+._fe {fill:light-dark(rgb(255,0,0),rgb(255,7,4))}
+._fj {fill:light-dark(rgb(0,0,255),rgb(24,88,255))}
+._fr {fill:light-dark(rgb(128,0,128),rgb(166,55,165))}
+._fv {fill:light-dark(rgb(0,128,128),rgb(35,144,143))}
+._fb {fill:light-dark(rgb(255,0,0),rgb(255,111,93))}
+._fg {fill:light-dark(rgb(0,0,255),rgb(63,123,255))}
+._fl {fill:light-dark(rgb(0,128,0),rgb(70,174,65))}
+._fo {fill:light-dark(rgb(255,255,255),rgb(252,252,252))}
+._fs {fill:light-dark(rgb(128,0,128),rgb(189,78,187))}
+._fu {fill:light-dark(rgb(0,0,0),rgb(238,238,238))}
+._fx {fill:light-dark(rgb(255,255,0),rgb(243,242,0))}
+._faa {fill:light-dark(rgb(0,255,255),rgb(0,251,251))}
+._sa {stroke:light-dark(rgb(128,0,0),rgb(176,59,47))}
+._sd {stroke:light-dark(rgb(255,0,0),rgb(255,7,4))}
+._sf {stroke:light-dark(rgb(0,0,128),rgb(33,79,195))}
+._si {stroke:light-dark(rgb(0,0,255),rgb(24,88,255))}
+._sk {stroke:light-dark(rgb(0,100,0),rgb(49,133,45))}
+._sq {stroke:light-dark(rgb(128,0,128),rgb(166,55,165))}
+._st {stroke:light-dark(rgb(0,128,128),rgb(35,144,143))}
+._sn {stroke:light-dark(rgb(128,0,128),rgb(104,0,105))}
+._sw {stroke:light-dark(rgb(0,0,128),rgb(0,0,127))}
+._sz {stroke:light-dark(rgb(128,0,0),rgb(111,0,0))}
+._sac {stroke:light-dark(rgb(0,0,0),rgb(6,6,6))}
+}
+</style>
+<path class="box A _sa _fc" d="M2.16,95.76L174.96,95.76L174.96,2.16L2.16,2.16Z"  stroke-width="2.16" />
+<text class="box A _fb _D _tM" x="88.56" y="48.96">red text</text>
+<g class="arrow" >
+<polygon class="arrow _fe" points="268.56,48.96 257.04,53.28 257.04,44.64" />
+<path class="arrow _T _sd" d="M174.96,48.96L262.8,48.96"  stroke-width="2.16" />
+</g>
+<text class="arrow _fb _D _tM" x="221.76" y="37.26">red</text>
+<path class="box B _sf _fh" d="M268.56,95.76L441.36,95.76L441.36,2.16L268.56,2.16Z"  stroke-width="2.16" />
+<text class="box B _fg _D _tM" x="354.96" y="48.96">blue text</text>
+<g class="arrow" >
+<polygon class="arrow _fj" points="534.96,48.96 523.44,53.28 523.44,44.64" />
+<path class="arrow _T _si" d="M441.36,48.96L529.2,48.96"  stroke-width="2.16" />
+</g>
+<text class="arrow _fg _D _tM" x="488.16" y="37.26">blue</text>
+<path class="box C _sk _fm" d="M534.96,95.76L707.76,95.76L707.76,2.16L534.96,2.16Z"  stroke-width="2.16" />
+<text class="box C _fl _D _tM" x="621.36" y="48.96">green text</text>
+<path class="box D _sn _fp" d="M2.16,282.96L174.96,282.96L174.96,189.36L2.16,189.36Z"  stroke-width="2.16" />
+<text class="box D _fo _D _tM" x="88.56" y="226.08">same fill</text>
+<text class="box D _fo _D _tM" x="88.56" y="246.24">and stroke</text>
+<g class="arrow" >
+<polygon class="arrow _fr" points="354.96,236.16 343.44,240.48 343.44,231.84" />
+<path class="arrow _T _sq" d="M174.96,236.16L349.2,236.16"  stroke-width="2.16" />
+</g>
+<circle class="dot _sq _fr" cx="354.96" cy="236.16" r="17.28"  stroke-width="2.16" />
+<text class="text _fs _D _tM" x="354.96" y="293.76">purple dot</text>
+<path class="box E _T _st" d="M534.96,282.96L707.76,282.96L707.76,189.36L534.96,189.36Z"  stroke-width="2.16" />
+<text class="box E _fu _D _tM" x="621.36" y="226.08">transparent</text>
+<text class="box E _fu _D _tM" x="621.36" y="246.24">background</text>
+<g class="arrow" >
+<polygon class="arrow _fv" points="534.96,236.16 523.44,240.48 523.44,231.84" />
+<path class="arrow _T _st" d="M376.56,236.16L529.2,236.16"  stroke-width="2.16" />
+</g>
+<path class="box F _sw _fy" d="M2.16,470.16L174.96,470.16L174.96,376.56L2.16,376.56Z"  stroke-width="2.16" />
+<text class="box F _fx _D _tM" x="88.56" y="423.36">yellow text</text>
+<path class="box G _sz _fab" d="M268.56,470.16L441.36,470.16L441.36,376.56L268.56,376.56Z"  stroke-width="2.16" />
+<text class="box G _faa _D _tM" x="354.96" y="423.36">cyan text</text>
+<path class="box H _sac _fad" d="M534.96,470.16L707.76,470.16L707.76,376.56L534.96,376.56Z"  stroke-width="2.16" />
+<text class="box H _fo _D _tM" x="621.36" y="423.36">white text</text>
+</svg>
+

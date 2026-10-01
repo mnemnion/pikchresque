@@ -1,0 +1,19 @@
+# Matching box fill/stroke are backgrounds; dots and arrowheads are foregrounds.
+# Text deliberately reuses the same RGB values as geometry.
+boxwid = 1.2; boxht = 0.65
+A: box "red text" fill LightPink color Maroon textcolor Red
+arrow right 0.65 color Red "red" above textcolor Red
+B: box "blue text" fill LightBlue color Navy textcolor Blue
+arrow right 0.65 color Blue "blue" above textcolor Blue
+C: box "green text" fill PaleGreen color DarkGreen textcolor Green
+
+D: box "same fill" "and stroke" fill Purple color Purple textcolor White at 1.3 below A
+arrow from D.e to (B.x,D.y) color Purple
+dot at (B.x,D.y) color Purple rad 0.12
+text "purple dot" at (B.x,D.y-0.4) textcolor Purple
+E: box "transparent" "background" fill None color Teal at (C.x,D.y)
+arrow from (B.x+0.15,D.y) to E.w color Teal
+
+F: box "yellow text" fill Navy color Navy textcolor Yellow at 1.3 below D
+G: box "cyan text" fill Maroon color Maroon textcolor Cyan at (B.x,F.y)
+H: box "white text" fill Black color Black textcolor White at (C.x,F.y)

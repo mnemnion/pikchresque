@@ -6,6 +6,8 @@ pub const plaintext_errors: u32 = pik.PIKCHR_PLAINTEXT_ERRORS;
 pub const dark_mode: u32 = pik.PIKCHR_DARK_MODE;
 pub const extra_unique_id: u32 = pik.PIKCHR_EXTRA_UNIQUE_ID;
 pub const pik_single_color = pik.PIKCHR_SINGLE_COLOR;
+/// Use the original RGB dark-mode conversion.
+pub const classic_colorspace: u32 = pik.PIKCHR_CLASSIC_COLORSPACE;
 pub const Pik = pik.Pik;
 pub const PikOptions = pik.PikOptions;
 pub const RenderResult = pik.RenderResult;
@@ -84,6 +86,13 @@ test "Pik options map to C flags" {
     options.single_color = true;
     try std.testing.expectEqual(
         pik_single_color,
+        @as(u32, @bitCast(options)),
+    );
+
+    options = PikOptions.default;
+    options.classic_colorspace = true;
+    try std.testing.expectEqual(
+        classic_colorspace,
         @as(u32, @bitCast(options)),
     );
 }

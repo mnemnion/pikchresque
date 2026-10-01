@@ -1,0 +1,43 @@
+# Each tile: background fill, foreground arrow/dot, colored text.
+# Repeated colors intentionally exercise distinct visual roles.
+boxwid = 1.15; boxht = 0.4; textht = 0.13
+B0: box "maroon" fill 0x400010 textcolor White at (0.0,0.0)
+arrow from (-0.48,-0.45) to (0.48,-0.45) color 0x400010
+dot at (0.0,-0.65) color 0x400010
+text "0x400010" at (0.0,-0.9) textcolor 0x400010
+box wid 1.15 ht 0.3 fill 0x400010 color 0x400010 at (0.0,-1.2)
+B1: box "brown" fill 0x603010 textcolor White at (1.35,0.0)
+arrow from (0.8700000000000001,-0.45) to (1.83,-0.45) color 0x603010
+dot at (1.35,-0.65) color 0x603010
+text "0x603010" at (1.35,-0.9) textcolor 0x603010
+box wid 1.15 ht 0.3 fill 0x603010 color 0x603010 at (1.35,-1.2)
+B2: box "olive" fill 0x505010 textcolor White at (2.7,0.0)
+arrow from (2.22,-0.45) to (3.18,-0.45) color 0x505010
+dot at (2.7,-0.65) color 0x505010
+text "0x505010" at (2.7,-0.9) textcolor 0x505010
+box wid 1.15 ht 0.3 fill 0x505010 color 0x505010 at (2.7,-1.2)
+B3: box "forest" fill 0x003020 textcolor White at (4.050000000000001,0.0)
+arrow from (3.5700000000000007,-0.45) to (4.530000000000001,-0.45) color 0x003020
+dot at (4.050000000000001,-0.65) color 0x003020
+text "0x003020" at (4.050000000000001,-0.9) textcolor 0x003020
+box wid 1.15 ht 0.3 fill 0x003020 color 0x003020 at (4.050000000000001,-1.2)
+B4: box "teal" fill 0x004050 textcolor White at (0.0,-1.6)
+arrow from (-0.48,-2.0500000000000003) to (0.48,-2.0500000000000003) color 0x004050
+dot at (0.0,-2.25) color 0x004050
+text "0x004050" at (0.0,-2.5) textcolor 0x004050
+box wid 1.15 ht 0.3 fill 0x004050 color 0x004050 at (0.0,-2.8)
+B5: box "navy" fill 0x000040 textcolor White at (1.35,-1.6)
+arrow from (0.8700000000000001,-2.0500000000000003) to (1.83,-2.0500000000000003) color 0x000040
+dot at (1.35,-2.25) color 0x000040
+text "0x000040" at (1.35,-2.5) textcolor 0x000040
+box wid 1.15 ht 0.3 fill 0x000040 color 0x000040 at (1.35,-2.8)
+B6: box "indigo" fill 0x250040 textcolor White at (2.7,-1.6)
+arrow from (2.22,-2.0500000000000003) to (3.18,-2.0500000000000003) color 0x250040
+dot at (2.7,-2.25) color 0x250040
+text "0x250040" at (2.7,-2.5) textcolor 0x250040
+box wid 1.15 ht 0.3 fill 0x250040 color 0x250040 at (2.7,-2.8)
+B7: box "plum" fill 0x500040 textcolor White at (4.050000000000001,-1.6)
+arrow from (3.5700000000000007,-2.0500000000000003) to (4.530000000000001,-2.0500000000000003) color 0x500040
+dot at (4.050000000000001,-2.25) color 0x500040
+text "0x500040" at (4.050000000000001,-2.5) textcolor 0x500040
+box wid 1.15 ht 0.3 fill 0x500040 color 0x500040 at (4.050000000000001,-2.8)

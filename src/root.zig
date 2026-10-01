@@ -5,6 +5,8 @@ pub const PIKCHR_PLAINTEXT_ERRORS: c_uint = pikchresque.plaintext_errors;
 pub const PIKCHR_DARK_MODE: c_uint = pikchresque.dark_mode;
 pub const PIKCHR_EXTRA_UNIQUE_ID: c_uint = pikchresque.extra_unique_id;
 pub const PIKCHR_SINGLE_COLOR: c_uint = pikchresque.pik_single_color;
+/// Use the original RGB dark-mode conversion.
+pub const PIKCHR_CLASSIC_COLORSPACE: c_uint = pikchresque.classic_colorspace;
 
 /// Parse the zero-terminated Pikchr script in `source`.
 ///
@@ -82,4 +84,15 @@ test "C interface reports rendering errors with negative dimensions" {
 
     try std.testing.expectEqual(@as(c_int, -1), width);
     try std.testing.expectEqual(@as(c_int, -1), height);
+}
+
+test "C interface selects classic colorspace" {
+    const source = "arrow color 0x112233\n";
+    const classic = pikchr(source, null, PIKCHR_CLASSIC_COLORSPACE | PIKCHR_SINGLE_COLOR | PIKCHR_DARK_MODE, null, null).?;
+    defer std.c.free(classic);
+    const modern = pikchr(source, null, PIKCHR_SINGLE_COLOR | PIKCHR_DARK_MODE, null, null).?;
+    defer std.c.free(modern);
+
+    try std.testing.expect(std.mem.indexOf(u8, std.mem.span(classic), "stroke:rgb(204,221,238)") != null);
+    try std.testing.expect(std.mem.indexOf(u8, std.mem.span(modern), "stroke:rgb(204,221,238)") == null);
 }

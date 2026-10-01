@@ -30,6 +30,9 @@ extern "C" {
 */
 #define PIKCHR_SINGLE_COLOR     0x0008u
 
+/* Use the original RGB dark-mode conversion instead of OKLCH. */
+#define PIKCHR_CLASSIC_COLORSPACE 0x0010u
+
 /*
 ** Parse the PIKCHR script contained in source[]. Return an SVG rendering, or
 ** HTML-formatted error text if an error is encountered. If
