@@ -56,6 +56,11 @@ pub fn build(b: *std.Build) void {
     const pikchr_options = b.addOptions();
     pikchr_options.addOption(bool, "pikchr_perfect", pikchr_perfect);
     grammar_mod.addOptions("config", pikchr_options);
+    const memex_dep = b.dependency("memex", .{
+        .target = target,
+        .optimize = optimize,
+    });
+    grammar_mod.addImport("memex_color", memex_dep.module("color"));
 
     const pikchresque_mod = b.addModule("pikchresque", .{
         .root_source_file = b.path("src/pikchresque.zig"),

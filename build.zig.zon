@@ -13,6 +13,10 @@
             .url = "https://github.com/mnemnion/zitron/archive/refs/tags/v0.2.4.tar.gz",
             .hash = "zitron-0.2.4--jF1ZkN5EQDtc9DlfsvXerhHnKtjoDZx3lvDmdund9We",
         },
+        .memex = .{
+            .url = "https://github.com/mnemnion/memex/archive/refs/tags/v0.1.1.tar.gz",
+            .hash = "memex-0.1.1-L7-4aaQUAgDyi0E9MTfCw5LNm9isuZ4R3AAg6BMhIq8w",
+        },
     },
 
     .paths = .{

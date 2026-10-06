@@ -172,6 +172,7 @@ fn usage(stderr: *std.Io.Writer, argv0: []const u8) !void {
         \\Convert Pikchr input files into SVG.  Filename "-" means stdin.
         \\    All output goes to stdout.
         \\    Options:
+        \\       --classic-colorspace Use the original RGB dark-mode conversion
         \\       --dark-mode      Generate dark-mode output if single-color is set
         \\       --dont-stop      Process all files even if earlier files have errors
         \\       --single-color   Generate single-color light output
@@ -302,6 +303,8 @@ pub fn main(init: std.process.Init) !void {
                 options.dark_mode = true;
             } else if (std.mem.eql(u8, option, "single-color")) {
                 options.single_color = true;
+            } else if (std.mem.eql(u8, option, "classic-colorspace")) {
+                options.classic_colorspace = true;
             } else if (std.mem.eql(u8, option, "svg-only")) {
                 if (!html_header_pending) {
                     try stderr.print("the \"{s}\" option must come first\n", .{arg});

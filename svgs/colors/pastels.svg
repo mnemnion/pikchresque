@@ -1,0 +1,125 @@
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-a089ee1cde" role="img" viewBox="0 0 753.12 457.92">
+<style>
+#pikchr-a089ee1cde {
+._D {dominant-baseline:central}
+._T {fill:transparent}
+._tM {text-anchor:middle}
+color-scheme:light dark;
+._fc {fill:light-dark(rgb(255,214,224),rgb(132,97,106))}
+._fh {fill:light-dark(rgb(255,218,185),rgb(133,100,71))}
+._fm {fill:light-dark(rgb(255,250,205),rgb(122,118,77))}
+._fr {fill:light-dark(rgb(193,240,208),rgb(76,119,91))}
+._fw {fill:light-dark(rgb(208,244,255),rgb(85,118,127))}
+._fab {fill:light-dark(rgb(204,204,255),rgb(98,97,142))}
+._fag {fill:light-dark(rgb(230,199,255),rgb(118,90,140))}
+._fal {fill:light-dark(rgb(248,244,237),rgb(162,159,152))}
+._fe {fill:light-dark(rgb(255,214,224),rgb(204,165,175))}
+._fj {fill:light-dark(rgb(255,218,185),rgb(205,170,138))}
+._fo {fill:light-dark(rgb(255,250,205),rgb(193,189,145))}
+._ft {fill:light-dark(rgb(193,240,208),rgb(145,190,160))}
+._fy {fill:light-dark(rgb(208,244,255),rgb(154,189,199))}
+._fad {fill:light-dark(rgb(204,204,255),rgb(165,165,214))}
+._fai {fill:light-dark(rgb(230,199,255),rgb(188,158,211))}
+._fan {fill:light-dark(rgb(248,244,237),rgb(232,228,221))}
+._fb {fill:light-dark(rgb(0,0,0),rgb(238,238,238))}
+._ff {fill:light-dark(rgb(255,214,224),rgb(250,209,219))}
+._fk {fill:light-dark(rgb(255,218,185),rgb(250,214,181))}
+._fp {fill:light-dark(rgb(255,250,205),rgb(241,236,192))}
+._fu {fill:light-dark(rgb(193,240,208),rgb(188,235,203))}
+._fz {fill:light-dark(rgb(208,244,255),rgb(199,235,246))}
+._fae {fill:light-dark(rgb(204,204,255),rgb(206,206,255))}
+._faj {fill:light-dark(rgb(230,199,255),rgb(231,200,255))}
+._fao {fill:light-dark(rgb(248,244,237),rgb(252,248,241))}
+._sa {stroke:light-dark(rgb(0,0,0),rgb(206,206,206))}
+._sd {stroke:light-dark(rgb(255,214,224),rgb(204,165,175))}
+._si {stroke:light-dark(rgb(255,218,185),rgb(205,170,138))}
+._sn {stroke:light-dark(rgb(255,250,205),rgb(193,189,145))}
+._ss {stroke:light-dark(rgb(193,240,208),rgb(145,190,160))}
+._sx {stroke:light-dark(rgb(208,244,255),rgb(154,189,199))}
+._sac {stroke:light-dark(rgb(204,204,255),rgb(165,165,214))}
+._sah {stroke:light-dark(rgb(230,199,255),rgb(188,158,211))}
+._sam {stroke:light-dark(rgb(248,244,237),rgb(232,228,221))}
+._sg {stroke:light-dark(rgb(255,214,224),rgb(132,97,106))}
+._sl {stroke:light-dark(rgb(255,218,185),rgb(133,100,71))}
+._sq {stroke:light-dark(rgb(255,250,205),rgb(122,118,77))}
+._sv {stroke:light-dark(rgb(193,240,208),rgb(76,119,91))}
+._saa {stroke:light-dark(rgb(208,244,255),rgb(85,118,127))}
+._saf {stroke:light-dark(rgb(204,204,255),rgb(98,97,142))}
+._sak {stroke:light-dark(rgb(230,199,255),rgb(118,90,140))}
+._sap {stroke:light-dark(rgb(248,244,237),rgb(162,159,152))}
+}
+</style>
+<path class="box B0 _sa _fc" d="M2.16,59.76L167.76,59.76L167.76,2.16L2.16,2.16Z"  stroke-width="2.16" />
+<text class="box B0 _fb _D _tM" x="84.96" y="30.96">rose</text>
+<g class="arrow" >
+<polygon class="arrow _fe" points="154.08,95.76 142.56,100.08 142.56,91.44" />
+<path class="arrow _T _sd" d="M15.84,95.76L148.32,95.76"  stroke-width="2.16" />
+</g>
+<circle class="dot _sd _fe" cx="84.96" cy="124.56" r="2.16"  stroke-width="2.16" />
+<text class="text _ff _D _tM" x="84.96" y="160.56">0xffd6e0</text>
+<path class="box _sg _fc" d="M2.16,225.36L167.76,225.36L167.76,182.16L2.16,182.16Z"  stroke-width="2.16" />
+<path class="box B1 _sa _fh" d="M196.56,59.76L362.16,59.76L362.16,2.16L196.56,2.16Z"  stroke-width="2.16" />
+<text class="box B1 _fb _D _tM" x="279.36" y="30.96">peach</text>
+<g class="arrow" >
+<polygon class="arrow _fj" points="348.48,95.76 336.96,100.08 336.96,91.44" />
+<path class="arrow _T _si" d="M210.24,95.76L342.72,95.76"  stroke-width="2.16" />
+</g>
+<circle class="dot _si _fj" cx="279.36" cy="124.56" r="2.16"  stroke-width="2.16" />
+<text class="text _fk _D _tM" x="279.36" y="160.56">0xffdab9</text>
+<path class="box _sl _fh" d="M196.56,225.36L362.16,225.36L362.16,182.16L196.56,182.16Z"  stroke-width="2.16" />
+<path class="box B2 _sa _fm" d="M390.96,59.76L556.56,59.76L556.56,2.16L390.96,2.16Z"  stroke-width="2.16" />
+<text class="box B2 _fb _D _tM" x="473.76" y="30.96">cream</text>
+<g class="arrow" >
+<polygon class="arrow _fo" points="542.88,95.76 531.36,100.08 531.36,91.44" />
+<path class="arrow _T _sn" d="M404.64,95.76L537.12,95.76"  stroke-width="2.16" />
+</g>
+<circle class="dot _sn _fo" cx="473.76" cy="124.56" r="2.16"  stroke-width="2.16" />
+<text class="text _fp _D _tM" x="473.76" y="160.56">0xfffacd</text>
+<path class="box _sq _fm" d="M390.96,225.36L556.56,225.36L556.56,182.16L390.96,182.16Z"  stroke-width="2.16" />
+<path class="box B3 _sa _fr" d="M585.36,59.76L750.96,59.76L750.96,2.16L585.36,2.16Z"  stroke-width="2.16" />
+<text class="box B3 _fb _D _tM" x="668.16" y="30.96">mint</text>
+<g class="arrow" >
+<polygon class="arrow _ft" points="737.28,95.76 725.76,100.08 725.76,91.44" />
+<path class="arrow _T _ss" d="M599.04,95.76L731.52,95.76"  stroke-width="2.16" />
+</g>
+<circle class="dot _ss _ft" cx="668.16" cy="124.56" r="2.16"  stroke-width="2.16" />
+<text class="text _fu _D _tM" x="668.16" y="160.56">0xc1f0d0</text>
+<path class="box _sv _fr" d="M585.36,225.36L750.96,225.36L750.96,182.16L585.36,182.16Z"  stroke-width="2.16" />
+<path class="box B4 _sa _fw" d="M2.16,290.16L167.76,290.16L167.76,232.56L2.16,232.56Z"  stroke-width="2.16" />
+<text class="box B4 _fb _D _tM" x="84.96" y="261.36">ice</text>
+<g class="arrow" >
+<polygon class="arrow _fy" points="154.08,326.16 142.56,330.48 142.56,321.84" />
+<path class="arrow _T _sx" d="M15.84,326.16L148.32,326.16"  stroke-width="2.16" />
+</g>
+<circle class="dot _sx _fy" cx="84.96" cy="354.96" r="2.16"  stroke-width="2.16" />
+<text class="text _fz _D _tM" x="84.96" y="390.96">0xd0f4ff</text>
+<path class="box _saa _fw" d="M2.16,455.76L167.76,455.76L167.76,412.56L2.16,412.56Z"  stroke-width="2.16" />
+<path class="box B5 _sa _fab" d="M196.56,290.16L362.16,290.16L362.16,232.56L196.56,232.56Z"  stroke-width="2.16" />
+<text class="box B5 _fb _D _tM" x="279.36" y="261.36">periwinkle</text>
+<g class="arrow" >
+<polygon class="arrow _fad" points="348.48,326.16 336.96,330.48 336.96,321.84" />
+<path class="arrow _T _sac" d="M210.24,326.16L342.72,326.16"  stroke-width="2.16" />
+</g>
+<circle class="dot _sac _fad" cx="279.36" cy="354.96" r="2.16"  stroke-width="2.16" />
+<text class="text _fae _D _tM" x="279.36" y="390.96">0xccccff</text>
+<path class="box _saf _fab" d="M196.56,455.76L362.16,455.76L362.16,412.56L196.56,412.56Z"  stroke-width="2.16" />
+<path class="box B6 _sa _fag" d="M390.96,290.16L556.56,290.16L556.56,232.56L390.96,232.56Z"  stroke-width="2.16" />
+<text class="box B6 _fb _D _tM" x="473.76" y="261.36">lavender</text>
+<g class="arrow" >
+<polygon class="arrow _fai" points="542.88,326.16 531.36,330.48 531.36,321.84" />
+<path class="arrow _T _sah" d="M404.64,326.16L537.12,326.16"  stroke-width="2.16" />
+</g>
+<circle class="dot _sah _fai" cx="473.76" cy="354.96" r="2.16"  stroke-width="2.16" />
+<text class="text _faj _D _tM" x="473.76" y="390.96">0xe6c7ff</text>
+<path class="box _sak _fag" d="M390.96,455.76L556.56,455.76L556.56,412.56L390.96,412.56Z"  stroke-width="2.16" />
+<path class="box B7 _sa _fal" d="M585.36,290.16L750.96,290.16L750.96,232.56L585.36,232.56Z"  stroke-width="2.16" />
+<text class="box B7 _fb _D _tM" x="668.16" y="261.36">near white</text>
+<g class="arrow" >
+<polygon class="arrow _fan" points="737.28,326.16 725.76,330.48 725.76,321.84" />
+<path class="arrow _T _sam" d="M599.04,326.16L731.52,326.16"  stroke-width="2.16" />
+</g>
+<circle class="dot _sam _fan" cx="668.16" cy="354.96" r="2.16"  stroke-width="2.16" />
+<text class="text _fao _D _tM" x="668.16" y="390.96">0xf8f4ed</text>
+<path class="box _sap _fal" d="M585.36,455.76L750.96,455.76L750.96,412.56L585.36,412.56Z"  stroke-width="2.16" />
+</svg>
+
