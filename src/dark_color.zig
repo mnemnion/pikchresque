@@ -3,16 +3,37 @@
 /// The visual role of a diagram color, independent of SVG fill versus stroke.
 pub const Role = enum { accent, background, text };
 
-/// Convert packed sRGB to a dark-mode color, preserving OKLCH hue and chroma
-/// until memex maps the result back into the sRGB gamut.
+/// Convert packed sRGB to a dark-mode color, with gentler darkening and a small
+/// warmward hue correction for yellows. Memex maps the result into the sRGB gamut.
 pub fn convert(rgb_value: i32, role: Role) i32 {
     var color = Rgb.fromPacked(rgb_value).toOklch();
+    const original_lightness = color.l;
     color.l = switch (role) {
         .accent => accentLightness(color.l, color.c),
         .background => backgroundLightness(color.l, color.c),
         .text => textLightness(color.l, color.c),
     };
+    const lightness_drop = original_lightness - color.l;
+    color.l = yellowLightness(color.l, original_lightness, color.h, color.c);
+    color.h = warmYellowHue(color.h, color.c, lightness_drop);
     return color.toRgb().toPacked(i32);
+}
+
+fn warmYellowHue(hue: f64, chroma: f64, lightness_drop: f64) f64 {
+    const darkened = smoothstep(lightness_drop / 0.25);
+    return hue - 8.0 * yellowWeight(hue, chroma) * darkened;
+}
+
+fn yellowLightness(lightness: f64, original_lightness: f64, hue: f64, chroma: f64) f64 {
+    const saturated = smoothstep((chroma - 0.06) / 0.14);
+    const retained = 0.20 + 0.25 * saturated;
+    return lightness + retained * yellowWeight(hue, chroma) * @max(0, original_lightness - lightness);
+}
+
+fn yellowWeight(hue: f64, chroma: f64) f64 {
+    const yellow = smoothstep((hue - 90.0) / 15.0) * smoothstep((120.0 - hue) / 15.0);
+    const colored = smoothstep(chroma / NEUTRAL_CHROMA);
+    return yellow * colored;
 }
 
 fn accentLightness(lightness: f64, chroma: f64) f64 {
@@ -79,6 +100,124 @@ test "dark colors retain hue for an in-gamut muted color" {
     }
 }
 
+test "darkened yellow and cream stay warm after sRGB gamut mapping" {
+    for ([_]i32{ 0xffff00, 0xfffacd }) |rgb_value| {
+        const original = Rgb.fromPacked(rgb_value).toOklch();
+        for ([_]Role{ .accent, .background, .text }) |role| {
+            const rgb = Rgb.fromPacked(convert(rgb_value, role));
+            const converted = rgb.toOklch();
+            const lightness = switch (role) {
+                .accent => accentLightness(original.l, original.c),
+                .background => backgroundLightness(original.l, original.c),
+                .text => textLightness(original.l, original.c),
+            };
+            try expect(rgb.r > rgb.g);
+            try expect(rgb.g > rgb.b);
+            const recovered = (converted.l - lightness) / (original.l - lightness);
+            if (rgb_value == 0xffff00) {
+                try expect(recovered > 0.30 and recovered < 0.40);
+            } else {
+                try expect(recovered > 0.12 and recovered < 0.25);
+            }
+            try expect(converted.l < original.l);
+            if (role == .text) {
+                try expectApproxEqAbs(original.h, converted.h, 1.0);
+            } else {
+                try expect(original.h - converted.h > 3.0);
+                try expect(original.h - converted.h < 9.0);
+            }
+        }
+    }
+}
+
+test "yellow lightness easing preserves role separation and monotonic ramps" {
+    for ([_]i32{ 0xffff00, 0xfffacd }) |rgb_value| {
+        const fill = Rgb.fromPacked(convert(rgb_value, .background)).toOklch();
+        const accent = Rgb.fromPacked(convert(rgb_value, .accent)).toOklch();
+        const text = Rgb.fromPacked(convert(rgb_value, .text)).toOklch();
+        try expect(accent.l - fill.l > 0.12);
+        try expect(text.l - accent.l > 0.08);
+    }
+    for ([_]f64{ 90, 97.5, 105, 112.5, 120 }) |hue| {
+        for ([_]f64{ 0, 0.01, 0.02, 0.04, 0.2 }) |chroma| {
+            for ([_]Role{ .accent, .background, .text }) |role| {
+                var previous: f64 = -1;
+                for (0..201) |step| {
+                    const original = @as(f64, @floatFromInt(step)) / 200.0;
+                    const mapped = switch (role) {
+                        .accent => accentLightness(original, chroma),
+                        .background => backgroundLightness(original, chroma),
+                        .text => textLightness(original, chroma),
+                    };
+                    const eased = yellowLightness(mapped, original, hue, chroma);
+                    try expect(eased > previous);
+                    try expect(eased >= mapped and eased <= @max(mapped, original));
+                    if (mapped >= original or hue == 90 or hue == 120 or chroma == 0) {
+                        try expectApproxEqAbs(mapped, eased, 0);
+                    }
+                    previous = eased;
+                }
+            }
+        }
+    }
+}
+
+test "yellow lightness lift grows smoothly with chroma and favors saturation over cream" {
+    var previous = yellowLightness(0.55, 0.97, 105, 0);
+    for (1..301) |step| {
+        const chroma = @as(f64, @floatFromInt(step)) / 1000.0;
+        const lifted = yellowLightness(0.55, 0.97, 105, chroma);
+        try expect(lifted >= previous);
+        try expect(lifted - previous < 0.004);
+        try expect(lifted <= 0.74);
+        previous = lifted;
+    }
+    for ([_]i32{ 0xffff00, 0xfffacd }) |rgb_value| {
+        const original = Rgb.fromPacked(rgb_value).toOklch();
+        const mapped = backgroundLightness(original.l, original.c);
+        const previous_lightness = mapped + 0.20 * yellowWeight(original.h, original.c) * (original.l - mapped);
+        const converted = Rgb.fromPacked(convert(rgb_value, .background)).toOklch();
+        if (rgb_value == 0xffff00) {
+            try expect(converted.l - previous_lightness > 0.07);
+        } else {
+            try expectApproxEqAbs(previous_lightness, converted.l, 0.01);
+        }
+    }
+}
+
+test "yellow correction leaves other color families and neutrals unchanged" {
+    for ([_]i32{
+        0xff0000, 0xff8000, 0x00ff00, 0x00ffff, 0x0000ff, 0xff00ff,
+        0xffd6e0, 0xffdab9, 0xc1f0d0, 0xd0f4ff, 0xccccff, 0xe6c7ff,
+        0xf8f4ed, 0x000000, 0x777777, 0xffffff,
+    }) |rgb_value| {
+        for ([_]Role{ .accent, .background, .text }) |role| {
+            var original = Rgb.fromPacked(rgb_value).toOklch();
+            original.l = switch (role) {
+                .accent => accentLightness(original.l, original.c),
+                .background => backgroundLightness(original.l, original.c),
+                .text => textLightness(original.l, original.c),
+            };
+            try std.testing.expectEqual(original.toRgb().toPacked(i32), convert(rgb_value, role));
+        }
+    }
+}
+
+test "yellow correction is bounded and continuous at its hue boundaries" {
+    var previous = warmYellowHue(0, 0.2, 0.3);
+    for (1..3601) |step| {
+        const hue = @as(f64, @floatFromInt(step)) / 10.0;
+        const corrected = warmYellowHue(hue, 0.2, 0.3);
+        try expect(corrected > previous);
+        try expect(corrected - previous < 0.19);
+        try expect(hue - corrected >= 0 and hue - corrected <= 8.0);
+        if (hue <= 90 or hue >= 120) try expectApproxEqAbs(hue, corrected, 0);
+        try expectApproxEqAbs(hue, warmYellowHue(hue, 0, 0.3), 0);
+        try expectApproxEqAbs(hue, warmYellowHue(hue, 0.2, -0.1), 0);
+        previous = corrected;
+    }
+}
+
 test "dark colors map saturated primaries and secondaries into sRGB" {
     for ([_]i32{ 0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0x00ffff, 0xff00ff }) |rgb_value| {
         for ([_]Role{ .accent, .background, .text }) |role| {
@@ -92,7 +231,8 @@ test "dark colors map saturated primaries and secondaries into sRGB" {
                 .background => backgroundLightness(original_lightness, original.c),
                 .text => 0.36 + 0.59 * original_lightness,
             };
-            try expectApproxEqAbs(expected, lightness, 0.025);
+            const eased = yellowLightness(expected, original.l, original.h, original.c);
+            try expectApproxEqAbs(eased, lightness, 0.025);
         }
     }
 }
