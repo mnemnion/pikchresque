@@ -309,7 +309,7 @@ pub const PObj = struct {
         .nTxt = 0,
         .mProp = 0,
         .mCalc = 0,
-        .aTxt = [_]PToken{.zero} ** 5,
+        .aTxt = @splat(.zero),
         .iLayer = 0,
         .inDir = 0,
         .outDir = 0,
@@ -451,7 +451,7 @@ pub const Pik = struct {
         .hSVG = 0,
         .fgcolor = -1,
         .bgcolor = -1,
-        .seenColor = [_]u8{0} ** 150,
+        .seenColor = @splat(0),
         .hFill = .empty,
         .hTextFill = .empty,
         .hFgFill = .empty,
@@ -460,9 +460,9 @@ pub const Pik = struct {
         .varGen = .{ 'a', 0, 0, 0 },
         .nTPath = 0,
         .mTPath = 0,
-        .aTPath = [_]PPoint{.zero} ** 1000,
+        .aTPath = @splat(.zero),
         .nCtx = 0,
-        .aCtx = [_]PToken{.zero} ** 10,
+        .aCtx = @splat(.zero),
     };
 
     /// Set up a Pik for rendering.  This expects the receiver to have been
@@ -6034,7 +6034,7 @@ fn pik_tokenize(p: *Pik, input: *PToken, parser: *PikParser, m_params: ?[]PToken
             break :blk pik_find_macro(p, &token) != null;
         }) {
             const mac = pik_find_macro(p, &token).?;
-            var args = [_]PToken{.zero} ** 9;
+            var args: [9]PToken = @splat(.zero);
             const j = i + sz;
             if (mac.inUse != 0) {
                 pik_error(p, &mac.macroName, "recursive macro definition");
