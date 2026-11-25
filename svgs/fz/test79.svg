@@ -1,12 +1,13 @@
-<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-e9b288cd31" role="img" viewBox="0 0 536.371 74.88">
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-c62d8320a3" role="img" viewBox="0 0 536.371 74.88">
 <style>
-#pikchr-e9b288cd31 {
+#pikchr-c62d8320a3 {
 ._D {dominant-baseline:central}
 ._T {fill:transparent}
 ._tM {text-anchor:middle}
 color-scheme:light dark;
-._fb {fill:light-dark(rgb(0,0,0),rgb(255,255,255))}
-._sa {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._fc {fill:light-dark(rgb(0,0,0),rgb(206,206,206))}
+._fb {fill:light-dark(rgb(0,0,0),rgb(238,238,238))}
+._sa {stroke:light-dark(rgb(0,0,0),rgb(206,206,206))}
 }
 </style>
 <path class="box _T _sa" d="M2.16,72.72L97.8912,72.72L97.8912,2.16L2.16,2.16Z"  stroke-width="2.16" />
@@ -14,7 +15,7 @@ color-scheme:light dark;
 <text class="box _fb _D _tM" x="50.0256" y="37.44">Thickness</text>
 <text class="box _fb _D _tM" x="50.0256" y="57.6">Lines</text>
 <g class="arrow" >
-<polygon class="arrow _fb" points="241.891,37.44 230.371,41.76 230.371,33.12" />
+<polygon class="arrow _fc" points="241.891,37.44 230.371,41.76 230.371,33.12" />
 <path class="arrow _T _sa" d="M169.891,37.44L236.131,37.44"  stroke-width="2.16" />
 </g>
 <text class="arrow _fb _D _tM" x="205.891" y="25.74">above</text>

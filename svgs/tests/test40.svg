@@ -1,16 +1,16 @@
 3 9<br>
 -5.5<br>
-<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-709410ad8d" role="img" viewBox="0 0 112.838 74.88">
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-d4b0b3424f" role="img" viewBox="0 0 112.838 74.88">
 <style>
-#pikchr-709410ad8d {
+#pikchr-d4b0b3424f {
 ._D {dominant-baseline:central}
 ._T {fill:transparent}
 ._tM {text-anchor:middle}
 ._Fb {font-weight:bold}
 ._Fi {font-style:italic}
 color-scheme:light dark;
-._fb {fill:light-dark(rgb(0,0,0),rgb(255,255,255))}
-._sa {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._fb {fill:light-dark(rgb(0,0,0),rgb(238,238,238))}
+._sa {stroke:light-dark(rgb(0,0,0),rgb(206,206,206))}
 }
 </style>
 <path class="box _T _sa" d="M2.16,72.72L110.678,72.72L110.678,2.16L2.16,2.16Z"  stroke-width="2.16" />

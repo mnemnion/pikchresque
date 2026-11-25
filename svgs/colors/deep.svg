@@ -7,7 +7,7 @@
 color-scheme:light dark;
 ._fc {fill:light-dark(rgb(64,0,16),rgb(68,3,19))}
 ._fh {fill:light-dark(rgb(96,48,16),rgb(83,36,2))}
-._fm {fill:light-dark(rgb(80,80,16),rgb(62,61,0))}
+._fm {fill:light-dark(rgb(80,80,16),rgb(66,64,0))}
 ._fr {fill:light-dark(rgb(0,48,32),rgb(0,47,31))}
 ._fw {fill:light-dark(rgb(0,64,80),rgb(0,55,70))}
 ._fab {fill:light-dark(rgb(0,0,64),rgb(0,13,77))}
@@ -41,7 +41,7 @@ color-scheme:light dark;
 ._sam {stroke:light-dark(rgb(80,0,64),rgb(138,61,117))}
 ._sg {stroke:light-dark(rgb(64,0,16),rgb(68,3,19))}
 ._sl {stroke:light-dark(rgb(96,48,16),rgb(83,36,2))}
-._sq {stroke:light-dark(rgb(80,80,16),rgb(62,61,0))}
+._sq {stroke:light-dark(rgb(80,80,16),rgb(66,64,0))}
 ._sv {stroke:light-dark(rgb(0,48,32),rgb(0,47,31))}
 ._saa {stroke:light-dark(rgb(0,64,80),rgb(0,55,70))}
 ._saf {stroke:light-dark(rgb(0,0,64),rgb(0,13,77))}

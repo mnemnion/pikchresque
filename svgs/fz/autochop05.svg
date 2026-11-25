@@ -1,12 +1,12 @@
-<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-a85b7f8f8c" role="img" viewBox="0 0 344.477 344.477">
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-7cd9236a23" role="img" viewBox="0 0 344.477 344.477">
 <style>
-#pikchr-a85b7f8f8c {
+#pikchr-7cd9236a23 {
 ._D {dominant-baseline:central}
 ._T {fill:transparent}
 ._tM {text-anchor:middle}
 color-scheme:light dark;
-._fb {fill:light-dark(rgb(0,0,0),rgb(255,255,255))}
-._sa {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._fb {fill:light-dark(rgb(0,0,0),rgb(238,238,238))}
+._sa {stroke:light-dark(rgb(0,0,0),rgb(206,206,206))}
 }
 </style>
 <path class="oval C _T _sa" d="M136.239,208.239L208.239,208.239A36 36 0 0 0 244.239 172.239A36 36 0 0 0 208.239 136.239L136.239,136.239A36 36 0 0 0 100.239 172.239A36 36 0 0 0 136.239 208.239Z"  stroke-width="2.16" />

@@ -1,14 +1,14 @@
-<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-53168b664a" role="img" viewBox="0 0 627.942 146.052">
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-8e986347ef" role="img" viewBox="0 0 627.942 146.052">
 <style>
-#pikchr-53168b664a {
+#pikchr-8e986347ef {
 ._D {dominant-baseline:central}
 ._T {fill:transparent}
 ._tM {text-anchor:middle}
 color-scheme:light dark;
-._fb {fill:light-dark(rgb(0,0,0),rgb(255,255,255))}
-._fd {fill:light-dark(rgb(255,0,0),rgb(255,127,127))}
-._sa {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
-._sc {stroke:light-dark(rgb(255,0,0),rgb(255,127,127))}
+._fd {fill:light-dark(rgb(255,0,0),rgb(255,7,4))}
+._fb {fill:light-dark(rgb(0,0,0),rgb(238,238,238))}
+._sa {stroke:light-dark(rgb(0,0,0),rgb(206,206,206))}
+._sc {stroke:light-dark(rgb(255,0,0),rgb(255,7,4))}
 }
 </style>
 <circle class="circle _T _sa" cx="313.971" cy="73.0261" r="36"  stroke-width="2.16" />

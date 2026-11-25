@@ -1,24 +1,24 @@
-<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-c305aa544c" role="img" viewBox="0 0 706.234 121.493">
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-cc61382a34" role="img" viewBox="0 0 706.234 121.493">
 <style>
-#pikchr-c305aa544c {
+#pikchr-cc61382a34 {
 ._D {dominant-baseline:central}
 ._T {fill:transparent}
 ._tM {text-anchor:middle}
 color-scheme:light dark;
-._fc {fill:light-dark(rgb(255,0,0),rgb(127,0,0))}
-._fd {fill:light-dark(rgb(255,165,0),rgb(127,82,0))}
-._fe {fill:light-dark(rgb(255,255,0),rgb(127,127,0))}
-._ff {fill:light-dark(rgb(0,128,0),rgb(63,127,63))}
-._fg {fill:light-dark(rgb(0,0,255),rgb(0,0,127))}
-._fh {fill:light-dark(rgb(238,130,238),rgb(125,17,125))}
-._fb {fill:light-dark(rgb(0,0,0),rgb(255,255,255))}
-._sa {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
-._si {stroke:light-dark(rgb(255,0,0),rgb(255,127,127))}
-._sj {stroke:light-dark(rgb(255,165,0),rgb(255,209,127))}
-._sk {stroke:light-dark(rgb(255,255,0),rgb(255,255,127))}
-._sl {stroke:light-dark(rgb(0,128,0),rgb(127,255,127))}
-._sm {stroke:light-dark(rgb(0,0,255),rgb(127,127,255))}
-._sn {stroke:light-dark(rgb(238,130,238),rgb(255,127,255))}
+._fc {fill:light-dark(rgb(255,0,0),rgb(170,0,0))}
+._fd {fill:light-dark(rgb(255,165,0),rgb(141,81,0))}
+._fe {fill:light-dark(rgb(255,255,0),rgb(176,160,0))}
+._ff {fill:light-dark(rgb(0,128,0),rgb(0,92,0))}
+._fg {fill:light-dark(rgb(0,0,255),rgb(4,0,205))}
+._fh {fill:light-dark(rgb(238,130,238),rgb(146,41,148))}
+._fb {fill:light-dark(rgb(0,0,0),rgb(238,238,238))}
+._sa {stroke:light-dark(rgb(0,0,0),rgb(206,206,206))}
+._si {stroke:light-dark(rgb(255,0,0),rgb(255,7,4))}
+._sj {stroke:light-dark(rgb(255,165,0),rgb(226,138,0))}
+._sk {stroke:light-dark(rgb(255,255,0),rgb(226,210,0))}
+._sl {stroke:light-dark(rgb(0,128,0),rgb(39,148,35))}
+._sm {stroke:light-dark(rgb(0,0,255),rgb(24,88,255))}
+._sn {stroke:light-dark(rgb(238,130,238),rgb(214,108,215))}
 }
 </style>
 <path class="box _sa _fc" d="M2.16,32.4L42.0192,32.4L42.0192,2.16L2.16,2.16Z"  stroke-width="2.16" />

@@ -1,6 +1,6 @@
-<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-0eaebed1f2" role="img" viewBox="0 0 479.75 302.22">
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-133285a9d4" role="img" viewBox="0 0 479.75 302.22">
 <style>
-#pikchr-0eaebed1f2 {
+#pikchr-133285a9d4 {
 ._D {dominant-baseline:central}
 ._T {fill:transparent}
 ._tS {text-anchor:start}
@@ -10,8 +10,9 @@
 ._Fi {font-style:italic}
 ._Fm {font-family:monospace}
 color-scheme:light dark;
-._fb {fill:light-dark(rgb(0,0,0),rgb(255,255,255))}
-._sa {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._fc {fill:light-dark(rgb(0,0,0),rgb(206,206,206))}
+._fb {fill:light-dark(rgb(0,0,0),rgb(238,238,238))}
+._sa {stroke:light-dark(rgb(0,0,0),rgb(206,206,206))}
 }
 </style>
 <g class="group ALL" >
@@ -22,7 +23,7 @@ color-scheme:light dark;
 <text class="file _fb _D _tS" x="5.58" y="125.28">*.txt</text>
 <text class="file _fb _D _tS" x="5.58" y="145.44">*.wiki</text>
 <g class="arrow" >
-<polygon class="arrow _fb" points="146.16,115.2 134.64,119.52 134.64,110.88" />
+<polygon class="arrow _fc" points="146.16,115.2 134.64,119.52 134.64,110.88" />
 <path class="arrow _T _sa" d="M74.16,115.2L140.4,115.2"  stroke-width="2.16" />
 </g>
 <path class="box _T _sa" d="M161.16,150.48L246.59,150.48A15 15 0 0 0 261.59 135.48L261.59,94.92A15 15 0 0 0 246.59 79.92L161.16,79.92A15 15 0 0 0 146.16 94.92L146.16,135.48A15 15 0 0 0 161.16 150.48Z"  stroke-width="2.16" />
@@ -30,7 +31,7 @@ color-scheme:light dark;
 <text class="box _fb _D _tS _Fm" x="149.58" y="115.2">Interpreter</text>
 <text class="box _fb _D _tS _Fi _Fm" x="149.58" y="135.36">(monospace)</text>
 <g class="arrow" >
-<polygon class="arrow _fb" points="405.59,115.2 394.07,119.52 394.07,110.88" />
+<polygon class="arrow _fc" points="405.59,115.2 394.07,119.52 394.07,110.88" />
 <path class="arrow _T _sa" d="M261.59,115.2L399.83,115.2"  stroke-width="2.16" />
 </g>
 <text class="arrow _fb _D _tM" x="333.59" y="103.5">above</text>
@@ -42,7 +43,7 @@ color-scheme:light dark;
 <text class="file _fb _D _tE" x="474.17" y="115.2">*.htm</text>
 <text class="file _fb _D _tE" x="474.17" y="135.36">*.js</text>
 <g class="arrow" >
-<polygon class="arrow _fb" points="203.875,222.48 199.555,210.96 208.195,210.96" />
+<polygon class="arrow _fc" points="203.875,222.48 199.555,210.96 208.195,210.96" />
 <path class="arrow _T _sa" d="M203.875,150.48L203.875,216.72"  stroke-width="2.16" />
 </g>
 <text class="arrow _fb _D _tE" x="203.875" y="186.48">rjust </text>

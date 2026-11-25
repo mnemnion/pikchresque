@@ -1,12 +1,12 @@
-<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-5e33222653" role="img" viewBox="0 0 231.092 231.092">
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-070684b81c" role="img" viewBox="0 0 231.092 231.092">
 <style>
-#pikchr-5e33222653 {
+#pikchr-070684b81c {
 ._D {dominant-baseline:central}
 ._T {fill:transparent}
 ._tM {text-anchor:middle}
 color-scheme:light dark;
-._fb {fill:light-dark(rgb(0,0,0),rgb(255,255,255))}
-._sa {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._fb {fill:light-dark(rgb(0,0,0),rgb(238,238,238))}
+._sa {stroke:light-dark(rgb(0,0,0),rgb(206,206,206))}
 }
 </style>
 <ellipse class="ellipse C _T _sa" cx="115.546" cy="115.546" rx="54" ry="36"  stroke-width="2.16" />

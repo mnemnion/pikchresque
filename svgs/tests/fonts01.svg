@@ -1,6 +1,6 @@
-<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-d13076dfa4" role="img" viewBox="0 0 816.653 473.04">
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-7342a01624" role="img" viewBox="0 0 816.653 473.04">
 <style>
-#pikchr-d13076dfa4 {
+#pikchr-7342a01624 {
 ._D {dominant-baseline:central}
 ._T {fill:transparent}
 ._tS {text-anchor:start}
@@ -10,8 +10,8 @@
 ._Fi {font-style:italic}
 ._Fm {font-family:monospace}
 color-scheme:light dark;
-._fb {fill:light-dark(rgb(0,0,0),rgb(255,255,255))}
-._sa {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._fb {fill:light-dark(rgb(0,0,0),rgb(238,238,238))}
+._sa {stroke:light-dark(rgb(0,0,0),rgb(206,206,206))}
 }
 </style>
 <path class="box ROW1 _T _sa" d="M2.16,72.72L114.84,72.72L114.84,2.16L2.16,2.16Z"  stroke-width="2.16" />

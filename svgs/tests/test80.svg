@@ -1,12 +1,12 @@
-<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-9fdfdc5c01" role="img" viewBox="0 0 717.517 445.652">
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-a3fed76b90" role="img" viewBox="0 0 717.517 445.652">
 <style>
-#pikchr-9fdfdc5c01 {
+#pikchr-a3fed76b90 {
 ._D {dominant-baseline:central}
 ._T {fill:transparent}
 ._tM {text-anchor:middle}
 color-scheme:light dark;
-._fa {fill:light-dark(rgb(0,0,0),rgb(255,255,255))}
-._sb {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._fa {fill:light-dark(rgb(0,0,0),rgb(238,238,238))}
+._sb {stroke:light-dark(rgb(0,0,0),rgb(206,206,206))}
 }
 </style>
 <text class="text TITLE _fa _D _tM" x="171.216" y="17.28">'with .start at' tests...</text>

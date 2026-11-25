@@ -1,11 +1,11 @@
-<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-608d08b1e1" role="img" viewBox="0 0 623.452 284.54">
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-de519a4862" role="img" viewBox="0 0 623.452 284.54">
 <style>
-#pikchr-608d08b1e1 {
+#pikchr-de519a4862 {
 ._T {fill:transparent}
 color-scheme:light dark;
-._fb {fill:light-dark(rgb(255,255,255),rgb(0,0,0))}
-._fc {fill:light-dark(rgb(0,0,0),rgb(255,255,255))}
-._sa {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._fb {fill:light-dark(rgb(255,255,255),rgb(174,174,174))}
+._fc {fill:light-dark(rgb(0,0,0),rgb(206,206,206))}
+._sa {stroke:light-dark(rgb(0,0,0),rgb(206,206,206))}
 }
 </style>
 <path class="line _T _sa" d="M2.16,210.38L146.16,210.38L146.16,66.3805L290.16,66.3805L290.16,282.38L203.76,282.38"  stroke-width="2.16" stroke-linejoin="round" stroke-dasharray="7.2 7.2" />

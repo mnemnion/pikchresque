@@ -1,13 +1,14 @@
-<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-18e4a0804e" role="img" viewBox="0 0 718.33 315.792">
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-dd15e2545b" role="img" viewBox="0 0 718.33 315.792">
 <style>
-#pikchr-18e4a0804e {
+#pikchr-dd15e2545b {
 ._D {dominant-baseline:central}
 ._T {fill:transparent}
 ._tM {text-anchor:middle}
 ._Fb {font-weight:bold}
 color-scheme:light dark;
-._fb {fill:light-dark(rgb(0,0,0),rgb(255,255,255))}
-._sa {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._fb {fill:light-dark(rgb(0,0,0),rgb(206,206,206))}
+._fc {fill:light-dark(rgb(0,0,0),rgb(238,238,238))}
+._sa {stroke:light-dark(rgb(0,0,0),rgb(206,206,206))}
 }
 </style>
 <circle class="circle _T _sa" cx="5.76" cy="17.28" r="3.6"  stroke-width="2.16" />
@@ -15,19 +16,19 @@ color-scheme:light dark;
 <path class="arrow A0 _T _sa" d="M9.36,17.28L26.64,17.28"  stroke-width="2.16" />
 <g class="group CR always token keyword" >
 <path class="oval _T _sa" d="M47.52,32.4L100.915,32.4A15.12 15.12 0 0 0 116.035 17.28A15.12 15.12 0 0 0 100.915 2.16L47.52,2.16A15.12 15.12 0 0 0 32.4 17.28A15.12 15.12 0 0 0 47.52 32.4Z"  stroke-width="2.16" />
-<text class="oval _fb _D _tM" x="74.2176" y="17.28">CREATE</text>
+<text class="oval _fc _D _tM" x="74.2176" y="17.28">CREATE</text>
 </g>
 <g class="group T1 optional token keyword" >
 <path class="oval _T _sa" d="M167.155,56.592L199.354,56.592A15.12 15.12 0 0 0 214.474 41.472A15.12 15.12 0 0 0 199.354 26.352L167.155,26.352A15.12 15.12 0 0 0 152.035 41.472A15.12 15.12 0 0 0 167.155 56.592Z"  stroke-width="2.16" />
-<text class="oval _fb _D _tM" x="183.254" y="41.472">TEMP</text>
+<text class="oval _fc _D _tM" x="183.254" y="41.472">TEMP</text>
 </g>
 <g class="group T2 optional token keyword" >
 <path class="oval _T _sa" d="M167.155,94.392L259.718,94.392A15.12 15.12 0 0 0 274.838 79.272A15.12 15.12 0 0 0 259.718 64.152L167.155,64.152A15.12 15.12 0 0 0 152.035 79.272A15.12 15.12 0 0 0 167.155 94.392Z"  stroke-width="2.16" />
-<text class="oval _fb _D _tM" x="213.437" y="79.272">TEMPORARY</text>
+<text class="oval _fc _D _tM" x="213.437" y="79.272">TEMPORARY</text>
 </g>
 <g class="group TBL always token keyword" >
 <path class="oval _T _sa" d="M325.958,32.4L365.299,32.4A15.12 15.12 0 0 0 380.419 17.28A15.12 15.12 0 0 0 365.299 2.16L325.958,2.16A15.12 15.12 0 0 0 310.838 17.28A15.12 15.12 0 0 0 325.958 32.4Z"  stroke-width="2.16" />
-<text class="oval _fb _D _tM" x="345.629" y="17.28">TABLE</text>
+<text class="oval _fc _D _tM" x="345.629" y="17.28">TABLE</text>
 </g>
 <g class="arrow" >
 <polygon class="arrow _fb" points="213.437,17.28 201.917,21.6 201.917,12.96" />
@@ -53,7 +54,7 @@ color-scheme:light dark;
 </g>
 <g class="group optional token keyword" >
 <path class="oval _T _sa" d="M431.539,32.4A15.12 15.12 0 0 0 446.659 17.28A15.12 15.12 0 0 0 431.539 2.16A15.12 15.12 0 0 0 416.419 17.28A15.12 15.12 0 0 0 431.539 32.4Z"  stroke-width="2.16" />
-<text class="oval _fb _D _tM" x="431.539" y="17.28">IF</text>
+<text class="oval _fc _D _tM" x="431.539" y="17.28">IF</text>
 </g>
 <g class="arrow" >
 <polygon class="arrow _fb" points="469.699,17.28 458.179,21.6 458.179,12.96" />
@@ -61,7 +62,7 @@ color-scheme:light dark;
 </g>
 <g class="group optional token keyword" >
 <path class="oval _T _sa" d="M484.819,32.4L504.922,32.4A15.12 15.12 0 0 0 520.042 17.28A15.12 15.12 0 0 0 504.922 2.16L484.819,2.16A15.12 15.12 0 0 0 469.699 17.28A15.12 15.12 0 0 0 484.819 32.4Z"  stroke-width="2.16" />
-<text class="oval _fb _D _tM" x="494.87" y="17.28">NOT</text>
+<text class="oval _fc _D _tM" x="494.87" y="17.28">NOT</text>
 </g>
 <g class="arrow" >
 <polygon class="arrow _fb" points="543.082,17.28 531.562,21.6 531.562,12.96" />
@@ -69,7 +70,7 @@ color-scheme:light dark;
 </g>
 <g class="group ETS optional token keyword" >
 <path class="oval _T _sa" d="M558.202,32.4L602.842,32.4A15.12 15.12 0 0 0 617.962 17.28A15.12 15.12 0 0 0 602.842 2.16L558.202,2.16A15.12 15.12 0 0 0 543.082 17.28A15.12 15.12 0 0 0 558.202 32.4Z"  stroke-width="2.16" />
-<text class="oval _fb _D _tM" x="580.522" y="17.28">EXISTS</text>
+<text class="oval _fc _D _tM" x="580.522" y="17.28">EXISTS</text>
 </g>
 <g class="arrow bypass" >
 <polygon class="arrow bypass _fb" points="213.437,109.512 224.957,105.192 224.957,113.832" />
@@ -86,7 +87,7 @@ color-scheme:light dark;
 </g>
 <g class="group SN identifier literal optional rule" >
 <path class="oval _T _sa" d="M43.92,162.432L140.285,162.432A15.12 15.12 0 0 0 155.405 147.312A15.12 15.12 0 0 0 140.285 132.192L43.92,132.192A15.12 15.12 0 0 0 28.8 147.312A15.12 15.12 0 0 0 43.92 162.432Z"  stroke-width="2.16" />
-<text class="oval _fb _D _tM" x="92.1024" y="147.312">schema-name</text>
+<text class="oval _fc _D _tM" x="92.1024" y="147.312">schema-name</text>
 </g>
 <g class="arrow" >
 <polygon class="arrow _fb" points="178.445,147.312 166.925,151.632 166.925,142.992" />
@@ -94,7 +95,7 @@ color-scheme:light dark;
 </g>
 <g class="group DOT optional glyph token" >
 <path class="oval _T _sa" d="M193.565,162.432A15.12 15.12 0 0 0 208.685 147.312A15.12 15.12 0 0 0 193.565 132.192A15.12 15.12 0 0 0 178.445 147.312A15.12 15.12 0 0 0 193.565 162.432Z"  stroke-width="2.16" />
-<text class="oval _fb _D _tM _Fb" x="193.565" y="147.312">.</text>
+<text class="oval _fc _D _tM _Fb" x="193.565" y="147.312">.</text>
 </g>
 <g class="arrow" >
 <polygon class="arrow _fb" points="244.685,147.312 233.165,151.632 233.165,142.992" />
@@ -102,7 +103,7 @@ color-scheme:light dark;
 </g>
 <g class="group TN always identifier literal rule" >
 <path class="oval _T _sa" d="M259.805,162.432L334.973,162.432A15.12 15.12 0 0 0 350.093 147.312A15.12 15.12 0 0 0 334.973 132.192L259.805,132.192A15.12 15.12 0 0 0 244.685 147.312A15.12 15.12 0 0 0 259.805 162.432Z"  stroke-width="2.16" />
-<text class="oval _fb _D _tM" x="297.389" y="147.312">table-name</text>
+<text class="oval _fc _D _tM" x="297.389" y="147.312">table-name</text>
 </g>
 <g class="arrow bypass" >
 <polygon class="arrow bypass _fb" points="92.1024,177.552 80.5824,181.872 80.5824,173.232" />
@@ -119,7 +120,7 @@ color-scheme:light dark;
 </g>
 <g class="group LP always choice-of glyph token" >
 <path class="oval _T _sa" d="M43.92,275.832A15.12 15.12 0 0 0 59.04 260.712A15.12 15.12 0 0 0 43.92 245.592A15.12 15.12 0 0 0 28.8 260.712A15.12 15.12 0 0 0 43.92 275.832Z"  stroke-width="2.16" />
-<text class="oval _fb _D _tM _Fb" x="43.92" y="260.712">(</text>
+<text class="oval _fc _D _tM _Fb" x="43.92" y="260.712">(</text>
 </g>
 <g class="arrow" >
 <polygon class="arrow _fb" points="95.04,260.712 83.52,265.032 83.52,256.392" />
@@ -127,11 +128,11 @@ color-scheme:light dark;
 </g>
 <g class="group CD always rule" >
 <path class="box _T _sa" d="M95.04,275.832L199.872,275.832L199.872,245.592L95.04,245.592Z"  stroke-width="2.16" />
-<text class="box _fb _D _tM" x="147.456" y="260.712">column-def</text>
+<text class="box _fc _D _tM" x="147.456" y="260.712">column-def</text>
 </g>
 <g class="group TC optional rule" >
 <path class="box _T _sa" d="M253.872,313.632L399.024,313.632L399.024,283.392L253.872,283.392Z"  stroke-width="2.16" />
-<text class="box _fb _D _tM" x="326.448" y="298.512">table-constraint</text>
+<text class="box _fc _D _tM" x="326.448" y="298.512">table-constraint</text>
 </g>
 <g class="arrow" >
 <polygon class="arrow _fb" points="399.024,298.512 410.544,294.192 410.544,302.832" />
@@ -139,11 +140,11 @@ color-scheme:light dark;
 </g>
 <g class="group C2 optional glyph token" >
 <path class="oval _T _sa" d="M431.424,313.632A15.12 15.12 0 0 0 446.544 298.512A15.12 15.12 0 0 0 431.424 283.392A15.12 15.12 0 0 0 416.304 298.512A15.12 15.12 0 0 0 431.424 313.632Z"  stroke-width="2.16" />
-<text class="oval _fb _D _tM _Fb" x="431.424" y="298.512">,</text>
+<text class="oval _fc _D _tM _Fb" x="431.424" y="298.512">,</text>
 </g>
 <g class="group RP always glyph token" >
 <path class="oval _T _sa" d="M503.424,275.832A15.12 15.12 0 0 0 518.544 260.712A15.12 15.12 0 0 0 503.424 245.592A15.12 15.12 0 0 0 488.304 260.712A15.12 15.12 0 0 0 503.424 275.832Z"  stroke-width="2.16" />
-<text class="oval _fb _D _tM _Fb" x="503.424" y="260.712">)</text>
+<text class="oval _fc _D _tM _Fb" x="503.424" y="260.712">)</text>
 </g>
 <g class="arrow" >
 <polygon class="arrow _fb" points="553.104,260.712 541.584,265.032 541.584,256.392" />
@@ -151,11 +152,11 @@ color-scheme:light dark;
 </g>
 <g class="group TO optional rule" >
 <path class="box _T _sa" d="M553.104,275.832L674.41,275.832L674.41,245.592L553.104,245.592Z"  stroke-width="2.16" />
-<text class="box _fb _D _tM" x="613.757" y="260.712">table-options</text>
+<text class="box _fc _D _tM" x="613.757" y="260.712">table-options</text>
 </g>
 <g class="group C1 optional glyph token" >
 <path class="oval _T _sa" d="M147.456,313.632A15.12 15.12 0 0 0 162.576 298.512A15.12 15.12 0 0 0 147.456 283.392A15.12 15.12 0 0 0 132.336 298.512A15.12 15.12 0 0 0 147.456 313.632Z"  stroke-width="2.16" />
-<text class="oval _fb _D _tM _Fb" x="147.456" y="298.512">,</text>
+<text class="oval _fc _D _tM _Fb" x="147.456" y="298.512">,</text>
 </g>
 <g class="arrow" >
 <polygon class="arrow _fb" points="162.576,298.512 174.096,294.192 174.096,302.832" />
@@ -194,7 +195,7 @@ color-scheme:light dark;
 </g>
 <g class="group AS always choice-of" >
 <path class="oval _T _sa" d="M455.213,162.432L459.187,162.432A15.12 15.12 0 0 0 474.307 147.312A15.12 15.12 0 0 0 459.187 132.192L455.213,132.192A15.12 15.12 0 0 0 440.093 147.312A15.12 15.12 0 0 0 455.213 162.432Z"  stroke-width="2.16" />
-<text class="oval _fb _D _tM" x="457.2" y="147.312">AS</text>
+<text class="oval _fc _D _tM" x="457.2" y="147.312">AS</text>
 </g>
 <g class="arrow" >
 <polygon class="arrow _fb" points="497.347,147.312 485.827,151.632 485.827,142.992" />
@@ -202,7 +203,7 @@ color-scheme:light dark;
 </g>
 <g class="group always rule" >
 <path class="box _T _sa" d="M497.347,162.432L601.603,162.432L601.603,132.192L497.347,132.192Z"  stroke-width="2.16" />
-<text class="box _fb _D _tM" x="549.475" y="147.312">select-stmt</text>
+<text class="box _fc _D _tM" x="549.475" y="147.312">select-stmt</text>
 </g>
 <g class="arrow" >
 <polygon class="arrow _fb" points="637.603,147.312 626.083,151.632 626.083,142.992" />

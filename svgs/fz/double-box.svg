@@ -1,21 +1,21 @@
-<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-6dcf92ef94" role="img" viewBox="0 0 472.32 256.32">
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-78fa0fdeac" role="img" viewBox="0 0 472.32 256.32">
 <style>
-#pikchr-6dcf92ef94 {
+#pikchr-78fa0fdeac {
 ._D {dominant-baseline:central}
 ._T {fill:transparent}
 ._tM {text-anchor:middle}
 ._Fb {font-weight:bold}
 color-scheme:light dark;
-._fg {fill:light-dark(rgb(255,222,173),rgb(82,49,0))}
-._fb {fill:light-dark(rgb(0,0,0),rgb(255,255,255))}
-._fd {fill:light-dark(rgb(0,0,255),rgb(127,127,255))}
-._ff {fill:light-dark(rgb(102,51,153),rgb(191,127,255))}
-._fi {fill:light-dark(rgb(255,0,0),rgb(255,127,127))}
-._sa {stroke:light-dark(rgb(0,0,255),rgb(127,127,255))}
-._sc {stroke:light-dark(rgb(255,0,0),rgb(255,127,127))}
-._se {stroke:light-dark(rgb(255,165,0),rgb(255,209,127))}
-._sh {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
-._sj {stroke:light-dark(rgb(0,128,0),rgb(127,255,127))}
+._fg {fill:light-dark(rgb(255,222,173),rgb(132,103,57))}
+._fb {fill:light-dark(rgb(0,0,0),rgb(238,238,238))}
+._fd {fill:light-dark(rgb(0,0,255),rgb(63,123,255))}
+._ff {fill:light-dark(rgb(102,51,153),rgb(155,106,212))}
+._fi {fill:light-dark(rgb(255,0,0),rgb(255,111,93))}
+._sa {stroke:light-dark(rgb(0,0,255),rgb(24,88,255))}
+._sc {stroke:light-dark(rgb(255,0,0),rgb(255,7,4))}
+._se {stroke:light-dark(rgb(255,165,0),rgb(226,138,0))}
+._sh {stroke:light-dark(rgb(0,0,0),rgb(206,206,206))}
+._sj {stroke:light-dark(rgb(0,128,0),rgb(39,148,35))}
 }
 </style>
 <path class="box First _T _sa" d="M2.16,74.16L110.16,74.16L110.16,2.16L2.16,2.16Z"  stroke-width="2.16" />

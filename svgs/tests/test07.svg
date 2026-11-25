@@ -1,16 +1,16 @@
 this is a test:  139<br>
 Colors: 16753920 0 16777215 16711680 32768 255<br>
-<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-565c23465e" role="img" viewBox="0 0 206.208 126.72">
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-1a96055327" role="img" viewBox="0 0 206.208 126.72">
 <style>
-#pikchr-565c23465e {
+#pikchr-1a96055327 {
 ._D {dominant-baseline:central}
 ._T {fill:transparent}
 ._tS {text-anchor:start}
 ._tM {text-anchor:middle}
 ._tE {text-anchor:end}
 color-scheme:light dark;
-._fb {fill:light-dark(rgb(0,0,0),rgb(255,255,255))}
-._sa {stroke:light-dark(rgb(139,0,0),rgb(255,127,127))}
+._fb {fill:light-dark(rgb(0,0,0),rgb(238,238,238))}
+._sa {stroke:light-dark(rgb(139,0,0),rgb(184,58,45))}
 }
 </style>
 <path class="box B _T _sa" d="M51.1776,99.36L159.178,99.36L159.178,27.36L51.1776,27.36Z"  stroke-width="2.16" />

@@ -7,7 +7,7 @@
 color-scheme:light dark;
 ._fc {fill:light-dark(rgb(255,214,224),rgb(132,97,106))}
 ._fh {fill:light-dark(rgb(255,218,185),rgb(133,100,71))}
-._fm {fill:light-dark(rgb(255,250,205),rgb(122,118,77))}
+._fm {fill:light-dark(rgb(255,250,205),rgb(149,138,98))}
 ._fr {fill:light-dark(rgb(193,240,208),rgb(76,119,91))}
 ._fw {fill:light-dark(rgb(208,244,255),rgb(85,118,127))}
 ._fab {fill:light-dark(rgb(204,204,255),rgb(98,97,142))}
@@ -15,7 +15,7 @@ color-scheme:light dark;
 ._fal {fill:light-dark(rgb(248,244,237),rgb(162,159,152))}
 ._fe {fill:light-dark(rgb(255,214,224),rgb(204,165,175))}
 ._fj {fill:light-dark(rgb(255,218,185),rgb(205,170,138))}
-._fo {fill:light-dark(rgb(255,250,205),rgb(193,189,145))}
+._fo {fill:light-dark(rgb(255,250,205),rgb(208,198,155))}
 ._ft {fill:light-dark(rgb(193,240,208),rgb(145,190,160))}
 ._fy {fill:light-dark(rgb(208,244,255),rgb(154,189,199))}
 ._fad {fill:light-dark(rgb(204,204,255),rgb(165,165,214))}
@@ -24,7 +24,7 @@ color-scheme:light dark;
 ._fb {fill:light-dark(rgb(0,0,0),rgb(238,238,238))}
 ._ff {fill:light-dark(rgb(255,214,224),rgb(250,209,219))}
 ._fk {fill:light-dark(rgb(255,218,185),rgb(250,214,181))}
-._fp {fill:light-dark(rgb(255,250,205),rgb(241,236,192))}
+._fp {fill:light-dark(rgb(255,250,205),rgb(244,239,194))}
 ._fu {fill:light-dark(rgb(193,240,208),rgb(188,235,203))}
 ._fz {fill:light-dark(rgb(208,244,255),rgb(199,235,246))}
 ._fae {fill:light-dark(rgb(204,204,255),rgb(206,206,255))}
@@ -33,7 +33,7 @@ color-scheme:light dark;
 ._sa {stroke:light-dark(rgb(0,0,0),rgb(206,206,206))}
 ._sd {stroke:light-dark(rgb(255,214,224),rgb(204,165,175))}
 ._si {stroke:light-dark(rgb(255,218,185),rgb(205,170,138))}
-._sn {stroke:light-dark(rgb(255,250,205),rgb(193,189,145))}
+._sn {stroke:light-dark(rgb(255,250,205),rgb(208,198,155))}
 ._ss {stroke:light-dark(rgb(193,240,208),rgb(145,190,160))}
 ._sx {stroke:light-dark(rgb(208,244,255),rgb(154,189,199))}
 ._sac {stroke:light-dark(rgb(204,204,255),rgb(165,165,214))}
@@ -41,7 +41,7 @@ color-scheme:light dark;
 ._sam {stroke:light-dark(rgb(248,244,237),rgb(232,228,221))}
 ._sg {stroke:light-dark(rgb(255,214,224),rgb(132,97,106))}
 ._sl {stroke:light-dark(rgb(255,218,185),rgb(133,100,71))}
-._sq {stroke:light-dark(rgb(255,250,205),rgb(122,118,77))}
+._sq {stroke:light-dark(rgb(255,250,205),rgb(149,138,98))}
 ._sv {stroke:light-dark(rgb(193,240,208),rgb(76,119,91))}
 ._saa {stroke:light-dark(rgb(208,244,255),rgb(85,118,127))}
 ._saf {stroke:light-dark(rgb(204,204,255),rgb(98,97,142))}

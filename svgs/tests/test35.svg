@@ -1,9 +1,9 @@
-<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-ed88e8eead" role="img" viewBox="0 0 154.435 90.3582">
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-0c64a8e3a9" role="img" viewBox="0 0 154.435 90.3582">
 <style>
-#pikchr-ed88e8eead {
+#pikchr-0c64a8e3a9 {
 ._T {fill:transparent}
 color-scheme:light dark;
-._sa {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._sa {stroke:light-dark(rgb(0,0,0),rgb(206,206,206))}
 }
 </style>
 <ellipse class="ellipse A _T _sa" cx="77.2173" cy="52.1982" rx="54" ry="36"  stroke-width="2.16" />

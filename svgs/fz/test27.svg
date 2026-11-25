@@ -1,14 +1,14 @@
-<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-62f8b4fa90" role="img" viewBox="0 0 156.96 228.96">
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-2c22c0009d" role="img" viewBox="0 0 156.96 228.96">
 <style>
-#pikchr-62f8b4fa90 {
+#pikchr-2c22c0009d {
 ._T {fill:transparent}
 color-scheme:light dark;
-._fc {fill:light-dark(rgb(255,0,0),rgb(255,127,127))}
-._fe {fill:light-dark(rgb(0,0,255),rgb(127,127,255))}
-._ff {fill:light-dark(rgb(0,0,0),rgb(255,255,255))}
-._sa {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
-._sb {stroke:light-dark(rgb(255,0,0),rgb(255,127,127))}
-._sd {stroke:light-dark(rgb(0,0,255),rgb(127,127,255))}
+._fc {fill:light-dark(rgb(255,0,0),rgb(255,7,4))}
+._fe {fill:light-dark(rgb(0,0,255),rgb(24,88,255))}
+._ff {fill:light-dark(rgb(0,0,0),rgb(206,206,206))}
+._sa {stroke:light-dark(rgb(0,0,0),rgb(206,206,206))}
+._sb {stroke:light-dark(rgb(255,0,0),rgb(255,7,4))}
+._sd {stroke:light-dark(rgb(0,0,255),rgb(24,88,255))}
 }
 </style>
 <path class="line _T _sa" d="M6.48,6.48L150.48,6.48L6.48,78.48L150.48,78.48"  stroke-width="2.16" stroke-linejoin="round" stroke-dasharray="2.16 7.2" />

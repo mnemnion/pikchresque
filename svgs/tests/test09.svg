@@ -1,9 +1,9 @@
-<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-43ab22d575" role="img" viewBox="0 0 116.688 96.5038">
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-e5cc88c985" role="img" viewBox="0 0 116.688 96.5038">
 <style>
-#pikchr-43ab22d575 {
+#pikchr-e5cc88c985 {
 ._T {fill:transparent}
 color-scheme:light dark;
-._sa {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._sa {stroke:light-dark(rgb(0,0,0),rgb(206,206,206))}
 }
 </style>
 <circle class="circle HEAD _T _sa" cx="58.3438" cy="58.3438" r="36"  stroke-width="2.16" />

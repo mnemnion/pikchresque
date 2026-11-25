@@ -1,19 +1,19 @@
 0.5 0<br>
-<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-235ce991e9" role="img" viewBox="0 0 237.572 83.88">
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-a7b93aea30" role="img" viewBox="0 0 237.572 83.88">
 <style>
-#pikchr-235ce991e9 {
+#pikchr-a7b93aea30 {
 ._T {fill:transparent}
 color-scheme:light dark;
-._fb {fill:light-dark(rgb(0,0,0),rgb(255,255,255))}
-._fd {fill:light-dark(rgb(255,0,0),rgb(255,127,127))}
-._ff {fill:light-dark(rgb(255,165,0),rgb(255,209,127))}
-._fh {fill:light-dark(rgb(0,128,0),rgb(127,255,127))}
-._fj {fill:light-dark(rgb(0,0,255),rgb(127,127,255))}
-._sa {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
-._sc {stroke:light-dark(rgb(255,0,0),rgb(255,127,127))}
-._se {stroke:light-dark(rgb(255,165,0),rgb(255,209,127))}
-._sg {stroke:light-dark(rgb(0,128,0),rgb(127,255,127))}
-._si {stroke:light-dark(rgb(0,0,255),rgb(127,127,255))}
+._fb {fill:light-dark(rgb(0,0,0),rgb(206,206,206))}
+._fd {fill:light-dark(rgb(255,0,0),rgb(255,7,4))}
+._ff {fill:light-dark(rgb(255,165,0),rgb(226,138,0))}
+._fh {fill:light-dark(rgb(0,128,0),rgb(39,148,35))}
+._fj {fill:light-dark(rgb(0,0,255),rgb(24,88,255))}
+._sa {stroke:light-dark(rgb(0,0,0),rgb(206,206,206))}
+._sc {stroke:light-dark(rgb(255,0,0),rgb(255,7,4))}
+._se {stroke:light-dark(rgb(255,165,0),rgb(226,138,0))}
+._sg {stroke:light-dark(rgb(0,128,0),rgb(39,148,35))}
+._si {stroke:light-dark(rgb(0,0,255),rgb(24,88,255))}
 }
 </style>
 <g class="spline" >

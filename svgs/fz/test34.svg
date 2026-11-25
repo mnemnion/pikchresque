@@ -1,10 +1,10 @@
-<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-e904420e04" role="img" viewBox="0 0 224.64 82.6594">
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-833e45d4ef" role="img" viewBox="0 0 224.64 82.6594">
 <style>
-#pikchr-e904420e04 {
+#pikchr-833e45d4ef {
 ._T {fill:transparent}
 color-scheme:light dark;
-._fb {fill:light-dark(rgb(0,0,0),rgb(255,255,255))}
-._sa {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._fb {fill:light-dark(rgb(0,0,0),rgb(206,206,206))}
+._sa {stroke:light-dark(rgb(0,0,0),rgb(206,206,206))}
 }
 </style>
 <path class="line _T _sa" d="M2.16,78.48L74.16,78.48"  stroke-width="2.16" />

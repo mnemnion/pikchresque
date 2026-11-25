@@ -1,18 +1,18 @@
-<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-d6ce6e0626" role="img" viewBox="0 0 213.178 497.53">
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-3a75262323" role="img" viewBox="0 0 213.178 497.53">
 <style>
-#pikchr-d6ce6e0626 {
+#pikchr-3a75262323 {
 ._D {dominant-baseline:central}
 ._T {fill:transparent}
 ._tM {text-anchor:middle}
 color-scheme:light dark;
-._fc {fill:light-dark(rgb(173,216,230),rgb(25,68,82))}
-._fd {fill:light-dark(rgb(255,255,0),rgb(127,127,0))}
-._fe {fill:light-dark(rgb(144,238,144),rgb(17,111,17))}
-._ff {fill:light-dark(rgb(255,192,203),rgb(63,0,11))}
-._fg {fill:light-dark(rgb(211,211,211),rgb(44,44,44))}
-._fh {fill:light-dark(rgb(255,165,0),rgb(127,82,0))}
-._fa {fill:light-dark(rgb(0,0,0),rgb(255,255,255))}
-._sb {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._fc {fill:light-dark(rgb(173,216,230),rgb(69,109,122))}
+._fd {fill:light-dark(rgb(255,255,0),rgb(176,160,0))}
+._fe {fill:light-dark(rgb(144,238,144),rgb(22,125,33))}
+._ff {fill:light-dark(rgb(255,192,203),rgb(140,85,96))}
+._fg {fill:light-dark(rgb(211,211,211),rgb(147,147,147))}
+._fh {fill:light-dark(rgb(255,165,0),rgb(141,81,0))}
+._fa {fill:light-dark(rgb(0,0,0),rgb(238,238,238))}
+._sb {stroke:light-dark(rgb(0,0,0),rgb(206,206,206))}
 }
 </style>
 <text class="text _fa _D _tM" x="106.589" y="17.28">Zero Thickness Objects</text>

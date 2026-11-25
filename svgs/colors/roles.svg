@@ -22,7 +22,7 @@ color-scheme:light dark;
 ._fo {fill:light-dark(rgb(255,255,255),rgb(252,252,252))}
 ._fs {fill:light-dark(rgb(128,0,128),rgb(189,78,187))}
 ._fu {fill:light-dark(rgb(0,0,0),rgb(238,238,238))}
-._fx {fill:light-dark(rgb(255,255,0),rgb(243,242,0))}
+._fx {fill:light-dark(rgb(255,255,0),rgb(248,246,0))}
 ._faa {fill:light-dark(rgb(0,255,255),rgb(0,251,251))}
 ._sa {stroke:light-dark(rgb(128,0,0),rgb(176,59,47))}
 ._sd {stroke:light-dark(rgb(255,0,0),rgb(255,7,4))}

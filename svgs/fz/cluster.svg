@@ -1,19 +1,19 @@
-<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-5944c1e44b" role="img" aria-labelledby="title-5944c1e44b desc-5944c1e44b" viewBox="0 0 292.32 76.32">
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-88c03b45eb" role="img" aria-labelledby="title-88c03b45eb desc-88c03b45eb" viewBox="0 0 292.32 76.32">
 <style>
-#pikchr-5944c1e44b {
+#pikchr-88c03b45eb {
 ._D {dominant-baseline:central}
 ._T {fill:transparent}
 ._tM {text-anchor:middle}
 color-scheme:light dark;
-._fb {fill:light-dark(rgb(0,128,0),rgb(127,255,127))}
-._sa {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._fb {fill:light-dark(rgb(0,128,0),rgb(70,174,65))}
+._sa {stroke:light-dark(rgb(0,0,0),rgb(206,206,206))}
 }
 </style>
-<title id="title-5944c1e44b">
+<title id="title-88c03b45eb">
 Time &amp; "Tide" wait for
 No Man.
 </title>
-<desc id="desc-5944c1e44b">
+<desc id="desc-88c03b45eb">
 The Description
 </desc>
 <path class="box _T _sa" d="M2.16,74.16L110.16,74.16L110.16,2.16L2.16,2.16Z"  stroke-width="2.16" />

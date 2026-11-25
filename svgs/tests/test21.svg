@@ -1,9 +1,9 @@
-<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-8209a9d876" role="img" viewBox="0 0 724.32 112.32">
+<svg xmlns='http://www.w3.org/2000/svg' style='font-size:initial;' class="pikchr" id="pikchr-70c7918924" role="img" viewBox="0 0 724.32 112.32">
 <style>
-#pikchr-8209a9d876 {
+#pikchr-70c7918924 {
 ._T {fill:transparent}
 color-scheme:light dark;
-._sa {stroke:light-dark(rgb(0,0,0),rgb(255,255,255))}
+._sa {stroke:light-dark(rgb(0,0,0),rgb(206,206,206))}
 }
 </style>
 <path class="line _T _sa" d="M2.16,2.16L722.16,2.16"  stroke-width="2.16" stroke-dasharray="7.2 7.2" />
